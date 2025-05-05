@@ -29,10 +29,10 @@
                         <li class="dropend">
                             <a class="dropdown-item dropdown-toggle" data-bs-toggle="dropdown" href="#">View</a>
                             <ul class="dropdown-menu">
-                                <li><a href=".\currentinventory.php" class="dropdown-item">Current Inventory</a></li>
+                                <li><a href="currentinventory.php" class="dropdown-item">Current Inventory</a></li>
                                 <li><a href="" class="dropdown-item">Product List</a></li>
                                 <li><a href="" class="dropdown-item">Material List</a></li>
-                                <li><a href=".\pfmlist.php" class="dropdown-item">PFM List</a></li>
+                                <li><a href="pfmlist.php" class="dropdown-item">PFM List</a></li>
                             </ul>
                         </li>
                     </ul>

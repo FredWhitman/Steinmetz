@@ -7,7 +7,6 @@ $productObj = new products();
 $materialNames = $materialObj->get_MaterialName();
 $partNames = $productObj->get_PartNames();
 
-
 ?>
 
 <!doctype html>
@@ -21,46 +20,14 @@ $partNames = $productObj->get_PartNames();
     <title>Steinmetz Inc</title>
 
     <!-- Bootstrap core CSS -->
-    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous"> -->
     <link href="../resources/vendors/css/bootstrap.min.css" rel="stylesheet">
-    <script type="text/javascript" src="../resources/vendors/js/bootstrap.bundle.min.js"></script>
-    <script type="text/javascript" src="../resources/js/prodLogSubmit.js"></script>
-
-    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script> -->
     <!-- Custom styles for this template -->
     <link href="../resources/vendors/css/dashboard.css" rel="stylesheet">
-
-    <style>
-        input[type='text'] {
-            font-size: .75rem;
-        }
-
-        input[type='number'] {
-            font-size: .75rem;
-        }
-
-        input[type='select'] {
-            font-size: .75rem;
-        }
-
-        input[type='date'] {
-            font-size: .75rem;
-        }
-
-        input[type="radio"] {
-            font-size: .75rem;
-        }
-
-
-        label[class='input-group-text'] {
-            font-size: .75rem;
-        }
-
-        label[class='form-check-label'] {
-            font-size: .75rem;
-        }
-    </style>
-
+    <link href="../resources/css/myCSS.css" rel="stylesheet">
+    <!-- Bootstrap js -->
+    <script type="text/javascript" src="../resources/vendors/js/bootstrap.bundle.min.js"></script>
+    <!-- My custom js -->
+    <script type="text/javascript" src="../resources/js/prodLogSubmit.js"></script>
 
 </head>
 

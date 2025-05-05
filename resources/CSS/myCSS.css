@@ -1,0 +1,21 @@
+input[type="text"] {
+  font-size: 0.75rem;
+}
+input[type="number"] {
+  font-size: 0.75rem;
+}
+input[type="select"] {
+  font-size: 0.75rem;
+}
+input[type="date"] {
+  font-size: 0.75rem;
+}
+input[type="radio"] {
+  font-size: 0.75rem;
+}
+label[class="input-group-text"] {
+  font-size: 0.75rem;
+}
+label[class="form-check-label"] {
+  font-size: 0.75rem;
+}
