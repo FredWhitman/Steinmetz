@@ -9,23 +9,21 @@ class Inventory
     public function __construct()
     {
         $database = new Database();
-
         $db = $database->dbconnection();
         $this->con = $db;
     }
 
-  
     //Get Parts Inventory
     public function get_Parts()
     {
         try {
             $stmt = $this->con->prepare("SELECT products.`ProductID`, products.`PartName`,products.`MinimumQty`,products.`customer`,products.`displayOrder`,productinventory.`ProductID`, productinventory.`PartQty` 
                                          FROM products JOIN productinventory ON productinventory.`ProductID` = products.`ProductID` 
-                                         WHERE products.`customer` = 'Amsted'ORDER BY products.`displayOrder` ASC" );
+                                         WHERE products.`customer` = 'Amsted'ORDER BY products.`displayOrder` ASC");
             $stmt->execute();
             if ($stmt->rowCount() > 0) {
                 return $stmt;
-                echo $stmt -> rowCount();
+                echo $stmt->rowCount();
             } else {
                 return null;
                 echo "$stmt returns NULL";
