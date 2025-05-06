@@ -9,6 +9,13 @@ $materialNames = $materialObj->get_MaterialName();
 $partNames = $productObj->get_PartNames();
 ?>
 
+<datalist id="partNames">
+    <?php foreach ($partNames as $row) {  ?> <option> <?php echo $row['ProductID']; ?> </option> <?php } ?>
+</datalist>
+<datalist id="material_Names">
+    <?php foreach ($materialNames as $row) {  ?> <option> <?php echo $row['MaterialName']; ?> </option> <?php } ?>
+</datalist>
+
 <!doctype html>
 
 <head>
@@ -52,39 +59,33 @@ $partNames = $productObj->get_PartNames();
                             <div class="d-inline-flex justify-content-center">
                                 <div class="d-flex justify-content-center p-1">
                                     <div class="form-group">
-                                        <label for="materialName" class="form-label">Select Material</label>
-                                        <input type="text" class="form-select" list="material_Names" id="material_Name" name="selectedMaterial" placeholder="Type to search for material ...">
-                                        <datalist id="material_Names">
-                                            <?php foreach ($materialNames as $row) {  ?> <option> <?php echo $row['MaterialName']; ?> </option> <?php } ?>
-                                        </datalist>
+                                        <div class="input-group sm-1"><label for="Material_Name" class="input-group-text">Material</label><input class="form-select" type="text" list="material_Names" name="selectedMaterial" id="Matertial_Name" required></div>
                                     </div>
                                 </div>
                                 <div class="d-flex justify-content-center p-1">
                                     <div class="form-group">
-                                        <label for="partNumber" class="form-label">Select Part</label>
-                                        <input type="text" class="form-select" list="partNumbers" id="partNumber" name="selectedPart" placeholder="select part..">
-                                        <datalist id="partNumbers">
-                                            <?php foreach ($partNames as $row) {  ?> <option> <?php echo $row['ProductID']; ?> </option> <?php } ?>
-                                        </datalist>
+                                        <div class="input-group sm-3"><label class="input-group-text" style="font-size: .75rem" for="partName">Part Name</label><input type="text" tabindex="1" class="form-select form-control-sm" list="partNames" id="partName" name="selectedPart"></div>
                                     </div>
                                 </div>
                                 <div class="d-flex justify-content-center p-1">
                                     <div class="form-group">
-                                        <label for="">Start Date</label><input class="form-control" type="date" id="logDate1" name="date1">
+                                        <div class="input-group mb-3"><label class="input-group-text" for="startDate">Start</label><input class="form-control" type="date" tabindex="2" id="startDate" name="start_date"></div>
                                     </div>
                                 </div>
                                 <div class="d-flex justify-content-center p-1">
                                     <div class="form-group">
-                                        <label for="">End Date</label><input class="form-control" type="date" id="logDate2" name="date2">
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-center p-1">
-                                    <div class="form-group">
-                                        <button type="sumbit" id="btn_getLotsChanges" name="viewLotChange" class="btn btn-dark">Get Lot Changes</button>
+                                        <div class="input-group mb-3"><label class="input-group-text" for="endDate">End</label><input class="form-control" type="date" tabindex="2" id="endDate" name="end_date"></div>
                                     </div>
                                 </div>
                             </div>
                         </form>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-center p-1">
+                        <div class="form-group">
+                            <button type="sumbit" id="btn_getLotChanges" name="viewLotChange" class="btn btn-dark">Get Lot Changes</button>
+                        </div>
                     </div>
                 </div>
             </div>
