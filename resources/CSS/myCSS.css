@@ -19,3 +19,6 @@ label[class="input-group-text"] {
 label[class="form-check-label"] {
   font-size: 0.75rem;
 }
+input[type="submit"]{
+  font-size: 0.75rem;
+}
