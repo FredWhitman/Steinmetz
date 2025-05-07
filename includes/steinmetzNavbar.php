@@ -51,7 +51,7 @@
                         <li>
                             <a href=".\newProductionLogs.php" class="dropdown-item">Add Production Log</a>
                             <a href="" class="dropdown-item">Edit Production Log</a>
-                            <a href="" class="dropdown-item">View Production Log</a>
+                            <a href=".\viewProductionLog.php" class="dropdown-item">View Production Log</a>
                         </li>
                     </ul>
                 </li>
