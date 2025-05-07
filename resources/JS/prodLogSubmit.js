@@ -109,6 +109,7 @@ function doStartDailyUsage(hop1, hop2, hop3, hop4) {
     (Number(dHop3.value) || 0) +
     (Number(dHop4.value) || 0);
   validateTotals(dSum);
+  dSum = Number(dSum.toFixed(3));
   dTotal.value = dSum;
   console.log("Totals: " + dSum);
 
