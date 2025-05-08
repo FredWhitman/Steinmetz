@@ -1,4 +1,5 @@
 <?php
+session_start();
 // Show PHP errors
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -12,7 +13,8 @@ $inventoryObj = new Inventory();
 ?>
 
 <!doctype html>
-<html lang="en"  data-bs-theme="dark">
+<html lang="en" data-bs-theme="dark">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -60,7 +62,7 @@ $inventoryObj = new Inventory();
                                         echo $e->getMessage();
                                     } ?>
                                     <tbody>
-                                        <?php if ($parts != Null) {
+                                        <?php if (!empty($parts)) {
                                             while ($rowParts = $parts->fetch(PDO::FETCH_ASSOC)) { ?>
                                                 <tr>
                                                     <td class="text-center"><?php print($rowParts["ProductID"]) ?></td>
@@ -97,7 +99,7 @@ $inventoryObj = new Inventory();
                                         } catch (PDOException $e) {
                                             echo $e->getMessage();
                                         } ?>
-                                        <tr><?Php if ($material->rowcount() > 0) {
+                                        <tr><?Php if (count($material) > 0) {
                                                 while ($rowMaterials = $material->fetch(PDO::FETCH_ASSOC)) { ?>
                                                     <td class="text-center"><?php print($rowMaterials["MaterialPartNumber"]) ?></td>
                                                     <td class="text-center"><?php print($rowMaterials["MaterialName"]) ?></td>

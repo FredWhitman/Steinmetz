@@ -1,6 +1,8 @@
+<?php session_start(); ?>
 <!doctype html>
 
-<html lang="en"  data-bs-theme="dark">
+<html lang="en" data-bs-theme="dark">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -24,7 +26,7 @@
 
     <div class="container-fluid mt-6">
         <div class="row justify-content-center mt-5">
-            <embed type="text/html" src="" width="500px" height="350px">
+
         </div>
     </div>
 </body>
