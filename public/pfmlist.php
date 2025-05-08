@@ -1,4 +1,5 @@
 <?php
+session_start();
 // Show PHP errors
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -13,7 +14,8 @@ $objPFM = new pfm();
 ?>
 
 <!doctype html>
-<html lang="en"  data-bs-theme="dark">
+<html lang="en" data-bs-theme="dark">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
