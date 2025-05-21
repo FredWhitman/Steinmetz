@@ -276,7 +276,6 @@ $partNames = $productObj->get_PartNames();
                                                         </tr>
                                                     </table>
                                                 </div>
-
                                             </div>
                                         </div>
                                     </div>

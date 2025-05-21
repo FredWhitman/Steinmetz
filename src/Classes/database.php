@@ -1,18 +1,19 @@
 <?php
 //Database connection information
 
-Class database
+class database
 {
     private $host = "localhost";
     private $dbName = "inventory_db";
     private $username = "root";
     private $password = "";
-   
+
 
     public $con;
 
     //Method for returing protect connection
-    public function dbConnection() {
+    public function dbConnection()
+    {
         $this->con = null;
         try {
             $this->con = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->dbName, $this->username, $this->password, array(
@@ -25,5 +26,3 @@ Class database
         return $this->con;
     }
 }
-
-?>
