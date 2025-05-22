@@ -46,14 +46,14 @@
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" data-bs-auto-close="outside" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Production</a>
-                    <ul class="dropdown-menu">
+                    <a class="nav-link" a href=".\Production.php" role="button">Production</a>
+                    <!-- <ul class="dropdown-menu">
                         <li>
                             <a href=".\newProductionLogs.php" class="dropdown-item">Add Production Log</a>
                             <a href="" class="dropdown-item">Edit Production Log</a>
                             <a href=".\viewProductionLog.php" class="dropdown-item">View Production Log</a>
                         </li>
-                    </ul>
+                    </ul> -->
                 </li>
             </ul>
         </div>
