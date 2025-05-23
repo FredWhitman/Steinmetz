@@ -41,7 +41,7 @@
                                 <div class="card align-middle">
                                     <div class="row row-cols-2">
                                         <div class="col">
-                                            <div class="input-group sm-3"><label class="input-group-text" style="font-size: .75rem" for="partName">Part Name</label><input type="text" tabindex="1" class="form-select form-control-sm" list="partNames" id="partName" name="selectedPart"></div>
+                                            <div class="input-group sm-3"><label class="input-group-text" style="font-size: .75rem" for="partName">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" list="partNames" id="partName" name="selectedPart"></div>
                                             <datalist id="partNames"><?php foreach ($partNames as $row) { ?><option><?php echo $row['ProductID']; ?></option><?php } ?></datalist>
                                         </div>
                                         <div class="col text-center">
@@ -82,28 +82,26 @@
                                                 <tbody>
                                                     <tr>
                                                         <td>
-                                                            <div class="input-group sm-1"><label for="Mat1Name" class="input-group-text">Hopper 1</label><input class="form-select" type="text" list="materialNames" name="selected1Mat" id="Mat1Name" required></div>
+                                                            <div class="input-group sm-1"><label for="Mat1Name" class="input-group-text">Hopper 1</label><select class="form-select" type="text" name="selected1Mat" id="Mat1Name" required></div>
                                                         </td>
-                                                        <datalist id="materialNames">
-                                                            <?php foreach ($materialNames as $row) {  ?> <option> <?php echo $row['MaterialName']; ?> </option> <?php } ?>
-                                                        </datalist>
+
                                                         <td><input class="form-control" type="number" step="0.001" name="hop1" id="hop1Lbs" tabindex="6" oninput="validateDecimalInput(event)" required></td>
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <div class="input-group sm-1"><label for="Mat2Name" class="input-group-text">Hopper 2</label><input class="form-select" type="text" list="materialNames" name="selected2Mat" id="Mat2Name" required></div>
+                                                            <div class="input-group sm-1"><label for="Mat2Name" class="input-group-text">Hopper 2</label><select class="form-select" type="text" list="materialNames" name="selected2Mat" id="Mat2Name" required></div>
                                                         </td>
                                                         <td><input class="form-control" type="number" step="0.001" name="hop2" id="hop2Lbs" tabindex="7" oninput="validateDecimalInput(event)" required></td>
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <div class="input-group sm-1"><label for="Mat3Name" class="input-group-text">Hopper 3</label><input class="form-select" type="text" list="materialNames" name="selected3Mat" id="Mat3Name"></div>
+                                                            <div class="input-group sm-1"><label for="Mat3Name" class="input-group-text">Hopper 3</label><select class="form-select" type="text" list="materialNames" name="selected3Mat" id="Mat3Name"></div>
                                                         </td>
                                                         <td><input class="form-control" type="number" step="0.001" name="hop3" id="hop3Lbs" tabindex="8" oninput="validateDecimalInput(event)"></td>
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <div class="input-group sm-1"><label for="Mat4Name" class="input-group-text">Hopper 4</label><input class="form-select" type="text" list="materialNames" name="selected4Mat" id="Mat4Name"></div>
+                                                            <div class="input-group sm-1"><label for="Mat4Name" class="input-group-text">Hopper 4</label><select class="form-select" type="text" list="materialNames" name="selected4Mat" id="Mat4Name"></div>
                                                         </td>
                                                         <td><input class="form-control" type="number" step="0.001" name="hop4" id="hop4Lbs" tabindex="9" oninput="validateDecimalInput(event)"></td>
                                                     </tr>
@@ -305,7 +303,7 @@
                         <h4 class="text-primary">Production Data</h4>
                     </div>
                     <div>
-                        <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#addProductionModal">Add Production Log</button>
+                        <button class="btn btn-primary" type="button" id="loadProdLogForm" data-bs-toggle="modal" data-bs-target="#addProductionModal">Add Production Log</button>
                     </div>
                 </div>
             </div>
