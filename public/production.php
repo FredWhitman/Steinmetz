@@ -22,7 +22,7 @@
     <?php require_once '../includes/steinmetzNavbar.php'; ?>
     <!-- New production log modal start-->
     <div class="modal fade" id="addProductionModal" tabindex="-1" aria-labelledby="addProductionModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style=" width: 55rem;">
+        <div class="modal-dialog modal-dialog-centered modal-lg" style=" width: 55rem;">
             <div class="modal-content ">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="addProductionModalLabel">New Production Log</h1>
