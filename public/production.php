@@ -17,286 +17,295 @@
     <link href="../resources/css/myCSS.css" rel="stylesheet">
 </head>
 
-<body>
+<body onload="addBlenderOnBlur">
     <!--Navbar -->
     <?php require_once '../includes/steinmetzNavbar.php'; ?>
     <!-- New production log modal start-->
-    <div class="modal fade" id="addProductionModal" tabindex="-1" aria-labelledby="addProductionModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg" style=" width: 55rem;">
+    <div class="modal fade" id="addProductionModal" tabindex="-1" aria-labelledby="addProductionModalLabel">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content ">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="addProductionModalLabel">New Production Log</h1>
+                <div class="modal-header text-center">
+                    <h6 class="text-center">New Production Log</h6>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-
                     <!--  Form for Production log start -->
                     <form id="productionLog" action="">
-                        <div class="container">
-                            <!-- TODO: check to make sure date selected is within a normal range or throw message
-                            TODO: if in progress radio button is selected pull previous log and subtract values from blender data to fill daily usage data
-                            TODO: if end of run is selected pull all data for production and add production run data to database
-                            -->
+                        <!-- Log Information -->
+                         <div class="container" id="logInformation">
+                            <div class="card pb-1">
+                                <div class="card-header">
+                                    Log Information
+                                </div>    
+                                <div class="card-body">
+                                    <div class="container text-center">
+                                        <div class="row row-cols-2 pb-1">
+                                            <div class="col">
+                                                <div class="input-group sm-3"><label class="input-group-text" style="font-size: .75rem" for="partName">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" list="partNames" id="partName" name="selectedPart"></select></div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="col text-center">Production Run Status</div>
+                                            </div>
+                                        </div>
+                                        <div class="row row-col-2">
+                                            <div class="col ">
+                                                <div class="input-group mb-3"><label class="input-group-text" for="logDate">Production Date</label><input class="form-control" type="date" tabindex="2" id="logDate" name="log_date"></div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="col">
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="prodRun" id="start" tabindex="3" value="1">Start<label class="form-check-label" for="start"></label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="prodRun" tabindex="4" id="inProgress" value="0">In Progress<label class="form-check-label" for="inProgress"></label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="prodRun" tabindex="5" id="end" value="2">End<label class="form-check-label" for="end"></label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>    
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Card for Blender and Daily Usage-->   
+                        <div class="container"id="blenderDailyUsage"> <input type="hidden" id="prodStatus" name="productionStatus">
                             <div class="row">
-                                <div class="card align-middle">
+                                <div class="col">
+                                    <div class="card">
+                                        <div class="card-header">Blender and Daily Usage</div>
+                                        <div class="card-body">
+                                            <div class="container text-center">
+                                                <!-- Header Row -->
+                                                <div class="row row-cols-5 mx-auto">
+                                                    <div class="col-1"></div>
+                                                    <div class="col-5">Material</div>
+                                                    <div class="col-2">Lbs for Run</div>
+                                                    <div class="col-2">Lbs Used</div>
+                                                    <div class="col-2">%</div>
+                                                </div>
+                                                <!-- Hoper 1 Row -->
+                                                <div class="row row-cols-5 mx-auto pb-1">
+                                                    <div class="col-1"></div>
+                                                    <div class="col-5">
+                                                        <div class="input-group sm-1">
+                                                            <label for="Mat1Name" class="input-group-text">Hopper 1</label>
+                                                            <select class="form-select" type="text" name="selected1Mat" id="Mat1Name" required></select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <input class="form-control" type="number" step="0.001" name="hop1" id="hop1Lbs" tabindex="6" oninput="validateDecimalInput(event)" required>
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <div class="input-group sm-1"><input class="form-control" type="number" name="hop1LbsDaily" id="dHop1" readonly></div>
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <input class="form-control" type="number" name="hop1Percent" id="dHop1p" readonly>
+                                                    </div>
+                                                </div>
+                                                <!-- Hopper 2 row -->
+                                                <div class="row row-cols-5 mx-auto pb-1">
+                                                    <div class="col-1"></div>
+                                                    <div class="col-5">
+                                                        <div class="input-group sm-1"><label for="Mat2Name" class="input-group-text">Hopper 2</label><select class="form-select" type="text" list="materialNames" name="selected2Mat" id="Mat2Name" required></select></div>
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <input class="form-control" type="number" step="0.001" name="hop2" id="hop2Lbs" tabindex="7" oninput="validateDecimalInput(event)" required>
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <div class="input-group sm-1"><input class="form-control" type="number" name="hop2LbsDaily" id="dHop2" readonly></div>
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <div class="input-group sm1"><input class="form-control" type="number" name="hop2Percent" id="dHop2p" readonly></div>
+                                                    </div>
+                                                </div>
+                                                <!-- Hopper 3 row -->
+                                                <div class="row row-cols-5 mx-auto pb-1">
+                                                    <div class="col-1"></div>
+                                                    <div class="col-5">
+                                                        <div class="input-group sm-1"><label for="Mat3Name" class="input-group-text">Hopper 3</label><select class="form-select" type="text" list="materialNames" name="selected3Mat" id="Mat3Name"></select></div>
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <input class="form-control" type="number" step="0.001" name="hop3" id="hop3Lbs" tabindex="8" oninput="validateDecimalInput(event)">
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <div class="input-group sm-1"><input class="form-control" type="number" name="hop3LbsDaily" id="dHop3" readonly></div>
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <div class="input-group sm-1"><input class="form-control" type="number" name="hop3Percent" id="dHop3p" readonly></div>
+                                                    </div>
+                                                </div>
+                                                <!-- Hopper 4 row -->
+                                                <div class="row row-cols-5 mx-auto pb-1">
+                                                    <div class="col-1"></div>
+                                                    <div class="col-5">
+                                                        <div class="input-group sm-1">
+                                                            <label for="Mat4Name" class="input-group-text">Hopper 4</label>
+                                                            <select class="form-select" type="text" list="materialNames" name="selected4Mat" id="Mat4Name"></select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <input class="form-control" type="number" step="0.001" name="hop4" id="hop4Lbs" tabindex="9" oninput="validateDecimalInput(event)">
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <div class="input-group sm-1">
+                                                            <input class="form-control" type="number" name="hop4LbsDaily" id="dHop4" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <div class="input-group sm-1"><input class="form-control" type="number" name="hop4Percent" id="dHop4p" readonly></div>
+                                                    </div>
+                                                </div>    
+                                                <!-- Totals row -->
+                                                <div class="row row-cols-5 mx-auto pb-1">
+                                                    <div class="col-1"></div>
+                                                    <div class="col-5 d-flex justify-content-end align-items-center">
+                                                        <h6 class="text-end">Totals</h6>
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <input class="form-control" type="number" step="0.001" name="totalsBlender" id="BlenderTotals" oninput="validateInput(event)" readonly>
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <input readonly class="form-control" type="text" name="totalDaily" id="dTotal" oninput="validateDecimalInput(event)" readonly>
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <input readonly class="form-control" type="text" name="totalPercent" id="dTotalp" oninput="validateDecimalInput(event)" readonly>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Dryer and Production Information -->
+                        <div class="container" id ="dryerProductionInfo" style="width:31rem;">
+                            <div class="card">
+                                <!-- TODO: This column will hold the dry information and produciton numbers
+                                     TODO: Ensure that only numbers can be entered into fields 
+                                -->
+                                <div class="card-header">Dryer & Production Information</div>
+                                <div class="card-body">
                                     <div class="row row-cols-2">
                                         <div class="col">
-                                            <div class="input-group sm-3"><label class="input-group-text" style="font-size: .75rem" for="partName">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" list="partNames" id="partName" name="selectedPart"></div>
-                                            <datalist id="partNames"><?php foreach ($partNames as $row) { ?><option><?php echo $row['ProductID']; ?></option><?php } ?></datalist>
-                                        </div>
-                                        <div class="col text-center">
-                                            Production Run Status
-                                        </div>
-                                        <div class="col ">
-                                            <div class="input-group mb-3"><label class="input-group-text" for="logDate">Production Date</label><input class="form-control" type="date" tabindex="2" id="logDate" name="log_date"></div>
-                                        </div>
-                                        <div class="col text-center">
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="prodRun" id="start" tabindex="3" value="1">Start<label class="form-check-label" for="start"></label>
+                                            <div class="input-group sm-1">
+                                                <label for="bigDryerTemp" class="input-group-text" style="font-size: .75rem">Big Dryer</label>
+                                                <input class="form-control" style="font-size: .75rem" type="number" tabindex="10" min="70" max="240" name="bigDryerTemp" id="bigDryerTemp">
+                                                <input class="form-control" style="font-size: .75rem" type="number" tabindex="11" min="-60" max="0" name="bigDryerDew" id="">
                                             </div>
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="prodRun" tabindex="4" id="inProgress" value="0">In Progress<label class="form-check-label" for="inProgress"></label>
+                                        </div>
+                                        <div class="col">
+                                            <div class="input-group sm"><label for="PressCounter" class="input-group-text">Press Counter</label><input class="form-control form-control-sm" tabindex="14" type="number" name="pressCount" id="PressCounter"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row row-cols-2">
+                                        <div class="col">
+                                            <div class="input-group sm-1">
+                                                <label for="PressDryerTemp" class="input-group-text" style="font-size: .75rem">Press Dryer</label>
+                                                <input class="form-control" type="number" style="font-size: .75rem" name="pressDryerTemp" min="70" max="240" tabindex="12" id="PressDryerTemp">
+                                                <input class="form-control" style="font-size: .75rem" type="number" name="pressDryerDew" min="-60" max="0" tabindex="13" id="">
                                             </div>
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="prodRun" tabindex="5" id="end" value="2">End<label class="form-check-label" for="end"></label>
-                                            </div>
-                                            <div class="form-check-input"><input type="hidden" id="prodStatus" name="productionStatus"></div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="input-group sm-1"><label for="PressRejects" class="input-group-text" style="font-size: .75rem">Press Rejects</label><input class="form-control form-control-sm" style="font-size: .75rem" tabindex="15" type="number" name="rejects" id="PressRejects"></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col">
-                                <div class="card" style="width: 30rem;">
-                                    <div class="card-header">Blender</div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <table>
-                                                <thead>
-                                                    <tr>
-                                                        <th class="text-center">Material</th>
-                                                        <th class="text-center">Lbs for Run</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>
-                                                            <div class="input-group sm-1"><label for="Mat1Name" class="input-group-text">Hopper 1</label><select class="form-select" type="text" name="selected1Mat" id="Mat1Name" required></div>
-                                                        </td>
-
-                                                        <td><input class="form-control" type="number" step="0.001" name="hop1" id="hop1Lbs" tabindex="6" oninput="validateDecimalInput(event)" required></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <div class="input-group sm-1"><label for="Mat2Name" class="input-group-text">Hopper 2</label><select class="form-select" type="text" list="materialNames" name="selected2Mat" id="Mat2Name" required></div>
-                                                        </td>
-                                                        <td><input class="form-control" type="number" step="0.001" name="hop2" id="hop2Lbs" tabindex="7" oninput="validateDecimalInput(event)" required></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <div class="input-group sm-1"><label for="Mat3Name" class="input-group-text">Hopper 3</label><select class="form-select" type="text" list="materialNames" name="selected3Mat" id="Mat3Name"></div>
-                                                        </td>
-                                                        <td><input class="form-control" type="number" step="0.001" name="hop3" id="hop3Lbs" tabindex="8" oninput="validateDecimalInput(event)"></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <div class="input-group sm-1"><label for="Mat4Name" class="input-group-text">Hopper 4</label><select class="form-select" type="text" list="materialNames" name="selected4Mat" id="Mat4Name"></div>
-                                                        </td>
-                                                        <td><input class="form-control" type="number" step="0.001" name="hop4" id="hop4Lbs" tabindex="9" oninput="validateDecimalInput(event)"></td>
-                                                    </tr>
-                                                    <tr>
-
-                                                        <td>
-                                                            <div class="input-group sm-1"><label for="BlenderTotals" class="input-group-text">Blender Totals</label><input class="form-control" type="number" step="0.001" name="totalsBlender" id="BlenderTotals" oninput="validateInput(event)" readonly></div>
-                                                        </td>
-                                                </tbody>
-                                            </table>
+                        <!-- Row for Chiller and Hot runner information -->
+                        <div class="container" id="chillerHotRunner" style="width:31rem;">
+                            <!-- TODO: Add Cooling info text inputs and hotrunner info text input
+                                 TODO: make sure that you want to leave the inputs empty if they are empty when they lose focus 
+                            -->
+                            <div class="card">
+                                <div class="card-header">Cooling & HotRunner Information</div>
+                                <div class="card-body">
+                                    <div class="row row-cols-2 pb-1">
+                                        <div class="col">
+                                            <div class="input-group sm-1"><label for="Chiller" class="input-group-text">Chiller</label><input class="form-control" tabindex="16" type="number" name="chillerTemp" id="Chiller"></div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="input-group sm-1"><label for="TCU" class="input-group-text">TCU</label><input class="form-control" tabindex="17" type="number" name="tcuTemp" id="TCU"></div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="card">
-                                    <div class="card-header">Daily Usage</div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <table>
-                                                <thead>
-                                                    <tr>
-                                                        <th class="text-center">Lbs Used</th>
-                                                        <th class="text-center">%</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td><input class="form-control" type="number" name="hop1LbsDaily" id="dHop1" readonly></td>
-                                                        <td><input class="form-control" type="number" name="hop1Percent" id="dHop1p" readonly></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><input class="form-control" type="number" name="hop2LbsDaily" id="dHop2" readonly></td>
-                                                        <td><input class="form-control" type="number" name="hop2Percent" id="dHop2p" readonly></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><input class="form-control" type="number" name="hop3LbsDaily" id="dHop3" readonly></td>
-                                                        <td><input class="form-control" type="number" name="hop3Percent" id="dHop3p" readonly></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><input class="form-control" type="number" name="hop4LbsDaily" id="dHop4" readonly></td>
-                                                        <td><input class="form-control" type="number" name="hop4Percent" id="dHop4p" readonly></td>
-                                                    </tr>
-                                                    <tr>
-
-                                                        <td>
-                                                            <div class="input-group sm-1"><label for="dTotal" class="input-group-text">Total</label><input readonly class="form-control" type="text" name="totalDaily" id="dTotal" oninput="validateDecimalInput(event)" readonly></div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="input-group sm-1"><label for="dTotalp" class="input-group-text">%</label><input readonly class="form-control" type="text" name="totalPercent" id="dTotalp" oninput="validateDecimalInput(event)" readonly></div>
-                                                        </td>
-                                                    </tr>
-
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                    <div class="row">
+                                        <div class="text-center"><h7>Hot Runner Temps</h7></div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
+                                    <div class="row row-cols-3 pb-1">
+                                        <div class="col">
+                                            <div class="input-group sm-1"><label for="T1" class="input-group-text">T1</label><input class="form-control" maxlength="3" tabindex="18" type="number" name="t1Temp" id="T1"></div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="input-group sm-1"><label for="M1" class="input-group-text">M1</label><input class="form-control" maxlength="3" type="number" tabindex="22" name="m1Temp" id="M1"></div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="input-group sm-1"><label for="M5" class="input-group-text">M5</label><input class="form-control" maxlength="3" type="number" tabindex="26" name="m5Temp" id="M5"></div>
+                                        </div>
+                                    </div>    
+                                    <div class="row row-cols-3 pb-1">
+                                        <div class="col">
+                                            <div class="input-group sm-1"><label for="T2" class="input-group-text">T2</label><input class="form-control" maxlength="3" tabindex="19" type="number" name="t2Temp" id="T2"></div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="input-group sm-1"><label for="M2" class="input-group-text">M2</label><input class="form-control" maxlength="3" tabindex="23" type="number" name="m2Temp" id="M2"></div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="input-group sm-1"><label for="M6" class="input-group-text">M6</label><input class="form-control" maxlength="3" type="number" tabindex="27" name="m6Temp" id="M6"></div>
+                                        </div>
+                                    </div>    
+                                    <div class="row row-cols-3 pb-1">
+                                        <div class="col">
+                                            <div class="input-group sm-1"><label for="T3" class="input-group-text">T3</label><input class="form-control" maxlength="3" tabindex="20" type="number" name="t3Temp" id="T3"></div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="input-group sm-1"><label for="M3" class="input-group-text">M3</label><input class="form-control" type="number" maxlength="3" tabindex="24" name="m3Temp" id="M3"></div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="input-group sm-1"><label for="M7" class="input-group-text">M7</label><input class="form-control" type="number" maxlength="3" tabindex="28" name="m7Temp" id="M7"></div>
+                                        </div>
+                                    </div>    
+                                    <div class="row row-cols-3 pb-1">
+                                        <div class="col">
+                                            <div class="input-group sm-1"><label for="T4" class="input-group-text">T4</label><input class="form-control" type="number" maxlength="3" tabindex="21" name="t4Temp" id="T4"></div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="input-group sm-1"><label for="M4" class="input-group-text">M4</label><input class="form-control" type="number" maxlength="3" tabindex="25" name="m4Temp" id="M4"></div>
+                                        </div>
+                                        <div class="col">
 
-                        <!-- Row for Dry Information, Cooling Information Hot Runner Information and Production Numbers -->
-                        <div class="row">
-                            <div class="col">
-                                <div class="card" style=" width: 30rem;">
-                                    <!-- TODO: This column will hold the dry information and produciton numbers
-                                                 TODO: Ensure that only numbers can be entered into fields 
-                                            -->
-                                    <div class="card-header">Dryer & Production Information</div>
-                                    <div class="card-body">
-                                        <div class="row row-cols-2">
-                                            <div class="col">
-                                                <div class="input-group sm-1">
-                                                    <label for="bigDryerTemp" class="input-group-text" style="font-size: .75rem">Big Dryer</label>
-                                                    <input class="form-control" style="font-size: .75rem" type="number" tabindex="10" min="70" max="240" name="bigDryerTemp" id="bigDryerTemp">
-                                                    <input class="form-control" style="font-size: .75rem" type="number" tabindex="11" min="-60" max="0" name="bigDryerDew" id="">
-                                                </div>
-                                            </div>
-                                            <div class="col">
-                                                <div class="input-group sm"><label for="PressCounter" class="input-group-text">Press Counter</label><input class="form-control form-control-sm" tabindex="14" type="text" name="pressCount" id="PressCounter"></div>
-                                            </div>
-                                            <div class="col">
-                                                <div class="input-group sm-1">
-                                                    <label for="PressDryerTemp" class="input-group-text" style="font-size: .75rem">Press Dryer</label>
-                                                    <input class="form-control" type="number" style="font-size: .75rem" name="pressDryerTemp" min="70" max="240" tabindex="12" id="PressDryerTemp">
-                                                    <input class="form-control" style="font-size: .75rem" type="number" name="pressDryerDew" min="-60" max="0" tabindex="13" id="">
-                                                </div>
-                                            </div>
-                                            <div class="col">
-                                                <div class="input-group sm-1"><label for="PressRejects" class="input-group-text" style="font-size: .75rem">Press Rejects</label><input class="form-control form-control-sm" style="font-size: .75rem" tabindex="15" type="text" name="rejects" id="PressRejects"></div>
-                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <!-- TODO: Add Cooling info text inputs and hotrunner info text input
-                                                 TODO: make sure that you want to leave the inputs empty if they are empty when they lose focus 
-                                            -->
-                                <div class="card">
-                                    <div class="card-header">Cooling & HotRunner Information</div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <table>
-                                                <tr>
-                                                    <td>
-                                                        <div class="input-group sm-1"><label for="Chiller" class="input-group-text">Chiller</label><input class="form-control" tabindex="16" type="text" name="chillerTemp" id="Chiller"></div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="input-group sm-1"><label for="TCU" class="input-group-text">TCU</label><input class="form-control" tabindex="17" type="text" name="tcuTemp" id="TCU"></div>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                        <div class="row">
-                                            <table>
-                                                <tr>
-                                                    <td>
-                                                        <div class="input-group sm-1"><label for="T1" class="input-group-text">T1</label><input class="form-control" maxlength="3" tabindex="18" type="text" name="t1Temp" id="T1"></div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="input-group sm-1"><label for="M1" class="input-group-text">M1</label><input class="form-control" maxlength="3" type="text" tabindex="22" name="m1Temp" id="M1"></div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="input-group sm-1"><label for="M5" class="input-group-text">M5</label><input class="form-control" maxlength="3" type="text" tabindex="26" name="m5Temp" id="M5"></div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="input-group sm-1"><label for="T2" class="input-group-text">T2</label><input class="form-control" maxlength="3" tabindex="19" type="text" name="t2Temp" id="T2"></div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="input-group sm-1"><label for="M2" class="input-group-text">M2</label><input class="form-control" maxlength="3" tabindex="23" type="text" name="m2Temp" id="M2"></div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="input-group sm-1"><label for="M6" class="input-group-text">M6</label><input class="form-control" maxlength="3" type="text" tabindex="27" name="m6Temp" id="M6"></div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="input-group sm-1"><label for="T3" class="input-group-text">T3</label><input class="form-control" maxlength="3" tabindex="20" type="text" name="t3Temp" id="T3"></div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="input-group sm-1"><label for="M3" class="input-group-text">M3</label><input class="form-control" type="text" maxlength="3" tabindex="24" name="m3Temp" id="M3"></div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="input-group sm-1"><label for="M7" class="input-group-text">M7</label><input class="form-control" type="text" maxlength="3" tabindex="28" name="m7Temp" id="M7"></div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="input-group sm-1"><label for="T4" class="input-group-text">T4</label><input class="form-control" type="text" maxlength="3" tabindex="21" name="t4Temp" id="T4"></div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="input-group sm-1"><label for="M4" class="input-group-text">M4</label><input class="form-control" type="text" maxlength="3" tabindex="25" name="m4Temp" id="M4"></div>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                    </div>
+                                    </div>    
+                                    <div class="row row-cols-3">
+                                    </div>    
                                 </div>
                             </div>
                         </div>
                         <!-- Row for Comment and button -->
-                        <div class="row">
-                            <div class="col">
-                                <!-- TODO: make sure that you want to leave the inputs empty if they are empty when they lose focus 
-                                            -->
-                                <div class="card">
-                                    <div class="card-header">Comments</div>
-                                    <div class="card-body">
-                                        <textarea class="form-control" id="commentText" rows="5"></textarea>
-                                    </div>
+                        <div class="container" id="commentSubmit" style="width:31rem;">
+                            <!-- TODO: make sure that you want to leave the inputs empty if they are empty when they lose focus 
+                                                    -->
+                            <div class="card">
+                                <div class="card-header">Comments</div>
+                                <div class="card-body">
+                                    <textarea class="form-control" id="commentText" rows="5"></textarea>
                                 </div>
                             </div>
+                            <div class="d-flex justify-content-center p-2">
+                                <div class=pe-1><button type="submit" id="cancel" data-bs-dismiss="modal" class="btn btn-danger btn-sm">Cancel</button></div>
+                                <button type="submit" id="addLog" class="btn btn-success btn-sm" onclick="sumbitForm()">Add Log</button>
+                            </div>
                         </div>
-                        <div class="row text-center"><button type="submit" id="addLog" class="btn btn-dark mb-3" onclick="sumbitForm()">Add Log</button></div>
+                    </form>
                 </div>
             </div>
-            </form>
-            <!--  Form for Production log end -->
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-primary">Save changes</button>
-        </div>
-    </div>
-    </div>
-    </div>
-
+        </div>    
+    </div>    
     <!-- New production log modal end-->
-
 
     <div class="container-fluid">
         <div class="mt-5">
-
             <div class="row mt-2">
                 <div class="col-lg-12 d-flex justify-content-between align-items-center mt-4">
                     <div>
@@ -314,21 +323,23 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col_lg-12">
-                    <div class="table_responsive">
+                <div class="col-lg-12">
+                    <div class="table-responsive">
                         <!-- Table to display our db user list -->
-                        <table class="table table-striped table-bordered text-center">
+                        <table id = "last4wks" class="table table-striped table-bordered text-center" >
                             <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>First Name</th>
-                                    <th>Last Name</th>
-                                    <th>E-mail</th>
-                                    <th>Phone</th>
+                                <tr >
+                                    <th>Part Number</th>
+                                    <th>Production Date</th>
+                                    <th>Parts Produced</th>
+                                    <th>Start Up Rejects</th>
+                                    <th>QA Rejects</th>
+                                    <th>Purge</th>
+                                    <th>Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="weeks">
 
                             </tbody>
                         </table>
@@ -343,6 +354,7 @@
     <script type="text/javascript" src="../resources/vendors/js/bootstrap.bundle.min.js"></script>
     <!-- My custom js -->
     <script type="text/javascript" src="../resources/js/main.js"></script>
+    <script type="text/javascript" src="../resources/js/productionLog.js"></script>
     <script type="text/javascript" src="../resources/js/prodLogSubmit.js"></script>
 </body>
 

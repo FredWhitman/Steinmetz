@@ -1,6 +1,11 @@
+const tbody =  document.querySelector('tbody'); //Set the tbody to display last 4 weeks of production
+
+
 document.addEventListener("DOMContentLoaded", function () {
-  //set variable for modal webform
-  const modal = document.getElementById("addProductionModal");
+  
+  const modal = document.getElementById("addProductionModal");//set variable for modal webform
+  
+
   //add listener to modal to trigger function when displayed
 
   modal.addEventListener("shown.bs.modal", function () {
@@ -15,8 +20,8 @@ document.addEventListener("DOMContentLoaded", function () {
           return; //stop execution
         }
 
-        console.log("Materials Array: ", data.materials);
-        console.log("PartNames Array: ", data.partNames);
+        //console.log("Materials Array: ", data.materials);
+        //console.log("PartNames Array: ", data.partNames);
 
         let materialSelects = ["Mat1Name", "Mat2Name", "Mat3Name", "Mat4Name"];
         let partSelect = ["partName"];
@@ -36,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
             select.appendChild(blankOption);
 
             data.materials.forEach((item) => {
-              console.log(`Adding Option: ${item.MaterialName}`);
+              //console.log(`Adding Option: ${item.MaterialName}`);
               let option = document.createElement("option");
               option.value = item.MaterialPartNumber;
               option.textContent = item.MaterialName;
@@ -64,8 +69,10 @@ document.addEventListener("DOMContentLoaded", function () {
               let option = document.createElement("option");
               option.value = item.ProductID;
               option.textContent = item.PartName;
+              option.style.fontSize = "0.75rem"; ///change font size of dropdown
               select.appendChild(option);
             });
+           fetchLast4Weeks(); 
           } else {
             console.warn(`Select element '${selectId}' not found.`);
           }
@@ -74,3 +81,19 @@ document.addEventListener("DOMContentLoaded", function () {
       .catch((error) => console.error("Error fetching data:", error));
   });
 });
+
+//Fetch ALl users Ajax request
+const fetchLast4Weeks = async()=>{
+  const data = await fetch('../src/Classes/productionActions.php?read4wks=1',{
+    method: "GET",
+  });
+
+  console.log('fetchLast4Weeks Ajax called!');
+  const response = await data.text();
+  tbody.innerHTML = response;
+};
+
+fetchLast4Weeks();
+
+
+
