@@ -16,7 +16,7 @@
     <link href="../resources/css/myCSS.css" rel="stylesheet">
 </head>
 
-<body onload="addBlenderOnBlur">
+<body>
     <!--Navbar -->
     <?php require_once '../includes/steinmetzNavbar.php'; ?> 
     <div class="modal fade" id="viewProductionModal" tabindex="-1" aria-labelledby="viewProductionModalLabel">
@@ -50,17 +50,7 @@
                                                 <div class="input-group mb-3"><label class="input-group-text" for="logDate">Production Date</label><input class="form-control" type="date" tabindex="2" id="vlogDate" name="vlog_date" readonly></div>
                                             </div>
                                             <div class="col">
-                                                <div class="col">
-                                                    <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" name="prodRun" id="start" tabindex="3" value="1">Start<label class="form-check-label" for="start"></label>
-                                                    </div>
-                                                    <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" name="prodRun" tabindex="4" id="inProgress" value="0">In Progress<label class="form-check-label" for="inProgress"></label>
-                                                    </div>
-                                                    <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" name="prodRun" tabindex="5" id="end" value="2">End<label class="form-check-label" for="end"></label>
-                                                    </div>
-                                                </div>
+                                                <div class="col text-center"><input type="text" class="form-control" name="vprodRun" id="vprodRun" readonly></div>
                                             </div>
                                         </div>
                                     </div>    
@@ -352,8 +342,7 @@
     <script type="text/javascript" src="../resources/vendors/js/bootstrap.bundle.min.js"></script>
     <!-- My custom js -->
     <script type="text/javascript" src="../resources/js/main.js"></script>
-    <script type="text/javascript" src="../resources/js/productionLog.js"></script>
-    <script type="text/javascript" src="../resources/js/prodLogSubmit.js"></script>
+
 </body>
 
 </html>

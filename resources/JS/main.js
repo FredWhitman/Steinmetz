@@ -95,6 +95,65 @@ const fetchLast4Weeks = async()=>{
 
 fetchLast4Weeks();
 
+//Edit User Ajax request
+//This code gets the id from the dynamic created table.
+
+tbody.addEventListener("click",(e) => {
+
+  if(e.target && e.target.matches("a.viewLink")){
+    e.preventDefault();
+    //find the data-id class tag in dynamiclly created table from productionAction.php get-read check
+    let id = e.target.closest("tr").getAttribute("data-id");
+    console.log("Production log ID: " + id);
+    viewUser(id);
+  }
+});
+
+const viewUser = async (id)=>{
+  //
+  const data = await fetch(`../src/Classes/productionActions.php?view=1&id=${id}`,{
+    method: 'GET'
+  });
+  const response = await data.json();
+  console.log("Fetched Data for logID:", response); // Debugging outp
+  console.log("Available Data Keys:", Object.keys(response));
+
+  if(response.error){
+    console.log("Error in viewUser:" + response.error);
+  }else{
+    const modal = new bootstrap.Modal(document.getElementById("viewProductionModal"));
+    modal.show(); //Ensures modal is open first
+
+  
+    setTimeout(()=> { //delay assigning values
+      document.getElementById("logID").value = response.logID;
+      document.getElementById("vpartName").value = response.productID;
+      document.getElementById("vlogDate").value = response.prodDate;
+      document.getElementById("vprodRun").value = response.runStatus;
+      document.getElementById("vMat1Name").value = response.mat1;
+      document.getElementById("vhop1Lbs").value = response.matUsed1;
+      document.getElementById("vMat2Name").value = response.mat2;
+      document.getElementById("vhop2Lbs").value = response.matUsed2;
+      document.getElementById("vMat3Name").value = response.mat3;
+      if(response.matUsed3 === null){
+          document.getElementById("vhop3Lbs").value =  0;
+      }else{
+        document.getElementById("vhop3Lbs").value =  response.matUsed3;
+      };
+      document.getElementById("vMat4Name").value = response.mat4;
+      if(response.matUsed4 === null){
+          document.getElementById("vhop4Lbs").value =  0;
+      }else{
+        document.getElementById("vhop4Lbs").value =  response.matUsed4;
+      };
+      let total = response.matUsed1+response.matUsed2+response.matUsed3+response.matUsed4;
+      document.getElementById("vBlenderTotals");
+    },500); //wait for modal elements to load
+  }
+  
+}
 
 
-
+ //columns returned: logID,productID,prodDate,runStatus,preProdLogID,runLogID,matLogID,tempLogID,pressCounter,startUpRejects,purgeLbs,
+        //  Comments, bigDryerTemp,bigDryerDew,pressDryerTemp,pressDryerDew,t1,t2,t3,t4,m1,m2,m3,m4,m5,m6,m7,chillerTemp,moldTemp,mat1,matUsed1,mat2,
+        //  matUsed2,mat3,matUsed3,mat4,matUsed4,
