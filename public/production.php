@@ -32,11 +32,11 @@
                     <!--  Form for Production log start -->
                     <form id="productionLog" action="">
                         <!-- Log Information -->
-                         <div class="container" id="logInformation">
+                        <div class="container" id="logInformation">
                             <div class="card pb-1">
                                 <div class="card-header">
                                     Log Information
-                                </div>    
+                                </div>
                                 <div class="card-body">
                                     <div class="container text-center">
                                         <div class="row row-cols-2 pb-1">
@@ -65,12 +65,12 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>    
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <!-- Card for Blender and Daily Usage-->   
-                        <div class="container"id="blenderDailyUsage"> <input type="hidden" id="prodStatus" name="productionStatus">
+                        <!-- Card for Blender and Daily Usage-->
+                        <div class="container" id="blenderDailyUsage"> <input type="hidden" id="prodStatus" name="productionStatus">
                             <div class="row">
                                 <div class="col">
                                     <div class="card">
@@ -156,7 +156,7 @@
                                                     <div class="col-2">
                                                         <div class="input-group sm-1"><input class="form-control" type="number" name="hop4Percent" id="dHop4p" readonly></div>
                                                     </div>
-                                                </div>    
+                                                </div>
                                                 <!-- Totals row -->
                                                 <div class="row row-cols-5 mx-auto pb-1">
                                                     <div class="col-1"></div>
@@ -174,13 +174,13 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>    
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <!-- Dryer and Production Information -->
-                        <div class="container" id ="dryerProductionInfo" style="width:31rem;">
+                        <div class="container" id="dryerProductionInfo" style="width:31rem;">
                             <div class="card">
                                 <!-- TODO: This column will hold the dry information and produciton numbers
                                      TODO: Ensure that only numbers can be entered into fields 
@@ -231,7 +231,9 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="text-center"><h7>Hot Runner Temps</h7></div>
+                                        <div class="text-center">
+                                            <h7>Hot Runner Temps</h7>
+                                        </div>
                                     </div>
                                     <div class="row row-cols-3 pb-1">
                                         <div class="col">
@@ -243,7 +245,7 @@
                                         <div class="col">
                                             <div class="input-group sm-1"><label for="M5" class="input-group-text">M5</label><input class="form-control" maxlength="3" type="number" tabindex="26" name="m5Temp" id="M5"></div>
                                         </div>
-                                    </div>    
+                                    </div>
                                     <div class="row row-cols-3 pb-1">
                                         <div class="col">
                                             <div class="input-group sm-1"><label for="T2" class="input-group-text">T2</label><input class="form-control" maxlength="3" tabindex="19" type="number" name="t2Temp" id="T2"></div>
@@ -254,7 +256,7 @@
                                         <div class="col">
                                             <div class="input-group sm-1"><label for="M6" class="input-group-text">M6</label><input class="form-control" maxlength="3" type="number" tabindex="27" name="m6Temp" id="M6"></div>
                                         </div>
-                                    </div>    
+                                    </div>
                                     <div class="row row-cols-3 pb-1">
                                         <div class="col">
                                             <div class="input-group sm-1"><label for="T3" class="input-group-text">T3</label><input class="form-control" maxlength="3" tabindex="20" type="number" name="t3Temp" id="T3"></div>
@@ -265,7 +267,7 @@
                                         <div class="col">
                                             <div class="input-group sm-1"><label for="M7" class="input-group-text">M7</label><input class="form-control" type="number" maxlength="3" tabindex="28" name="m7Temp" id="M7"></div>
                                         </div>
-                                    </div>    
+                                    </div>
                                     <div class="row row-cols-3 pb-1">
                                         <div class="col">
                                             <div class="input-group sm-1"><label for="T4" class="input-group-text">T4</label><input class="form-control" type="number" maxlength="3" tabindex="21" name="t4Temp" id="T4"></div>
@@ -276,9 +278,9 @@
                                         <div class="col">
 
                                         </div>
-                                    </div>    
+                                    </div>
                                     <div class="row row-cols-3">
-                                    </div>    
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -300,8 +302,8 @@
                     </form>
                 </div>
             </div>
-        </div>    
-    </div>    
+        </div>
+    </div>
     <!-- New production log modal end-->
 
     <!-- View production log modal start -->
@@ -310,17 +312,16 @@
             <div class="modal-content ">
                 <div class="modal-header text-center">
                     <h6 class="text-center">Production Log</h6>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <!--  Form for Production log start -->
                     <form id="productionLog" action="">
                         <!-- Log Information -->
-                         <div class="container" id="logInformation">
+                        <div class="container" id="logInformation">
                             <div class="card pb-1">
                                 <div class="card-header">
                                     Log Information
-                                </div>    
+                                </div>
                                 <div class="card-body">
                                     <div class="container text-center">
                                         <div class="row row-cols-2 pb-1">
@@ -339,12 +340,12 @@
                                                 <div class="col text-center"><input type="text" class="form-control" name="vprodRun" id="vprodRun" readonly></div>
                                             </div>
                                         </div>
-                                    </div>    
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <!-- Card for Blender and Daily Usage-->   
-                        <div class="container"id="vblenderDailyUsage"> <input type="hidden" id="vprodStatus" name="vproductionStatus"><input type="hidden" id="logID" name="logID">
+                        <!-- Card for Blender and Daily Usage-->
+                        <div class="container" id="vblenderDailyUsage"> <input type="hidden" id="vprodStatus" name="vproductionStatus"><input type="hidden" id="logID" name="logID">
                             <div class="row">
                                 <div class="col">
                                     <div class="card">
@@ -383,7 +384,8 @@
                                                     <div class="col-1"></div>
                                                     <div class="col-5">
                                                         <div class="input-group sm-1">
-                                                            <label for="vMat2Name" class="input-group-text">Hopper 2</label><inout class="form-control" type="text" name="vselected2Mat" id="vMat2Name" readonly></div>
+                                                            <label for="vMat2Name" class="input-group-text">Hopper 2</label><input class="form-control" type="text" name="vselected2Mat" id="vMat2Name" readonly>
+                                                        </div>
                                                     </div>
                                                     <div class="col-2">
                                                         <input class="form-control" type="number" step="0.001" name="vhop2" id="vhop2Lbs" tabindex="7" readopnly>
@@ -431,7 +433,7 @@
                                                     <div class="col-2">
                                                         <div class="input-group sm-1"><input class="form-control" type="number" name="vhop4Percent" id="vdHop4p" readonly></div>
                                                     </div>
-                                                </div>    
+                                                </div>
                                                 <!-- Totals row -->
                                                 <div class="row row-cols-5 mx-auto pb-1">
                                                     <div class="col-1"></div>
@@ -439,23 +441,23 @@
                                                         <h6 class="text-end">Totals</h6>
                                                     </div>
                                                     <div class="col-2">
-                                                        <input class="form-control" type="number" step="0.001" name="vtotalsBlender" id="vBlenderTotals" oninput="validateInput(event)" readonly>
+                                                        <input class="form-control" type="number" step="0.001" name="vtotalsBlender" id="vBlenderTotals" readonly>
                                                     </div>
                                                     <div class="col-2">
-                                                        <input readonly class="form-control" type="text" name="vtotalDaily" id="vdTotal" oninput="validateDecimalInput(event)" readonly>
+                                                        <input readonly class="form-control" type="text" name="vtotalDaily" id="vdTotal" readonly>
                                                     </div>
                                                     <div class="col-2">
-                                                        <input readonly class="form-control" type="text" name="vtotalPercent" id="vdTotalp" oninput="validateDecimalInput(event)" readonly>
+                                                        <input readonly class="form-control" type="text" name="vtotalPercent" id="vdTotalp" readonly>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>    
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <!-- Dryer and Production Information -->
-                        <div class="container" id ="vdryerProductionInfo" style="width:31rem;">
+                        <div class="container" id="vdryerProductionInfo" style="width:31rem;">
                             <div class="card">
                                 <!-- TODO: This column will hold the dry information and produciton numbers
                                      TODO: Ensure that only numbers can be entered into fields 
@@ -465,9 +467,9 @@
                                     <div class="row row-cols-2">
                                         <div class="col">
                                             <div class="input-group sm-1">
-                                                <label for="bigDryerTemp" class="input-group-text" style="font-size: .75rem">Big Dryer</label>
-                                                <input class="form-control" style="font-size: .75rem" type="number" tabindex="10" min="70" max="240" name="vbigDryerTemp" id="vbigDryerTemp">
-                                                <input class="form-control" style="font-size: .75rem" type="number" tabindex="11" min="-60" max="0" name="vbigDryerDew" id="">
+                                                <label for="vbigDryerTemp" class="input-group-text" style="font-size: .75rem">Big Dryer</label>
+                                                <input class="form-control" style="font-size: .75rem" type="number" name="vbigDryerTemp" id="vbigDryerTemp" readonly>
+                                                <input class="form-control" style="font-size: .75rem" type="number" name="vbigDryerDew" id="vbigDryerDew" readonly>
                                             </div>
                                         </div>
                                         <div class="col">
@@ -477,13 +479,13 @@
                                     <div class="row row-cols-2">
                                         <div class="col">
                                             <div class="input-group sm-1">
-                                                <label for="PressDryerTemp" class="input-group-text" style="font-size: .75rem">Press Dryer</label>
-                                                <input class="form-control" type="number" style="font-size: .75rem" name="pressDryerTemp" min="70" max="240" tabindex="12" id="PressDryerTemp">
-                                                <input class="form-control" style="font-size: .75rem" type="number" name="pressDryerDew" min="-60" max="0" tabindex="13" id="">
+                                                <label for="vPressDryerTemp" class="input-group-text" style="font-size: .75rem">Press Dryer</label>
+                                                <input class="form-control" type="number" style="font-size: .75rem" name="vpressDryerTemp" id="vPressDryerTemp">
+                                                <input class="form-control" style="font-size: .75rem" type="number" name="vpressDryerDew" id="vPressDryerDew">
                                             </div>
                                         </div>
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="PressRejects" class="input-group-text" style="font-size: .75rem">Press Rejects</label><input class="form-control form-control-sm" style="font-size: .75rem" tabindex="15" type="number" name="rejects" id="PressRejects"></div>
+                                            <div class="input-group sm-1"><label for="vPressRejects" class="input-group-text" style="font-size: .75rem">Press Rejects</label><input class="form-control form-control-sm" style="font-size: .75rem" tabindex="15" type="number" name="vrejects" id="vPressRejects"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -499,61 +501,63 @@
                                 <div class="card-body">
                                     <div class="row row-cols-2 pb-1">
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="Chiller" class="input-group-text">Chiller</label><input class="form-control" tabindex="16" type="number" name="chillerTemp" id="Chiller"></div>
+                                            <div class="input-group sm-1"><label for="vChiller" class="input-group-text">Chiller</label><input class="form-control" tabindex="16" type="number" name="vchillerTemp" id="vChiller"></div>
                                         </div>
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="TCU" class="input-group-text">TCU</label><input class="form-control" tabindex="17" type="number" name="tcuTemp" id="TCU"></div>
+                                            <div class="input-group sm-1"><label for="vTCU" class="input-group-text">TCU</label><input class="form-control" tabindex="17" type="number" name="vtcuTemp" id="vTCU"></div>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="text-center"><h7>Hot Runner Temps</h7></div>
+                                        <div class="text-center">
+                                            <h7>Hot Runner Temps</h7>
+                                        </div>
                                     </div>
                                     <div class="row row-cols-3 pb-1">
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="T1" class="input-group-text">T1</label><input class="form-control" maxlength="3" tabindex="18" type="number" name="t1Temp" id="T1"></div>
+                                            <div class="input-group sm-1"><label for="vT1" class="input-group-text">T1</label><input class="form-control" maxlength="3" tabindex="18" type="number" name="vt1Temp" id="vT1"></div>
                                         </div>
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="M1" class="input-group-text">M1</label><input class="form-control" maxlength="3" type="number" tabindex="22" name="m1Temp" id="M1"></div>
+                                            <div class="input-group sm-1"><label for="vM1" class="input-group-text">M1</label><input class="form-control" maxlength="3" type="number" tabindex="22" name="vm1Temp" id="vM1"></div>
                                         </div>
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="M5" class="input-group-text">M5</label><input class="form-control" maxlength="3" type="number" tabindex="26" name="m5Temp" id="M5"></div>
+                                            <div class="input-group sm-1"><label for="vM5" class="input-group-text">M5</label><input class="form-control" maxlength="3" type="number" tabindex="26" name="vm5Temp" id="vM5"></div>
                                         </div>
-                                    </div>    
+                                    </div>
                                     <div class="row row-cols-3 pb-1">
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="T2" class="input-group-text">T2</label><input class="form-control" maxlength="3" tabindex="19" type="number" name="t2Temp" id="T2"></div>
+                                            <div class="input-group sm-1"><label for="vT2" class="input-group-text">T2</label><input class="form-control" maxlength="3" tabindex="19" type="number" name="vt2Temp" id="vT2"></div>
                                         </div>
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="M2" class="input-group-text">M2</label><input class="form-control" maxlength="3" tabindex="23" type="number" name="m2Temp" id="M2"></div>
+                                            <div class="input-group sm-1"><label for="vM2" class="input-group-text">M2</label><input class="form-control" maxlength="3" tabindex="23" type="number" name="vm2Temp" id="vM2"></div>
                                         </div>
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="M6" class="input-group-text">M6</label><input class="form-control" maxlength="3" type="number" tabindex="27" name="m6Temp" id="M6"></div>
+                                            <div class="input-group sm-1"><label for="vM6" class="input-group-text">M6</label><input class="form-control" maxlength="3" type="number" tabindex="27" name="vm6Temp" id="vM6"></div>
                                         </div>
-                                    </div>    
+                                    </div>
                                     <div class="row row-cols-3 pb-1">
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="T3" class="input-group-text">T3</label><input class="form-control" maxlength="3" tabindex="20" type="number" name="t3Temp" id="T3"></div>
+                                            <div class="input-group sm-1"><label for="vT3" class="input-group-text">T3</label><input class="form-control" maxlength="3" tabindex="20" type="number" name="vt3Temp" id="vT3"></div>
                                         </div>
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="M3" class="input-group-text">M3</label><input class="form-control" type="number" maxlength="3" tabindex="24" name="m3Temp" id="M3"></div>
+                                            <div class="input-group sm-1"><label for="vM3" class="input-group-text">M3</label><input class="form-control" type="number" maxlength="3" tabindex="24" name="vm3Temp" id="vM3"></div>
                                         </div>
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="M7" class="input-group-text">M7</label><input class="form-control" type="number" maxlength="3" tabindex="28" name="m7Temp" id="M7"></div>
+                                            <div class="input-group sm-1"><label for="vM7" class="input-group-text">M7</label><input class="form-control" type="number" maxlength="3" tabindex="28" name="vm7Temp" id="vM7"></div>
                                         </div>
-                                    </div>    
+                                    </div>
                                     <div class="row row-cols-3 pb-1">
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="T4" class="input-group-text">T4</label><input class="form-control" type="number" maxlength="3" tabindex="21" name="t4Temp" id="T4"></div>
+                                            <div class="input-group sm-1"><label for="vT4" class="input-group-text">T4</label><input class="form-control" type="number" maxlength="3" tabindex="21" name="vt4Temp" id="vT4"></div>
                                         </div>
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="M4" class="input-group-text">M4</label><input class="form-control" type="number" maxlength="3" tabindex="25" name="m4Temp" id="M4"></div>
+                                            <div class="input-group sm-1"><label for="vM4" class="input-group-text">M4</label><input class="form-control" type="number" maxlength="3" tabindex="25" name="vm4Temp" id="vM4"></div>
                                         </div>
                                         <div class="col">
 
                                         </div>
-                                    </div>    
+                                    </div>
                                     <div class="row row-cols-3">
-                                    </div>    
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -564,18 +568,17 @@
                             <div class="card">
                                 <div class="card-header">Comments</div>
                                 <div class="card-body">
-                                    <textarea class="form-control" id="commentText" rows="5"></textarea>
+                                    <textarea class="form-control" id="vcommentText" rows="5"></textarea>
                                 </div>
                             </div>
                             <div class="d-flex justify-content-center p-2">
-                                <div class=pe-1><button type="submit" id="cancel" data-bs-dismiss="modal" class="btn btn-danger btn-sm">Cancel</button></div>
-                                <button type="submit" id="addLog" class="btn btn-success btn-sm" onclick="sumbitForm()">Add Log</button>
+                                <div class=pe-1><button type="submit" id="close" data-bs-dismiss="modal" class="btn btn-danger btn-sm">Close</button></div>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
-        </div>    
+        </div>
     </div>
     <!-- View production log modal end -->
 
@@ -601,9 +604,9 @@
                 <div class="col-lg-12">
                     <div class="table-responsive">
                         <!-- Table to display our db user list -->
-                        <table id = "last4wks" class="table table-striped table-bordered text-center" >
+                        <table id="last4wks" class="table table-striped table-bordered text-center">
                             <thead>
-                                <tr >
+                                <tr>
                                     <th>Part Number</th>
                                     <th>Production Date</th>
                                     <th>Parts Produced</th>

@@ -1,10 +1,7 @@
-const tbody =  document.querySelector('tbody'); //Set the tbody to display last 4 weeks of production
-
+const tbody = document.querySelector("tbody"); //Set the tbody to display last 4 weeks of production
 
 document.addEventListener("DOMContentLoaded", function () {
-  
-  const modal = document.getElementById("addProductionModal");//set variable for modal webform
-  
+  const modal = document.getElementById("addProductionModal"); //set variable for modal webform
 
   //add listener to modal to trigger function when displayed
 
@@ -72,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
               option.style.fontSize = "0.75rem"; ///change font size of dropdown
               select.appendChild(option);
             });
-           fetchLast4Weeks(); 
+            fetchLast4Weeks();
           } else {
             console.warn(`Select element '${selectId}' not found.`);
           }
@@ -83,12 +80,12 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Fetch ALl users Ajax request
-const fetchLast4Weeks = async()=>{
-  const data = await fetch('../src/Classes/productionActions.php?read4wks=1',{
+const fetchLast4Weeks = async () => {
+  const data = await fetch("../src/Classes/productionActions.php?read4wks=1", {
     method: "GET",
   });
 
-  console.log('fetchLast4Weeks Ajax called!');
+  //console.log("fetchLast4Weeks Ajax called!");
   const response = await data.text();
   tbody.innerHTML = response;
 };
@@ -98,34 +95,39 @@ fetchLast4Weeks();
 //Edit User Ajax request
 //This code gets the id from the dynamic created table.
 
-tbody.addEventListener("click",(e) => {
-
-  if(e.target && e.target.matches("a.viewLink")){
+tbody.addEventListener("click", (e) => {
+  if (e.target && e.target.matches("a.viewLink")) {
     e.preventDefault();
     //find the data-id class tag in dynamiclly created table from productionAction.php get-read check
     let id = e.target.closest("tr").getAttribute("data-id");
-    console.log("Production log ID: " + id);
+    //console.log("Production log ID: " + id);
     viewUser(id);
   }
 });
 
-const viewUser = async (id)=>{
+const viewUser = async (id) => {
   //
-  const data = await fetch(`../src/Classes/productionActions.php?view=1&id=${id}`,{
-    method: 'GET'
-  });
+  const data = await fetch(
+    `../src/Classes/productionActions.php?view=1&id=${id}`,
+    {
+      method: "GET",
+    }
+  );
   const response = await data.json();
   console.log("Fetched Data for logID:", response); // Debugging outp
-  console.log("Available Data Keys:", Object.keys(response));
+  //console.log("Available Data Keys:", Object.keys(response));
 
-  if(response.error){
-    console.log("Error in viewUser:" + response.error);
-  }else{
-    const modal = new bootstrap.Modal(document.getElementById("viewProductionModal"));
+  if (response.error) {
+    //console.log("Error in viewUser:" + response.error);
+  } else {
+    const modal = new bootstrap.Modal(
+      document.getElementById("viewProductionModal")
+    );
     modal.show(); //Ensures modal is open first
 
-  
-    setTimeout(()=> { //delay assigning values
+    setTimeout(() => {
+      //delay assigning values
+      //Blender Info
       document.getElementById("logID").value = response.logID;
       document.getElementById("vpartName").value = response.productID;
       document.getElementById("vlogDate").value = response.prodDate;
@@ -135,25 +137,52 @@ const viewUser = async (id)=>{
       document.getElementById("vMat2Name").value = response.mat2;
       document.getElementById("vhop2Lbs").value = response.matUsed2;
       document.getElementById("vMat3Name").value = response.mat3;
-      if(response.matUsed3 === null){
-          document.getElementById("vhop3Lbs").value =  0;
-      }else{
-        document.getElementById("vhop3Lbs").value =  response.matUsed3;
-      };
+      response.matUsed3 === null
+        ? (document.getElementById("vhop3Lbs").value = 0)
+        : (document.getElementById("vhop3Lbs").value = response.matUsed3);
       document.getElementById("vMat4Name").value = response.mat4;
-      if(response.matUsed4 === null){
-          document.getElementById("vhop4Lbs").value =  0;
-      }else{
-        document.getElementById("vhop4Lbs").value =  response.matUsed4;
-      };
-      let total = response.matUsed1+response.matUsed2+response.matUsed3+response.matUsed4;
-      document.getElementById("vBlenderTotals");
-    },500); //wait for modal elements to load
+      response.matUsed4 === null
+        ? (document.getElementById("vhop4Lbs").value = 0)
+        : (document.getElementById("vhop4Lbs").value = response.matUsed4);
+
+      let total =
+        response.matUsed1 +
+        response.matUsed2 +
+        response.matUsed3 +
+        response.matUsed4;
+      //console.log("Blender total: " + total);
+      document.getElementById("vBlenderTotals").value = total;
+
+      //Dryer Info//
+      document.getElementById("vbigDryerTemp").value = response.bigDryerTemp;
+      document.getElementById("vbigDryerDew").value = response.bigDryerDew;
+      document.getElementById("vPressDryerTemp").value =
+        response.pressDryerTemp;
+      document.getElementById("vPressDryerDew").value = response.pressDryerDew;
+
+      //Cooling and Hotrunner info
+      document.getElementById("vChiller").value = response.chillerTemp;
+      document.getElementById("vTCU").value = response.moldTemp;
+      document.getElementById("vT1").value = response.t1;
+      document.getElementById("vT2").value = response.t2;
+      document.getElementById("vT3").value = response.t3;
+      document.getElementById("vT4").value = response.t4;
+      document.getElementById("vM1").value = response.m1;
+      document.getElementById("vM2").value = response.m2;
+      document.getElementById("vM3").value = response.m3;
+      document.getElementById("vM4").value = response.m4;
+      document.getElementById("vM5").value = response.m5;
+      document.getElementById("vM6").value = response.m6;
+      document.getElementById("vM7").value = response.m7;
+
+      //Produced Parts and startup Rejects comments
+      document.getElementById("vPressCounter").value = response.pressCounter;
+      document.getElementById("vPressRejects").value = response.startUpRejects;
+      document.getElementById("vcommentText").value = response.Comments;
+    }, 500); //wait for modal elements to load
   }
-  
-}
+};
 
-
- //columns returned: logID,productID,prodDate,runStatus,preProdLogID,runLogID,matLogID,tempLogID,pressCounter,startUpRejects,purgeLbs,
-        //  Comments, bigDryerTemp,bigDryerDew,pressDryerTemp,pressDryerDew,t1,t2,t3,t4,m1,m2,m3,m4,m5,m6,m7,chillerTemp,moldTemp,mat1,matUsed1,mat2,
-        //  matUsed2,mat3,matUsed3,mat4,matUsed4,
+//columns returned: logID,productID,prodDate,runStatus,preProdLogID,runLogID,matLogID,tempLogID,pressCounter,startUpRejects,purgeLbs,
+//  Comments, bigDryerTemp,bigDryerDew,pressDryerTemp,pressDryerDew,t1,t2,t3,t4,m1,m2,m3,m4,m5,m6,m7,chillerTemp,moldTemp,mat1,matUsed1,mat2,
+//  matUsed2,mat3,matUsed3,mat4,matUsed4,
