@@ -5,24 +5,31 @@ document.addEventListener("DOMContentLoaded", function () {
   // This function will display the add Log form and fetch data from the db to fill the select options for material
   //and part name.
   modal.addEventListener("shown.bs.modal", function () {
-    setTimeout(() => {
+    
       // Runs when modal is visible
       fetch("../src/classes/fetch_data.php")
         .then((response) => response.json())
         .then((data) => {
+          
           //console.log("Fetched Data: ", data); //checking for data
           //console.log("Fetched Part Names:", data.partNames);
+          
           if (!data.materials || !data.partNames) {
             console.error("Error: Json response missing expect keys.");
             return; //stop execution
           }
+          
+          //console.log("Checking data before population:", JSON.stringify(data.partNames, null, 2));
 
           //Populate PartName Select component
-          let select = document.getElementById("partName");
-          console.log(`Checking existence of ${select}: `, select);
+          let select = document.getElementById("qaPartName");
+
+          //console.log(`Checking existence of ${select}: `, select);
 
           if (select) {
+
             //console.log("Populating Part select: ", selectId);
+            
             select.innerHTML = ""; //make sure its empty
 
             //create blank entry
@@ -37,34 +44,13 @@ document.addEventListener("DOMContentLoaded", function () {
               option.textContent = item.PartName;
               //option.style.fontSize = "0.75rem"; ///change font size of dropdown
               select.appendChild(option);
-              console.log("Added Option:", option);
+
+             // console.log("Added Option:", option);
             });
-
-            setTimeout(() => {
-              let select = document.getElementById("partName");
-              select.dispatchEvent(new Event("change")); // Trigger a UI update
-            }, 300);
-
-            console.log(
-              "PartName Select innerHTML:",
-              document.getElementById("partName").innerHTML
-            );
-
-            console.log(
-              "Select visibility:",
-              window.getComputedStyle(document.getElementById("partName"))
-                .display
-            );
-            setTimeout(() => {
-              let select = document.getElementById("partName");
-              select.style.display = "block"; // Ensure it's visible
-              select.dispatchEvent(new Event("change"));
-            }, 300);
           } else {
             console.warn(`Select element '${select}' not found.`);
           }
         })
         .catch((error) => console.error("Error fetching data:", error));
-    }, 300);
   });
 });

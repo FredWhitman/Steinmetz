@@ -590,7 +590,7 @@
                         <div class="mb-3">
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="partName">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="partName" name="selectedPart"></select></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="qaPartName">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="qaPartName" name="qaPart"></select></div>
                                 </div>
                             </div>
                             <div class="row pb-2">
