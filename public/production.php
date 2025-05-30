@@ -353,101 +353,96 @@
                                         <div class="card-body">
                                             <div class="container text-center">
                                                 <!-- Header Row -->
-                                                <div class="row row-cols-5 mx-auto">
-                                                    <div class="col-1"></div>
-                                                    <div class="col-5">Material</div>
-                                                    <div class="col-2">Lbs for Run</div>
-                                                    <div class="col-2">Lbs Used</div>
+                                                <div class="row row-cols-4 mx-auto">
+                                                    <div class="col-4">Material</div>
+                                                    <div class="col-3">Lbs for Run</div>
+                                                    <div class="col-3">Lbs Used</div>
                                                     <div class="col-2">%</div>
                                                 </div>
                                                 <!-- Hoper 1 Row -->
-                                                <div class="row row-cols-5 mx-auto pb-1">
-                                                    <div class="col-1"></div>
-                                                    <div class="col-5">
+                                                <div class="row row-cols-4 mx-auto pb-1">
+                                                    <div class="col-4">
                                                         <div class="input-group sm-1">
                                                             <label for="vMat1Name" class="input-group-text">Hopper 1</label>
                                                             <input class="form-control" type="text" name="vselected1Mat" id="vMat1Name" readonly>
                                                         </div>
                                                     </div>
-                                                    <div class="col-2">
-                                                        <input class="form-control" type="number" step="0.001" name="vop1" id="vhop1Lbs" tabindex="6" readonly>
+                                                    <div class="col-3">
+                                                        <input class="form-control text-center" type="number" step="0.001" name="vop1" id="vhop1Lbs" tabindex="6" readonly>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <input class="form-control text-center" type="number" name="vhop1LbsDaily" id="vdHop1" readonly>
                                                     </div>
                                                     <div class="col-2">
-                                                        <input class="form-control" type="number" name="vhop1LbsDaily" id="vdHop1" readonly>
-                                                    </div>
-                                                    <div class="col-2">
-                                                        <input class="form-control" type="number" name="vhop1Percent" id="vdHop1p" readonly>
+                                                        <input class="form-control text-center" type="number" name="vhop1Percent" id="vdHop1p" readonly>
                                                     </div>
                                                 </div>
                                                 <!-- Hopper 2 row -->
-                                                <div class="row row-cols-5 mx-auto pb-1">
-                                                    <div class="col-1"></div>
-                                                    <div class="col-5">
+                                                <div class="row row-cols-4 mx-auto pb-1">
+                                                    <div class="col-4">
                                                         <div class="input-group sm-1">
                                                             <label for="vMat2Name" class="input-group-text">Hopper 2</label><input class="form-control" type="text" name="vselected2Mat" id="vMat2Name" readonly>
                                                         </div>
                                                     </div>
-                                                    <div class="col-2">
-                                                        <input class="form-control" type="number" step="0.001" name="vhop2" id="vhop2Lbs" tabindex="7" readopnly>
+                                                    <div class="col-3">
+                                                        <input class="form-control text-center" type="number" step="0.001" name="vhop2" id="vhop2Lbs" tabindex="7" readopnly>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <input class="form-control text-center" type="number" name="vhop2LbsDaily" id="vdHop2" readonly>
                                                     </div>
                                                     <div class="col-2">
-                                                        <input class="form-control" type="number" name="vhop2LbsDaily" id="vdHop2" readonly>
-                                                    </div>
-                                                    <div class="col-2">
-                                                        <input class="form-control" type="number" name="vhop2Percent" id="vdHop2p" readonly>
+                                                        <input class="form-control text-center" type="number" name="vhop2Percent" id="vdHop2p" readonly>
                                                     </div>
                                                 </div>
                                                 <!-- Hopper 3 row -->
-                                                <div class="row row-cols-5 mx-auto pb-1">
-                                                    <div class="col-1"></div>
-                                                    <div class="col-5">
+                                                <div class="row row-cols-4 mx-auto pb-1">
+                                                    <div class="col-4">
                                                         <div class="input-group sm-1"><label for="2Mat3Name" class="input-group-text">Hopper 3</label><input class="form-control" type="text" name="vselected3Mat" id="vMat3Name"></div>
                                                     </div>
-                                                    <div class="col-2">
-                                                        <input class="form-control" type="number" step="0.001" name="vhop3" id="vhop3Lbs" tabindex="8" readonly>
+                                                    <div class="col-3">
+                                                        <input class="form-control text-center" type="number" step="0.001" name="vhop3" id="vhop3Lbs" tabindex="8" readonly>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <input class="form-control text-center" type="number" name="vhop3LbsDaily" id="vdHop3" readonly>
                                                     </div>
                                                     <div class="col-2">
-                                                        <input class="form-control" type="number" name="vhop3LbsDaily" id="vdHop3" readonly>
-                                                    </div>
-                                                    <div class="col-2">
-                                                        <input class="form-control" type="number" name="vhop3Percent" id="vdHop3p" readonly>
+                                                        <input class="form-control text-center" type="number" name="vhop3Percent" id="vdHop3p" readonly>
                                                     </div>
                                                 </div>
                                                 <!-- Hopper 4 row -->
-                                                <div class="row row-cols-5 mx-auto pb-1">
-                                                    <div class="col-1"></div>
-                                                    <div class="col-5">
+                                                <div class="row row-cols-4 mx-auto pb-1">
+                                                    <div class="col-4">
                                                         <div class="input-group sm-1">
                                                             <label for="Mat4Name" class="input-group-text">Hopper 4</label>
                                                             <input class="form-control" type="text" name="vselected4Mat" id="vMat4Name" readonly>
                                                         </div>
                                                     </div>
-                                                    <div class="col-2">
-                                                        <input class="form-control" type="number" step="0.001" name="vhop4" id="vhop4Lbs" tabindex="9" readonly>
+                                                    <div class="col-3">
+                                                        <input class="form-control text-center" type="number" step="0.001" name="vhop4" id="vhop4Lbs" tabindex="9" readonly>
                                                     </div>
-                                                    <div class="col-2">
+                                                    <div class="col-3">
                                                         <div class="input-group sm-1">
-                                                            <input class="form-control" type="number" name="vhop4LbsDaily" id="vdHop4" readonly>
+                                                            <input class="form-control text-center" type="number" name="vhop4LbsDaily" id="vdHop4" readonly>
                                                         </div>
                                                     </div>
                                                     <div class="col-2">
-                                                        <div class="input-group sm-1"><input class="form-control" type="number" name="vhop4Percent" id="vdHop4p" readonly></div>
+                                                        <div class="input-group sm-1"><input class="form-control text-center" type="number" name="vhop4Percent" id="vdHop4p" readonly></div>
                                                     </div>
                                                 </div>
                                                 <!-- Totals row -->
-                                                <div class="row row-cols-5 mx-auto pb-1">
-                                                    <div class="col-1"></div>
-                                                    <div class="col-5 d-flex justify-content-end align-items-center">
+                                                <div class="row row-cols-4 mx-auto pb-1">
+
+                                                    <div class="col-4 d-flex justify-content-end align-items-center">
                                                         <h6 class="text-end">Totals</h6>
                                                     </div>
-                                                    <div class="col-2">
-                                                        <input class="form-control" type="number" step="0.001" name="vtotalsBlender" id="vBlenderTotals" readonly>
+                                                    <div class="col-3">
+                                                        <input class="form-control text-center" type="number" step="0.001" name="vtotalsBlender" id="vBlenderTotals" readonly>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <input readonly class="form-control text-center" type="text" name="vtotalDaily" id="vdTotal" readonly>
                                                     </div>
                                                     <div class="col-2">
-                                                        <input readonly class="form-control" type="text" name="vtotalDaily" id="vdTotal" readonly>
-                                                    </div>
-                                                    <div class="col-2">
-                                                        <input readonly class="form-control" type="text" name="vtotalPercent" id="vdTotalp" readonly>
+                                                        <input readonly class="form-control text-center" type="text" name="vtotalPercent" id="vdTotalp" readonly>
                                                     </div>
                                                 </div>
                                             </div>

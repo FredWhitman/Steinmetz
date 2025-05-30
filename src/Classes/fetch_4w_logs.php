@@ -2,9 +2,10 @@
 
 require_once 'database.php';
 
-class Last4Weeks extends database{
+class Last4Weeks extends database
+{
 
-     // Constructor
+    // Constructor
     public function __construct()
     {
         $database = new Database();
@@ -12,18 +13,18 @@ class Last4Weeks extends database{
         $this->con = $db;
     }
 
-    public function read4wks(){
+    public function read4wks()
+    {
         try {
             $sql = 'SELECT * FROM productionLogs WHERE prodDate >= NOW() - INTERVAL 4 WEEK Order By prodDate ASC';
             $stmt = $this->con->prepare($sql);
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             //var_dump($results);
-            return $results;//code...
+            return $results; //code...
         } catch (PDOException $e) {
-           echo $e->getMessage();
+            echo $e->getMessage();
         }
-        
     }
 
     //Fetch single record from DB
@@ -44,12 +45,19 @@ class Last4Weeks extends database{
         return $result;
     }
 
-    public function readPrevious($id){
-        //this function returns the previous log of the viewed one
-        $sql = 'SELECT p.logID, t.*, m.* FROM productionlogs AS p 
-                INNER JOIN materiallog AS m ON p.logID = m.prodLogID WHERE p.logID = :id';
-                $stmt = $this->con->prepare($sql);
+    public function readPrevious($id)
+    {
+        try {
+            //this function returns the previous log of the viewed one
+            $sql = 'SELECT p.logID, m.* FROM productionlogs AS p 
+                    INNER JOIN materiallog AS m ON p.logID = m.prodLogID WHERE p.logID = :id';
+            $stmt = $this->con->prepare($sql);
+            $stmt->execute(['id' => $id]);
+
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result;
+        } catch (PDOException $e) {
+            echo $e->getMessage();
+        }
     }
-
-
 }

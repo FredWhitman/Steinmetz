@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
   //add listener to modal to trigger when displayed
   // This function will display the add Log form and fetch data from the db to fill the select options for material
   //and part name.
-   modal.addEventListener("shown.bs.modal", function () {
+  modal.addEventListener("shown.bs.modal", function () {
     // Runs when modal is visible
     fetch("../src/classes/fetch_data.php")
       .then((response) => response.json())
@@ -106,8 +106,7 @@ tbody.addEventListener("click", (e) => {
   }
 });
 
-const viewLog = async (id) => 
-  {
+const viewLog = async (id) => {
   //
   const data = await fetch(
     `../src/Classes/productionActions.php?view=1&id=${id}`,
@@ -116,7 +115,7 @@ const viewLog = async (id) =>
     }
   );
   const response = await data.json();
-  console.log("Fetched Data for logID:", response); // Debugging outp
+  //console.log("Fetched Data for logID:", response); // Debugging outp
   //console.log("Available Data Keys:", Object.keys(response));
 
   if (response.error) {
@@ -188,8 +187,7 @@ const viewLog = async (id) =>
   }
 };
 
-const getLog = async (id) => 
-{
+const getLog = async (id) => {
   const data = await fetch(
     `../src/Classes/productionActions.php?previous=1&id=${id}`,
     {
@@ -197,44 +195,44 @@ const getLog = async (id) =>
     }
   );
   const response = await data.json();
-  
-//current values of the hopppers
-  let cMat1Used = document.getElementById("vhop1Lbs").value;
-  let cMat2Used = document.getElementById("vhop2Lbs").value;
-  let cMat3Used = document.getElementById("vhop3Lbs").value;
-  let cMat4Used = document.getElementById("vhop4Lbs").value;
+  //console.log("Fetched Data for previous log:", response);
+  //current values of the hopppers
+  let cMat1Used = parseFloat(document.getElementById("vhop1Lbs").value) || 0;
+  let cMat2Used = parseFloat(document.getElementById("vhop2Lbs").value) || 0;
+  let cMat3Used = parseFloat(document.getElementById("vhop3Lbs").value) || 0;
+  let cMat4Used = parseFloat(document.getElementById("vhop4Lbs").value) || 0;
+  //console.log("Current Hopper 1 Used:", cMat1Used);
 
-//previous log in the production run's hoppers
-  let pMat1Used = document.getElementById("vhop1Lbs").value = response.mat1Used;
-  let pMat2Used = document.getElementById("vhop2Lbs").value = response.mat2Used;
-  let pMat3Used = document.getElementById("vhop3Lbs").value = response.mat3Used;
-  let pMat4Used = document.getElementById("vhop4Lbs").value = response.mat4Used;
-  
-  
+  //previous log in the production run's hoppers
+  let pMat1Used = parseFloat(response.matUsed1) || 0;
+  let pMat2Used = parseFloat(response.matUsed2) || 0;
+  let pMat3Used = parseFloat(response.matUsed3) || 0;
+  let pMat4Used = parseFloat(response.matUsed4) || 0;
+  console.log("Previous Hopper 1 Used:", pMat1Used);
+
   //getting daily usage
-  let dMat1Used = cMat1Used - pMat1Used;
-  let dMat2Used = cMat1Used - pMat2Used;
-  let dMat3Used = cMat1Used - pMat3Used;
-  let dMat4Used = cMat1Used - pMat4Used;
+  let dMat1Used = parseFloat(cMat1Used - pMat1Used) || 0;
+  let dMat2Used = parseFloat(cMat2Used - pMat2Used) || 0;
+  let dMat3Used = parseFloat(cMat3Used - pMat3Used) || 0;
+  let dMat4Used = parseFloat(cMat4Used - pMat4Used) || 0;
   let dTotal = dMat1Used + dMat2Used + dMat3Used + dMat4Used;
 
   ///calculate percentage
-  let pHop1 = (dMat1Used/dTotal)*100;
-  let pHop2 = (dMat2Used/dTotal)*100;
-  let pHop3 = (dMat3Used/dTotal)*100;
-  let pHop4 = (dMat4Used/dTotal)*100;
-  let pTotal = pHop1+pHop2+pHop3+pHop4;
+  let pHop1 = (dMat1Used / dTotal) * 100;
+  let pHop2 = (dMat2Used / dTotal) * 100;
+  let pHop3 = (dMat3Used / dTotal) * 100;
+  let pHop4 = (dMat4Used / dTotal) * 100;
+  let pTotal = pHop1 + pHop2 + pHop3 + pHop4;
 
-  document.getElementById("vdHop1").value = dMat1Used;
-  document.getElementById("vdHop1p").value = pHop1;
-  document.getElementById("vdHop2").value = dMat2Used;
-  document.getElementById("vdHop2p").value = pHop2;
-  document.getElementById("vdHop3").value = dMat3Used;
-  document.getElementById("vdHop3p").value = pHop3;
-  document.getElementById("vdHop4").value = dMat4Used;
-  document.getElementById("vdHop4p").value = pHop4;
-  document.getElementById("vdTotal").value = dTotal;
-  document.getElementById("vdTotalp").value = pTotal;
-
-}  
-
+  //Add data to elements
+  document.getElementById("vdHop1").value = dMat1Used.toFixed(3);
+  document.getElementById("vdHop1p").value = pHop1.toFixed(2);
+  document.getElementById("vdHop2").value = dMat2Used.toFixed(3);
+  document.getElementById("vdHop2p").value = pHop2.toFixed(2);
+  document.getElementById("vdHop3").value = dMat3Used.toFixed(3);
+  document.getElementById("vdHop3p").value = pHop3.toFixed(2);
+  document.getElementById("vdHop4").value = dMat4Used.toFixed(3);
+  document.getElementById("vdHop4p").value = pHop4.toFixed(2);
+  document.getElementById("vdTotal").value = dTotal.toFixed(3);
+  document.getElementById("vdTotalp").value = pTotal.toFixed(2);
+};
