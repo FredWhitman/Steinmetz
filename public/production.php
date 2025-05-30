@@ -20,6 +20,7 @@
 <body onload="addBlenderOnBlur">
     <!--Navbar -->
     <?php require_once '../includes/steinmetzNavbar.php'; ?>
+    <!--------------------------------------------------------------------------------------------------------------->
     <!-- New production log modal start-->
     <div class="modal fade" id="addProductionModal" tabindex="-1" aria-labelledby="addProductionModalLabel">
         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -305,7 +306,7 @@
         </div>
     </div>
     <!-- New production log modal end-->
-
+    <!--------------------------------------------------------------------------------------------------------------->
     <!-- View production log modal start -->
     <div class="modal fade" id="viewProductionModal" tabindex="-1" aria-labelledby="viewProductionModalLabel">
         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -576,7 +577,47 @@
         </div>
     </div>
     <!-- View production log modal end -->
-
+    <!--------------------------------------------------------------------------------------------------------------->
+    <!-- Add QA Rejects to production log start-->
+    <div class="modal fade" id="addQARejectsModal" tabindex="-1" aria-labelledby="addQARejectsModal">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">QA Rejects</h1>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" style="font-size: .75rem" for="partName">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="partName" name="selectedPart"></select></div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="logDate">Production Date</label><input class="form-control" type="date" tabindex="2" id="logDate" name="log_date"></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-group sm-3"><label class="input-group-text" for="qaRejects">Reject Quantity</label><input type="number" tabindex="1" class="form-control form-control-sm" id="qaRejects" name="qaRejects"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="message-text" class="col-form-label">Comments</label>
+                            <textarea class="form-control" id="comment-text"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success">Add Rejects</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add QA Rejects to production log end-->
+    <!--------------------------------------------------------------------------------------------------------------->
+    <!-- Table to hold the last 4 weeks of production  -->
     <div class="container-fluid">
         <div class="mt-5">
             <div class="row mt-2">
@@ -585,6 +626,7 @@
                         <h4 class="text-primary">Production Data</h4>
                     </div>
                     <div>
+                        <button class="btn btn-primary" type="button" id="loadQARejectForm" data-bs-toggle="modal" data-bs-target="#addQARejectsModal">Add QA Rejects</button>
                         <button class="btn btn-primary" type="button" id="loadProdLogForm" data-bs-toggle="modal" data-bs-target="#addProductionModal">Add Production Log</button>
                     </div>
                 </div>
