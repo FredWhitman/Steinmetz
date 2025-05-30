@@ -3,9 +3,10 @@ const tbody = document.querySelector("tbody"); //Set the tbody to display last 4
 document.addEventListener("DOMContentLoaded", function () {
   const modal = document.getElementById("addProductionModal"); //set variable for modal webform
 
-  //add listener to modal to trigger function when displayed
-
-  modal.addEventListener("shown.bs.modal", function () {
+  //add listener to modal to trigger when displayed
+  // This function will display the add Log form and fetch data from the db to fill the select options for material
+  //and part name.
+   modal.addEventListener("shown.bs.modal", function () {
     // Runs when modal is visible
     fetch("../src/classes/fetch_data.php")
       .then((response) => response.json())
@@ -101,11 +102,12 @@ tbody.addEventListener("click", (e) => {
     //find the data-id class tag in dynamiclly created table from productionAction.php get-read check
     let id = e.target.closest("tr").getAttribute("data-id");
     //console.log("Production log ID: " + id);
-    viewUser(id);
+    viewLog(id);
   }
 });
 
-const viewUser = async (id) => {
+const viewLog = async (id) => 
+  {
   //
   const data = await fetch(
     `../src/Classes/productionActions.php?view=1&id=${id}`,
@@ -118,7 +120,7 @@ const viewUser = async (id) => {
   //console.log("Available Data Keys:", Object.keys(response));
 
   if (response.error) {
-    //console.log("Error in viewUser:" + response.error);
+    console.log("Error in viewLog:" + response.error);
   } else {
     const modal = new bootstrap.Modal(
       document.getElementById("viewProductionModal")
@@ -179,10 +181,60 @@ const viewUser = async (id) => {
       document.getElementById("vPressCounter").value = response.pressCounter;
       document.getElementById("vPressRejects").value = response.startUpRejects;
       document.getElementById("vcommentText").value = response.Comments;
+      let prevID = response.prevProdLogID;
+
+      getLog(prevID);
     }, 500); //wait for modal elements to load
   }
 };
 
-//columns returned: logID,productID,prodDate,runStatus,preProdLogID,runLogID,matLogID,tempLogID,pressCounter,startUpRejects,purgeLbs,
-//  Comments, bigDryerTemp,bigDryerDew,pressDryerTemp,pressDryerDew,t1,t2,t3,t4,m1,m2,m3,m4,m5,m6,m7,chillerTemp,moldTemp,mat1,matUsed1,mat2,
-//  matUsed2,mat3,matUsed3,mat4,matUsed4,
+const getLog = async (id) => 
+{
+  const data = await fetch(
+    `../src/Classes/productionActions.php?previous=1&id=${id}`,
+    {
+      method: "GET",
+    }
+  );
+  const response = await data.json();
+  
+//current values of the hopppers
+  let cMat1Used = document.getElementById("vhop1Lbs").value;
+  let cMat2Used = document.getElementById("vhop2Lbs").value;
+  let cMat3Used = document.getElementById("vhop3Lbs").value;
+  let cMat4Used = document.getElementById("vhop4Lbs").value;
+
+//previous log in the production run's hoppers
+  let pMat1Used = document.getElementById("vhop1Lbs").value = response.mat1Used;
+  let pMat2Used = document.getElementById("vhop2Lbs").value = response.mat2Used;
+  let pMat3Used = document.getElementById("vhop3Lbs").value = response.mat3Used;
+  let pMat4Used = document.getElementById("vhop4Lbs").value = response.mat4Used;
+  
+  
+  //getting daily usage
+  let dMat1Used = cMat1Used - pMat1Used;
+  let dMat2Used = cMat1Used - pMat2Used;
+  let dMat3Used = cMat1Used - pMat3Used;
+  let dMat4Used = cMat1Used - pMat4Used;
+  let dTotal = dMat1Used + dMat2Used + dMat3Used + dMat4Used;
+
+  ///calculate percentage
+  let pHop1 = (dMat1Used/dTotal)*100;
+  let pHop2 = (dMat2Used/dTotal)*100;
+  let pHop3 = (dMat3Used/dTotal)*100;
+  let pHop4 = (dMat4Used/dTotal)*100;
+  let pTotal = pHop1+pHop2+pHop3+pHop4;
+
+  document.getElementById("vdHop1").value = dMat1Used;
+  document.getElementById("vdHop1p").value = pHop1;
+  document.getElementById("vdHop2").value = dMat2Used;
+  document.getElementById("vdHop2p").value = pHop2;
+  document.getElementById("vdHop3").value = dMat3Used;
+  document.getElementById("vdHop3p").value = pHop3;
+  document.getElementById("vdHop4").value = dMat4Used;
+  document.getElementById("vdHop4p").value = pHop4;
+  document.getElementById("vdTotal").value = dTotal;
+  document.getElementById("vdTotalp").value = pTotal;
+
+}  
+

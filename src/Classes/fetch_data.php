@@ -15,7 +15,7 @@ class DB extends database
     }
 
     // get data to fill material select component
-    public function getMaterialNames()
+    public function getNames()
     {
         try {
             $sql = "SELECT MaterialPartNumber, MaterialName FROM material";
@@ -45,4 +45,4 @@ class DB extends database
 }
 
 $db = new DB();
-$db->getMaterialNames();
+$db->getNames();

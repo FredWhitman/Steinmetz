@@ -35,7 +35,7 @@ if (isset($_GET['read4wks']))
 }
 
 
-//Handle Edit User Ajax request from main.js editUser
+//Handle View Log Ajax request from main.js 
 if (isset($_GET['view'])) {
     $id =$_GET['id'];
     $log = $db->readOne($id);
@@ -45,7 +45,20 @@ if (isset($_GET['view'])) {
     } else {
         echo json_encode($log);
     }
+    exit;
+}
 
+ //Handle get previous log Ajax request from main.js    
+if(isset($_GET['previous']))
+{
+    $id = $_GET['id'];
+    $log = $db->readPrevious($id);
+
+    if(!$log){
+        echo json_encode(["error" => "No data found for logID $id"]);
+    }else{
+      echo json_encode($log);
+    }   
     exit;
 }
 
