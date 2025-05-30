@@ -583,14 +583,14 @@
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">QA Rejects</h1>
+                    <h1 class="modal-title fs-5" id="addQARejectsModal">QA Rejects</h1>
                 </div>
                 <div class="modal-body">
                     <form>
                         <div class="mb-3">
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" style="font-size: .75rem" for="partName">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="partName" name="selectedPart"></select></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="partName">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="partName" name="selectedPart"></select></div>
                                 </div>
                             </div>
                             <div class="row pb-2">
@@ -673,6 +673,7 @@
     <script type="text/javascript" src="../resources/js/main.js"></script>
     <script type="text/javascript" src="../resources/js/productionLog.js"></script>
     <script type="text/javascript" src="../resources/js/prodLogSubmit.js"></script>
+    <script type="text/javascript" src="../resources/js/qaRejects.js"></script>
 </body>
 
 </html>
