@@ -597,10 +597,11 @@
             </div>
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="table-responsive">
+                    <div class="table-container-scroll">
+                        <!-- <div class="table-responsive"> -->
                         <!-- Table to display our db user list -->
                         <table id="last4wks" class="table table-striped table-bordered text-center">
-                            <thead>
+                            <thead class="sticky-header">
                                 <tr>
                                     <th>Part Number</th>
                                     <th>Production Date</th>
@@ -616,6 +617,7 @@
 
                             </tbody>
                         </table>
+                        <!-- </div> -->
                     </div>
                 </div>
             </div>

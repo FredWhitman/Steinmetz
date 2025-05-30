@@ -19,7 +19,7 @@ label[class="input-group-text"] {
 label[class="form-check-label"] {
   font-size: 0.75rem;
 }
-input[type="submit"]{
+input[type="submit"] {
   font-size: 0.75rem;
 }
 .form-select {
@@ -30,4 +30,23 @@ select {
 }
 .dropdown-menu {
   font-size: 0.75rem;
+}
+
+.table-container-scroll {
+  max-height: 600px; /* Set your desired maximum height for the *entire* table area */
+  overflow-y: auto; /* Enable vertical scrolling for the container */
+  border: 1px solid #dee2e6; /* Optional: Add a border to the container */
+}
+
+.sticky-header th {
+  position: sticky;
+  top: 0; /* This makes the header stick to the top of its scrolling container */
+  background-color: #f8f9fa; /* Bootstrap's light gray background for headers */
+  z-index: 10; /* Ensures the header stays on top of the scrolling content */
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow for depth */
+}
+
+/* Adjust for Bootstrap's default table padding/borders if needed */
+.table-container-scroll .table {
+  margin-bottom: 0; /* Remove default table margin if it affects the scroll area */
 }
