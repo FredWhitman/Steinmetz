@@ -1,7 +1,21 @@
 <?php
 require_once 'fetch_4w_logs.php';
-
+require_once 'util.php';
 $db = new Last4Weeks;
+$util = new Util;
+
+if(isset($_POST['qaRejects'])){
+    $productID = $util->testInput($_POST['qaPart']);
+    $prodDate = $util->testInput($_POST['qaLogDate']);
+    $rejects = $util->testInput($_POST['rejects']);
+    $comments = $util->testInput($_POST['qaComments']);
+    if($db->insertQaRejects($productID,$prodDate,$rejects,$comments))
+    {
+        echo $util->showMessage('success','QA Rejects of been added!');
+    }else{
+        echo $util->showMessage('danger', 'QA Rejects were not added!');
+    }
+}
 
 if (isset($_GET['read4wks'])) {
 

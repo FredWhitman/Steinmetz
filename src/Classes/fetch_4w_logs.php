@@ -1,6 +1,7 @@
 <?php
 
 require_once 'database.php';
+require_once 'util.php';
 
 class Last4Weeks extends database
 {
@@ -40,6 +41,7 @@ class Last4Weeks extends database
         //columns returned: logID,productID,prodDate,runStatus,preProdLogID,runLogID,matLogID,tempLogID,pressCounter,startUpRejects,purgeLbs,
         //  Comments, bigDryerTemp,bigDryerDew,pressDryerTemp,pressDryerDew,t1,t2,t3,t4,m1,m2,m3,m4,m5,m6,m7,chillerTemp,moldTemp,mat1,matUsed1,mat2,
         //  matUsed2,mat3,matUsed3,mat4,matUsed4,
+
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         //var_dump($result);
         return $result;
@@ -59,5 +61,73 @@ class Last4Weeks extends database
         } catch (PDOException $e) {
             echo $e->getMessage();
         }
+    }
+
+    public function insertQaRejects($productID, $prodDate, $rejects, $comments)
+    {
+        $util = new Util;
+        try {
+            $this->con->beginTransaction();
+            $row = $this->getProductionlog($productID,$prodDate);
+
+            if(!$row){
+                error_log("Error:  nothing was returned for previous log!");
+                $this->con->rollback(); //revert changes
+                return false;
+            }
+
+            $prodLogID = $row['logID'];
+            $prevRejects =$row['qaRejects'];
+            
+            $newTotal = $prevRejects+$rejects;
+            //Insert info into qaRejects Table
+            $sqlInsert = "INSERT INTO qarejects (prodDate,prodLogID,productID,rejects,comments) 
+                            VALUES (:prodDate,:prodLogID,:productID,:rejects,:comments)";
+            $stmtInsert = $this->con->prepare($sqlInsert);
+            $stmtInsert->bindParam(":prodDate",$prodDate,PDO::PARAM_STR);
+            $stmtInsert->bindParam(":prodLogID",$prodLogID,PDO::PARAM_STR);
+            $stmtInsert->bindParam(":productID",$productID,PDO::PARAM_INT);
+            $stmtInsert->bindParam(":rejects",$rejects,PDO::PARAM_INT);
+            $stmtInsert->bindParam(":comments",$comments,PDO::PARAM_INT);
+            $stmtInsert->execute();
+
+            //Update productionLogs table
+
+            $sqlUpdate = 'UPDATE productionlogs SET qaRejects =  qaRejects + :rejects WHERE logID = :prodLogID';
+            $stmtUpdate= $this->con->prepare($sqlUpdate);
+            $stmtUpdate->bindParam(":rejects",$rejects,PDO::PARAM_INT);
+            $stmtUpdate->bindParam(":prodLogID",$prodLogID,PDO::PARAM_INT);
+            $stmtUpdate->execute();
+
+            //Commit transaction
+            $this->con->commit();
+
+            error_log("Transaction successful: QA Rejects added and productionlogs qarejects updated.");
+            return true;
+
+        } catch (PDOException $e) {
+            $this->con->rollback();
+            error_log("QA Rejects Transaction failed: " .$e->getMessage());
+
+        }
+    }
+
+    private function getProductionlog($productID, $prodDate){
+        try {
+            $sql = 'SELECT logID, qaRejects,productID, prodDate FROM `productionlogs` WHERE productID = :productID AND prodDate = :prodDate';
+            $stmt = $this->con->prepare($sql);
+            $stmt->execute([
+                'productID' => $productID,
+                'prodDate' => $prodDate
+            ]);
+
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result;
+
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return null;
+        }
+       
     }
 }

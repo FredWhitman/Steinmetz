@@ -80,16 +80,19 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-//Fetch ALl users Ajax request
-const fetchLast4Weeks = async () => {
-  const data = await fetch("../src/Classes/productionActions.php?read4wks=1", {
-    method: "GET",
-  });
+//Fetch last 4 weeks of production logs Ajax request 
+window.fetchLast4Weeks = async function() {
+  console.log("fetchLast4Weeks() is being called");
+  const data = await fetch('../src/classes/productionActions.php?read4wks=1', 
+    {
+      method: "GET",
+    });
 
-  //console.log("fetchLast4Weeks Ajax called!");
-  const response = await data.text();
-  tbody.innerHTML = response;
-};
+    const response = await data.text();
+    console.log("Fetched Data:", response); // Debugging output
+    document.getElementById("weeks").innerHTML = response;
+  };
+
 
 fetchLast4Weeks();
 
