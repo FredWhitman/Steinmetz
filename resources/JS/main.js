@@ -82,21 +82,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
 //Fetch last 4 weeks of production logs Ajax request 
 window.fetchLast4Weeks = async function() {
-  console.log("fetchLast4Weeks() is being called");
+  //console.log("fetchLast4Weeks() is being called");
   const data = await fetch('../src/classes/productionActions.php?read4wks=1', 
     {
       method: "GET",
     });
 
     const response = await data.text();
-    console.log("Fetched Data:", response); // Debugging output
+    //console.log("Fetched Data:", response); // Debugging output
     document.getElementById("weeks").innerHTML = response;
   };
 
 
 fetchLast4Weeks();
 
-//Edit User Ajax request
+//View log Ajax request
 //This code gets the id from the dynamic created table.
 
 tbody.addEventListener("click", (e) => {

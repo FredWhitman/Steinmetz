@@ -4,6 +4,7 @@ require_once 'util.php';
 $db = new Last4Weeks;
 $util = new Util;
 
+//Handles Ajax request from qaRejects.js
 if(isset($_POST['qaRejects'])){
     $productID = $util->testInput($_POST['qaPart']);
     $prodDate = $util->testInput($_POST['qaLogDate']);
@@ -17,6 +18,19 @@ if(isset($_POST['qaRejects'])){
     }
 }
 
+if(isset($_POST['purge'])){
+    $productID = $util->testInput($_POST['p_Part']);
+    $prodDate = $util->testInput($_POST['p_LogDate']);
+    $purge = $util->testInput($_POST['p_purge']);
+    
+    if($db->addPurge($productID,$prodDate,$purge))
+    {
+        echo $util->showMessage('success','Purge added to production log!');
+    }else{
+        echo $util->showMessage('danger', 'Purge was not added ot production log!');
+    }
+}
+//Handle AJax read4wks call to fill table
 if (isset($_GET['read4wks'])) {
 
     $records = $db->read4wks();
@@ -44,7 +58,6 @@ if (isset($_GET['read4wks'])) {
         echo '<tr><td colspan="6"> No production in the last 4 weeks found in the database!</td></tr>';
     }
 }
-
 
 //Handle View Log Ajax request from main.js 
 if (isset($_GET['view'])) {

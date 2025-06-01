@@ -1,7 +1,6 @@
 <?php
 
 require_once 'database.php';
-require_once 'util.php';
 
 class Last4Weeks extends database
 {
@@ -65,7 +64,6 @@ class Last4Weeks extends database
 
     public function insertQaRejects($productID, $prodDate, $rejects, $comments)
     {
-        $util = new Util;
         try {
             $this->con->beginTransaction();
             $row = $this->getProductionlog($productID,$prodDate);
@@ -78,7 +76,7 @@ class Last4Weeks extends database
 
             $prodLogID = $row['logID'];
             $prevRejects =$row['qaRejects'];
-            
+
             $newTotal = $prevRejects+$rejects;
             //Insert info into qaRejects Table
             $sqlInsert = "INSERT INTO qarejects (prodDate,prodLogID,productID,rejects,comments) 
@@ -99,16 +97,57 @@ class Last4Weeks extends database
             $stmtUpdate->bindParam(":prodLogID",$prodLogID,PDO::PARAM_INT);
             $stmtUpdate->execute();
 
-            //Commit transaction
-            $this->con->commit();
-
-            error_log("Transaction successful: QA Rejects added and productionlogs qarejects updated.");
-            return true;
-
+            if ($stmtUpdate->rowCount()===0) {
+                $this->con->rollback();
+                error_log("Transaction Failed: QA Rejects were not added and productionlogs qarejects was not updated.");
+                return false;
+            }else{
+                //Commit transaction
+                $this->con->commit();
+                error_log("Transaction successful: QA Rejects added and productionlogs qarejects updated.");
+                return true; 
+            }
         } catch (PDOException $e) {
             $this->con->rollback();
             error_log("QA Rejects Transaction failed: " .$e->getMessage());
 
+        }
+    }
+
+    public function addPurge($productID, $prodDate, $purge)
+    {
+        try {
+            $this->con->beginTransaction();
+            $row = $this->getProductionlog($productID,$prodDate);
+
+            if(!$row){
+                error_log("Error:  nothing was returned for previous log!");
+                $this->con->rollback(); //revert changes
+                return false;
+            }
+
+            $prodLogID = $row['logID'];
+
+            //Update productionLogs table
+
+            $sqlUpdate = 'UPDATE productionlogs SET purgelbs =  purgelbs + :purge WHERE logID = :prodLogID';
+            $stmtUpdate= $this->con->prepare($sqlUpdate);
+            $stmtUpdate->bindParam(":purge",$purge,PDO::PARAM_STR);
+            $stmtUpdate->bindParam(":prodLogID",$prodLogID,PDO::PARAM_INT);
+            $stmtUpdate->execute();
+
+            if($stmtUpdate->rowCount()=== 0){
+                error_log("Transaction Failed: productionlogs purge update.");
+                $this->con->rollback();
+                return false;
+            }else{
+                //Commit transaction
+                $this->con->commit();
+                error_log("Transaction successful: productionlogs purge updated.");
+                return true;
+            }
+        } catch (PDOException $e) {
+            echo error_log('Error adding purge to production log: ' . $e->getMessage());
         }
     }
 

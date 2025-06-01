@@ -3,8 +3,8 @@ const addQARejectModal = new bootstrap.Modal(document.getElementById("addQARejec
 const showAlert = document.getElementById("showAlert");
 
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("Triggering fetchLast4Weeks from qaRejects.js.......");
-  console.log("Checking for fetchLast4Weeks:", typeof window.fetchLast4Weeks);
+  //console.log("Triggering fetchLast4Weeks from qaRejects.js.......");
+  //console.log("Checking for fetchLast4Weeks:", typeof window.fetchLast4Weeks);
   if(typeof window.fetchLast4Weeks === 'function'){
     window.fetchLast4Weeks(); //Call function from main.js
   }else{
@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", function () {
 addQARejectForm.addEventListener("submit", async (e) => {
   //prevent form from submitting data to DB
   e.preventDefault();
-  console.log("Add button clicked:");
+  //console.log("Add button clicked:");
 
   const formData = new FormData(addQARejectForm);
   formData.append("qaRejects", 1);

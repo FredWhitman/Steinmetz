@@ -620,6 +620,48 @@
     </div>
     <!-- Add QA Rejects to production log end-->
     <!--------------------------------------------------------------------------------------------------------------->
+    <!-- Add purge to production log start -->
+    <div class="modal fade" id="addPurgeModal" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addPurgeModal">Add Purge</h1>
+                </div>
+                <div class="modal-body">
+                    <form id="add-purge-form" class="needs-validation p-2" novalidate>
+                        <div class="mb-3">
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="p_aPartName">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="p_PartName" name="p_Part" required></select></div>
+                                    <div class="invalid-feedback">Part name is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="p_LogDate">Production Date</label><input class="form-control" type="date" tabindex="2" id="logDate" name="p_LogDate" required></div>
+                                    <div class="invalid-feedback">Production date is required!</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-group sm-3"><label class="input-group-text" for="p_purge">Lbs of purge</label><input type="number" step="0.001" tabindex="1" class="form-control form-control-sm" id="p_purge" name="p_purge" required></div>
+                                <div class="invalid-feedback">Lbs of purge is required!</div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" value = "Add Purge" class="btn btn-success" id="add-purge-btn">Add Purge</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add purge to production log end -->
+    
+    
+    
+    
+    
     <!-- Table to hold the last 4 weeks of production  -->
     <div class="container-fluid">
         <div class="mt-5">
@@ -629,6 +671,7 @@
                         <h4 class="text-primary">Production Data</h4>
                     </div>
                     <div>
+                        <button class="btn btn-primary" type="button" id="loadPurgeForm" data-bs-toggle="modal" data-bs-target="#addPurgeModal">Add Purge</button>
                         <button class="btn btn-primary" type="button" id="loadQARejectForm" data-bs-toggle="modal" data-bs-target="#addQARejectsModal">Add QA Rejects</button>
                         <button class="btn btn-primary" type="button" id="loadProdLogForm" data-bs-toggle="modal" data-bs-target="#addProductionModal">Add Production Log</button>
                     </div>
@@ -677,6 +720,7 @@
     <script type="text/javascript" src="../resources/js/productionLog.js"></script>
     <script type="text/javascript" src="../resources/js/prodLogSubmit.js"></script>
     <script type="text/javascript" src="../resources/js/qaRejects.js"></script>
+    <script type="text/javascript" src="../resources/js/purge.js"></script>
 </body>
 
 </html>
