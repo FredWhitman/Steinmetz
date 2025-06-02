@@ -1,3 +1,98 @@
+const addLogForm = document.getElementById("add-productionLog-form");
+//const showAlert = document.getElementById("showAlert");
+const addLogModal = new bootstrap.Modal(document.getElementById("addProductionModal"));
+
+
+//Function to total the lbs of material in hoppers 1-4 and display that value the Blender Total input
+document.addEventListener("DOMContentLoaded", function(){
+  const modal = document.getElementById("addProductionModal");
+  modal.addEventListener("shown.bs.modal",function(){
+    addBlenderOnBlur(); //Call the addBlenderOnBlur function when modal is displayed.
+  })
+})
+
+//add New User Ajax Request
+addLogForm.addEventListener("submit", async (e) => {
+  //prevent form from submitting data to DB
+  e.preventDefault();
+
+  const formData = new FormData(addLogForm);
+  //formData.append("addLog", 1);
+  //check to make sure the input fields are not empty
+  if (!addLogForm.checkValidity()) {
+    e.preventDefault();
+    e.stopPropagation();
+    addLogForm.classList.add("was-validated");
+    return false;
+  } else {
+    document.getElementById("add-log-btn").value = "Please Wait...";
+    const logInfo = {
+      action:"addLog",
+      prodLogData:{
+        productID: formData.get("partName"),
+        prodDate: formData.get("logDate"),
+        runStatus: formData.get("prodRun"),
+        prevProdLogID: '0',
+        runLogID: '0',
+        matLogID: '0',
+        tempLogID: '0',
+        pressCounter: formData.get("pressCounter"),
+        startUpRejects: formData.get("startUpRejects"),
+        purgeLbs: '0',
+        comments: formData.get("commentText")
+      },
+      materialData:{
+          prodLogID: '0',
+          mat1: formData.get("Mat1Name"),
+          matused1: formData.get("hop1Lbs"),
+          mat2: formData.get("Mat2Name"),
+          matused2: formData.get("hop2Lbs"),
+          mat3: formData.get("Mat3Name"),
+          matused3: formData.get("hop3Lbs"),
+          mat4: formData.get("Mat4Name"),
+          matused4: formData.get("hop4Lbs")
+      },
+      tempData:{
+        prodLogID: '0',
+        bigDryerTemp: formData.get("bigDryerTemp"),
+        bigDryerDew: formData.get("bigDryerDew"),
+        pressDryerTemp: formData.get("pressDryerTemp"),
+        pressDryerDew: formData.get("pressDryerDew"),
+        t1: formData.get("t1"),
+        t2: formData.get("t2"),
+        t3: formData.get("t3"),
+        t4: formData.get("t4"),
+        m1: formData.get("m1"),
+        m2: formData.get("m2"),
+        m3: formData.get("m3"),
+        m4: formData.get("m4"),
+        m5: formData.get("m5"),
+        m6: formData.get("m6"),
+        m7: formData.get("m7"),
+        chillerTemp: formData.get("chiller"),
+        moldTemp: formData.get("tcuTemp")
+      }
+    }
+
+    const data = await fetch("../src/Classes/productionActions.php", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(logInfo) 
+    });
+
+    const response = await data.text();
+    showAlert.innerHTML = response;
+    document.getElementById("add-log-btn").value = "Add Log";
+    addLogForm.reset();
+    addLogForm.classList.remove("was-validated");
+    addLogModal.hide();
+    
+  }
+
+});
+
+
+
 //Function to total the lbs of material in hoppers 1-4 and display that value the Blender Total input
 function addBlenderOnBlur() {
   var prodRunStatus = document.getElementsByTagName("prodRun");
@@ -11,7 +106,7 @@ function addBlenderOnBlur() {
     radio.addEventListener("change", function () {
       console.log(`Selected value: ${this.value}`);
       prodStatus = this.value;
-      console.dir(prodStatus);
+      //console.dir(prodStatus);
     });
   });
 
@@ -32,7 +127,7 @@ function addBlenderOnBlur() {
       (Number(hop4.value) || 0);
     totalBlended.value = sum;
     let partID = document.getElementById("partName").value;
-    let prodDate = document.getElementById("logDate");
+    let prodDate = document.getElementById("logDate").value;
     console.log(
       "Production Run Status: " +
         prodStatus +
@@ -45,6 +140,9 @@ function addBlenderOnBlur() {
     switch (prodStatus) {
       case "0":
         console.log("In Progress:");
+        // get Production run id, use that to get previsou production log id. 
+        
+
 
         break;
 

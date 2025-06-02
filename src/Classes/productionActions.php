@@ -1,7 +1,14 @@
 <?php
-require_once 'fetch_4w_logs.php';
+/* header("Access-Control-Allow-Origin: *"); // Allows requests from any domain
+header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
+
+error_log("PHP Received Request: " . json_encode($_SERVER)); */
+
+
+require_once 'productionDB_SQL.php';
 require_once 'util.php';
-$db = new Last4Weeks;
+$db = new productionDB;
 $util = new Util;
 
 //Handles Ajax request from qaRejects.js
@@ -30,6 +37,29 @@ if(isset($_POST['purge'])){
         echo $util->showMessage('danger', 'Purge was not added ot production log!');
     }
 }
+
+//Handles Ajax call to add production log
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $data = json_decode(file_get_contents("php://input"), true);
+    
+    if (isset($data["action"]) && $data["action"] === "addLog") {
+        if (isset($data["prodLogData"]) && isset($data["prodLogData"])&& isset($data["tempData"])) {
+            if($db->insertProdLog($data["prodLogData"],$data["materialData"], $data["tempData"]))
+            {
+                echo $util->showMessage('success','Production, material and temp logs added!');
+            }else{
+                echo $util->showMessage('danger', 'Logs were not added nor updated!');
+            }
+        } else {
+            echo "Missing required data!";
+            http_response_code(400);
+        }
+    } else {
+        echo "Unauthorized request!";
+        http_response_code(403); // Forbidden status
+    }
+}
+
 //Handle AJax read4wks call to fill table
 if (isset($_GET['read4wks'])) {
 

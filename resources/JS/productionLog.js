@@ -5,8 +5,9 @@ document.addEventListener("DOMContentLoaded", function(){
     addBlenderOnBlur(); //Call the addBlenderOnBlur function when modal is displayed.
   })
 })
+
 function addBlenderOnBlur() {
-  var prodRunStatus = document.getElementsByTagName("prodRun");
+  //var prodRunStatus = document.getElementsByTagName("prodRun");
   let prodStatus = [];
 
   // Select all radio buttons within the group
@@ -37,6 +38,7 @@ function addBlenderOnBlur() {
       (Number(hop3.value) || 0) +
       (Number(hop4.value) || 0);
     totalBlended.value = sum;
+
     let partID = document.getElementById("partName").value;
     let prodDate = document.getElementById("logDate");
     console.log(
@@ -173,17 +175,4 @@ function validateDecimalInput(event) {
   }
 }
 
-function getDailyUsage() {
-  const bigDryerTemp = document.getElementById("bigDryerTemp");
 
-  bigDryerTemp.addEventListener("", function () {
-    /* TODO: Check radio button for production status if start copy values from blender 
-                  and calculate percentage of each hopper.
-            TODO: Check radio button and if in progress pull last production record for this run
-                  and subtract these values from the current. Display new values and calculate percentages
-            TODO: Check radio button and if end pull last production record for the run and fill daily usage.
-                  Pull all production logs for entire production run and total all material consumed, number of pads produced and reject
-  
-          */
-  });
-}

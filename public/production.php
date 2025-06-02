@@ -16,13 +16,13 @@
     <link href="../resources/vendors/css/dashboard.css" rel="stylesheet">
     <link href="../resources/css/myCSS.css" rel="stylesheet">
 </head>
-
-<body onload="addBlenderOnBlur">
+<!--  -->
+<body>
     <!--Navbar -->
     <?php require_once '../includes/steinmetzNavbar.php'; ?>
     <!--------------------------------------------------------------------------------------------------------------->
     <!-- New production log modal start-->
-    <div class="modal fade" id="addProductionModal" tabindex="-1" aria-labelledby="addProductionModalLabel">
+    <div class="modal fade" id="addProductionModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content ">
                 <div class="modal-header text-center">
@@ -31,7 +31,7 @@
                 </div>
                 <div class="modal-body">
                     <!--  Form for Production log start -->
-                    <form id="productionLog" action="">
+                    <form id="add-productionLog-form" class="needs-validation p-2" novalidate>
                         <!-- Log Information -->
                         <div class="container" id="logInformation">
                             <div class="card pb-1">
@@ -42,7 +42,8 @@
                                     <div class="container text-center">
                                         <div class="row row-cols-2 pb-1">
                                             <div class="col">
-                                                <div class="input-group sm-3"><label class="input-group-text" style="font-size: .75rem" for="partName">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" list="partNames" id="partName" name="selectedPart"></select></div>
+                                                <div class="input-group sm-3"><label class="input-group-text" style="font-size: .75rem" for="partName">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" list="partNames" id="partName" name="partName" required></select></div>
+                                                <div class="invalid-feedback">part name is required!</div>
                                             </div>
                                             <div class="col">
                                                 <div class="col text-center">Production Run Status</div>
@@ -50,12 +51,12 @@
                                         </div>
                                         <div class="row row-col-2">
                                             <div class="col ">
-                                                <div class="input-group mb-3"><label class="input-group-text" for="logDate">Production Date</label><input class="form-control" type="date" tabindex="2" id="logDate" name="log_date"></div>
+                                                <div class="input-group mb-3"><label class="input-group-text" for="logDate">Production Date</label><input class="form-control" type="date" tabindex="2" id="logDate" name="logDate" required></div>
                                             </div>
                                             <div class="col">
                                                 <div class="col">
                                                     <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" name="prodRun" id="start" tabindex="3" value="1">Start<label class="form-check-label" for="start"></label>
+                                                        <input class="form-check-input" type="radio" name="prodRun" id="start" tabindex="3" value="1" required>Start<label class="form-check-label" for="start"></label>
                                                     </div>
                                                     <div class="form-check form-check-inline">
                                                         <input class="form-check-input" type="radio" name="prodRun" tabindex="4" id="inProgress" value="0">In Progress<label class="form-check-label" for="inProgress"></label>
@@ -92,49 +93,49 @@
                                                     <div class="col-5">
                                                         <div class="input-group sm-1">
                                                             <label for="Mat1Name" class="input-group-text">Hopper 1</label>
-                                                            <select class="form-select" type="text" name="selected1Mat" id="Mat1Name" required></select>
+                                                            <select class="form-select" type="text" name="Mat1Name" id="Mat1Name" required></select>
                                                         </div>
                                                     </div>
                                                     <div class="col-2">
-                                                        <input class="form-control" type="number" step="0.001" name="hop1" id="hop1Lbs" tabindex="6" oninput="validateDecimalInput(event)" required>
+                                                        <input class="form-control" type="number" step="0.001" name="hop1Lbs" id="hop1Lbs" tabindex="6" oninput="validateDecimalInput(event)" required>
                                                     </div>
                                                     <div class="col-2">
-                                                        <div class="input-group sm-1"><input class="form-control" type="number" name="hop1LbsDaily" id="dHop1" readonly></div>
+                                                        <div class="input-group sm-1"><input class="form-control" type="number" name="dHop1" id="dHop1" readonly></div>
                                                     </div>
                                                     <div class="col-2">
-                                                        <input class="form-control" type="number" name="hop1Percent" id="dHop1p" readonly>
+                                                        <input class="form-control" type="number" name="dHop1p" id="dHop1p" readonly>
                                                     </div>
                                                 </div>
                                                 <!-- Hopper 2 row -->
                                                 <div class="row row-cols-5 mx-auto pb-1">
                                                     <div class="col-1"></div>
                                                     <div class="col-5">
-                                                        <div class="input-group sm-1"><label for="Mat2Name" class="input-group-text">Hopper 2</label><select class="form-select" type="text" list="materialNames" name="selected2Mat" id="Mat2Name" required></select></div>
+                                                        <div class="input-group sm-1"><label for="Mat2Name" class="input-group-text">Hopper 2</label><select class="form-select" type="text" list="materialNames" name="Mat2Name" id="Mat2Name" required></select></div>
                                                     </div>
                                                     <div class="col-2">
-                                                        <input class="form-control" type="number" step="0.001" name="hop2" id="hop2Lbs" tabindex="7" oninput="validateDecimalInput(event)" required>
+                                                        <input class="form-control" type="number" step="0.001" name="hop2Lbs" id="hop2Lbs" tabindex="7" oninput="validateDecimalInput(event)" required>
                                                     </div>
                                                     <div class="col-2">
-                                                        <div class="input-group sm-1"><input class="form-control" type="number" name="hop2LbsDaily" id="dHop2" readonly></div>
+                                                        <div class="input-group sm-1"><input class="form-control" type="number" name="dHop2" id="dHop2" readonly></div>
                                                     </div>
                                                     <div class="col-2">
-                                                        <div class="input-group sm1"><input class="form-control" type="number" name="hop2Percent" id="dHop2p" readonly></div>
+                                                        <div class="input-group sm1"><input class="form-control" type="number" name="dHop2p" id="dHop2p" readonly></div>
                                                     </div>
                                                 </div>
                                                 <!-- Hopper 3 row -->
                                                 <div class="row row-cols-5 mx-auto pb-1">
                                                     <div class="col-1"></div>
                                                     <div class="col-5">
-                                                        <div class="input-group sm-1"><label for="Mat3Name" class="input-group-text">Hopper 3</label><select class="form-select" type="text" list="materialNames" name="selected3Mat" id="Mat3Name"></select></div>
+                                                        <div class="input-group sm-1"><label for="Mat3Name" class="input-group-text">Hopper 3</label><select class="form-select" type="text" list="materialNames" name="Mat3Name" id="Mat3Name"></select></div>
                                                     </div>
                                                     <div class="col-2">
-                                                        <input class="form-control" type="number" step="0.001" name="hop3" id="hop3Lbs" tabindex="8" oninput="validateDecimalInput(event)">
+                                                        <input class="form-control" type="number" step="0.001" name="hop3Lbs" id="hop3Lbs" tabindex="8" oninput="validateDecimalInput(event)">
                                                     </div>
                                                     <div class="col-2">
-                                                        <div class="input-group sm-1"><input class="form-control" type="number" name="hop3LbsDaily" id="dHop3" readonly></div>
+                                                        <div class="input-group sm-1"><input class="form-control" type="number" name="dHop3" id="dHop3" readonly></div>
                                                     </div>
                                                     <div class="col-2">
-                                                        <div class="input-group sm-1"><input class="form-control" type="number" name="hop3Percent" id="dHop3p" readonly></div>
+                                                        <div class="input-group sm-1"><input class="form-control" type="number" name="dHop3p" id="dHop3p" readonly></div>
                                                     </div>
                                                 </div>
                                                 <!-- Hopper 4 row -->
@@ -143,19 +144,19 @@
                                                     <div class="col-5">
                                                         <div class="input-group sm-1">
                                                             <label for="Mat4Name" class="input-group-text">Hopper 4</label>
-                                                            <select class="form-select" type="text" list="materialNames" name="selected4Mat" id="Mat4Name"></select>
+                                                            <select class="form-select" type="text" list="materialNames" name="Mat4Name" id="Mat4Name"></select>
                                                         </div>
                                                     </div>
                                                     <div class="col-2">
-                                                        <input class="form-control" type="number" step="0.001" name="hop4" id="hop4Lbs" tabindex="9" oninput="validateDecimalInput(event)">
+                                                        <input class="form-control" type="number" step="0.001" name="hop4Lbs" id="hop4Lbs" tabindex="9" oninput="validateDecimalInput(event)">
                                                     </div>
                                                     <div class="col-2">
                                                         <div class="input-group sm-1">
-                                                            <input class="form-control" type="number" name="hop4LbsDaily" id="dHop4" readonly>
+                                                            <input class="form-control" type="number" name="dHop4" id="dHop4" readonly>
                                                         </div>
                                                     </div>
                                                     <div class="col-2">
-                                                        <div class="input-group sm-1"><input class="form-control" type="number" name="hop4Percent" id="dHop4p" readonly></div>
+                                                        <div class="input-group sm-1"><input class="form-control" type="number" name="dHop4p" id="dHop4p" readonly></div>
                                                     </div>
                                                 </div>
                                                 <!-- Totals row -->
@@ -192,12 +193,12 @@
                                         <div class="col">
                                             <div class="input-group sm-1">
                                                 <label for="bigDryerTemp" class="input-group-text" style="font-size: .75rem">Big Dryer</label>
-                                                <input class="form-control" style="font-size: .75rem" type="number" tabindex="10" min="70" max="240" name="bigDryerTemp" id="bigDryerTemp">
-                                                <input class="form-control" style="font-size: .75rem" type="number" tabindex="11" min="-60" max="0" name="bigDryerDew" id="">
+                                                <input class="form-control" style="font-size: .75rem" type="number" tabindex="10" min="70" max="240" name="bigDryerTemp" id="bigDryerTemp" required>
+                                                <input class="form-control" style="font-size: .75rem" type="number" tabindex="11" min="-60" max="0" name="bigDryerDew" id="bigDryerDew" required>
                                             </div>
                                         </div>
                                         <div class="col">
-                                            <div class="input-group sm"><label for="PressCounter" class="input-group-text">Press Counter</label><input class="form-control form-control-sm" tabindex="14" type="number" name="pressCount" id="PressCounter"></div>
+                                            <div class="input-group sm"><label for="PressCounter" class="input-group-text">Press Counter</label><input class="form-control form-control-sm" tabindex="14" type="number" name="pressCounter" id="pessCounter" required></div>
                                         </div>
                                     </div>
                                     <div class="row row-cols-2">
@@ -209,7 +210,7 @@
                                             </div>
                                         </div>
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="PressRejects" class="input-group-text" style="font-size: .75rem">Press Rejects</label><input class="form-control form-control-sm" style="font-size: .75rem" tabindex="15" type="number" name="rejects" id="PressRejects"></div>
+                                            <div class="input-group sm-1"><label for="PressRejects" class="input-group-text" style="font-size: .75rem">Start Up Rejects</label><input class="form-control form-control-sm" style="font-size: .75rem" tabindex="15" type="number" name="startUpRejects" id="startUpRejects" required></div>
                                         </div>
                                     </div>
                                 </div>
@@ -225,10 +226,10 @@
                                 <div class="card-body">
                                     <div class="row row-cols-2 pb-1">
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="Chiller" class="input-group-text">Chiller</label><input class="form-control" tabindex="16" type="number" name="chillerTemp" id="Chiller"></div>
+                                            <div class="input-group sm-1"><label for="Chiller" class="input-group-text">Chiller</label><input class="form-control" tabindex="16" type="number" name="chiller" id="chiller" required></div>
                                         </div>
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="TCU" class="input-group-text">TCU</label><input class="form-control" tabindex="17" type="number" name="tcuTemp" id="TCU"></div>
+                                            <div class="input-group sm-1"><label for="TCU" class="input-group-text">TCU</label><input class="form-control" tabindex="17" type="number" name="tcuTemp" id="tcuTemp" required></div>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -238,43 +239,43 @@
                                     </div>
                                     <div class="row row-cols-3 pb-1">
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="T1" class="input-group-text">T1</label><input class="form-control" maxlength="3" tabindex="18" type="number" name="t1Temp" id="T1"></div>
+                                            <div class="input-group sm-1"><label for="t1" class="input-group-text">T1</label><input class="form-control" maxlength="3" tabindex="18" type="number" name="t1" id="t1" required></div>
                                         </div>
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="M1" class="input-group-text">M1</label><input class="form-control" maxlength="3" type="number" tabindex="22" name="m1Temp" id="M1"></div>
+                                            <div class="input-group sm-1"><label for="M1" class="input-group-text">M1</label><input class="form-control" maxlength="3" type="number" tabindex="22" name="m1" id="m1"></div>
                                         </div>
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="M5" class="input-group-text">M5</label><input class="form-control" maxlength="3" type="number" tabindex="26" name="m5Temp" id="M5"></div>
-                                        </div>
-                                    </div>
-                                    <div class="row row-cols-3 pb-1">
-                                        <div class="col">
-                                            <div class="input-group sm-1"><label for="T2" class="input-group-text">T2</label><input class="form-control" maxlength="3" tabindex="19" type="number" name="t2Temp" id="T2"></div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="input-group sm-1"><label for="M2" class="input-group-text">M2</label><input class="form-control" maxlength="3" tabindex="23" type="number" name="m2Temp" id="M2"></div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="input-group sm-1"><label for="M6" class="input-group-text">M6</label><input class="form-control" maxlength="3" type="number" tabindex="27" name="m6Temp" id="M6"></div>
+                                            <div class="input-group sm-1"><label for="M5" class="input-group-text">M5</label><input class="form-control" maxlength="3" type="number" tabindex="26" name="m5" id="m5"></div>
                                         </div>
                                     </div>
                                     <div class="row row-cols-3 pb-1">
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="T3" class="input-group-text">T3</label><input class="form-control" maxlength="3" tabindex="20" type="number" name="t3Temp" id="T3"></div>
+                                            <div class="input-group sm-1"><label for="T2" class="input-group-text">T2</label><input class="form-control" maxlength="3" tabindex="19" type="number" name="t2" id="t2"></div>
                                         </div>
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="M3" class="input-group-text">M3</label><input class="form-control" type="number" maxlength="3" tabindex="24" name="m3Temp" id="M3"></div>
+                                            <div class="input-group sm-1"><label for="M2" class="input-group-text">M2</label><input class="form-control" maxlength="3" tabindex="23" type="number" name="m2" id="m2"></div>
                                         </div>
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="M7" class="input-group-text">M7</label><input class="form-control" type="number" maxlength="3" tabindex="28" name="m7Temp" id="M7"></div>
+                                            <div class="input-group sm-1"><label for="M6" class="input-group-text">M6</label><input class="form-control" maxlength="3" type="number" tabindex="27" name="m6" id="m6"></div>
                                         </div>
                                     </div>
                                     <div class="row row-cols-3 pb-1">
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="T4" class="input-group-text">T4</label><input class="form-control" type="number" maxlength="3" tabindex="21" name="t4Temp" id="T4"></div>
+                                            <div class="input-group sm-1"><label for="T3" class="input-group-text">T3</label><input class="form-control" maxlength="3" tabindex="20" type="number" name="t3" id="t3"></div>
                                         </div>
                                         <div class="col">
-                                            <div class="input-group sm-1"><label for="M4" class="input-group-text">M4</label><input class="form-control" type="number" maxlength="3" tabindex="25" name="m4Temp" id="M4"></div>
+                                            <div class="input-group sm-1"><label for="M3" class="input-group-text">M3</label><input class="form-control" type="number" maxlength="3" tabindex="24" name="m3" id="m3"></div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="input-group sm-1"><label for="M7" class="input-group-text">M7</label><input class="form-control" type="number" maxlength="3" tabindex="28" name="m7" id="m7"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row row-cols-3 pb-1">
+                                        <div class="col">
+                                            <div class="input-group sm-1"><label for="T4" class="input-group-text">T4</label><input class="form-control" type="number" maxlength="3" tabindex="21" name="t4" id="t4"></div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="input-group sm-1"><label for="M4" class="input-group-text">M4</label><input class="form-control" type="number" maxlength="3" tabindex="25" name="m4" id="m4"></div>
                                         </div>
                                         <div class="col">
 
@@ -292,12 +293,12 @@
                             <div class="card">
                                 <div class="card-header">Comments</div>
                                 <div class="card-body">
-                                    <textarea class="form-control" id="commentText" rows="5"></textarea>
+                                    <textarea class="form-control" name="commentText"id="commentText" rows="5"></textarea>
                                 </div>
                             </div>
                             <div class="d-flex justify-content-center p-2">
                                 <div class=pe-1><button type="submit" id="cancel" data-bs-dismiss="modal" class="btn btn-danger btn-sm">Cancel</button></div>
-                                <button type="submit" id="addLog" class="btn btn-success btn-sm" onclick="sumbitForm()">Add Log</button>
+                                <button type="submit" id="add-log-btn" class="btn btn-success btn-sm">Add Log</button>
                             </div>
                         </div>
                     </form>
@@ -660,8 +661,6 @@
     
     
     
-    
-    
     <!-- Table to hold the last 4 weeks of production  -->
     <div class="container-fluid">
         <div class="mt-5">
@@ -717,7 +716,7 @@
     <script type="text/javascript" src="../resources/vendors/js/bootstrap.bundle.min.js"></script>
     <!-- My custom js -->
     <script type="text/javascript" src="../resources/js/main.js"></script>
-    <script type="text/javascript" src="../resources/js/productionLog.js"></script>
+    <!-- <script type="text/javascript" src="../resources/js/productionLog.js"></script>  -->
     <script type="text/javascript" src="../resources/js/prodLogSubmit.js"></script>
     <script type="text/javascript" src="../resources/js/qaRejects.js"></script>
     <script type="text/javascript" src="../resources/js/purge.js"></script>

@@ -70,7 +70,11 @@ document.addEventListener("DOMContentLoaded", function () {
               option.style.fontSize = "0.75rem"; ///change font size of dropdown
               select.appendChild(option);
             });
+
             fetchLast4Weeks();
+
+
+
           } else {
             console.warn(`Select element '${selectId}' not found.`);
           }
@@ -109,6 +113,8 @@ tbody.addEventListener("click", (e) => {
   }
 });
 
+
+
 const viewLog = async (id) => {
   //
   const data = await fetch(
@@ -117,6 +123,7 @@ const viewLog = async (id) => {
       method: "GET",
     }
   );
+
   const response = await data.json();
   //console.log("Fetched Data for logID:", response); // Debugging outp
   //console.log("Available Data Keys:", Object.keys(response));
@@ -190,6 +197,9 @@ const viewLog = async (id) => {
   }
 };
 
+const addLog = async () =>{
+
+}
 const getLog = async (id) => {
   const data = await fetch(
     `../src/Classes/productionActions.php?previous=1&id=${id}`,
