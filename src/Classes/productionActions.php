@@ -12,28 +12,26 @@ $db = new productionDB;
 $util = new Util;
 
 //Handles Ajax request from qaRejects.js
-if(isset($_POST['qaRejects'])){
+if (isset($_POST['qaRejects'])) {
     $productID = $util->testInput($_POST['qaPart']);
     $prodDate = $util->testInput($_POST['qaLogDate']);
     $rejects = $util->testInput($_POST['rejects']);
     $comments = $util->testInput($_POST['qaComments']);
-    if($db->insertQaRejects($productID,$prodDate,$rejects,$comments))
-    {
-        echo $util->showMessage('success','QA Rejects of been added!');
-    }else{
+    if ($db->insertQaRejects($productID, $prodDate, $rejects, $comments)) {
+        echo $util->showMessage('success', 'QA Rejects of been added!');
+    } else {
         echo $util->showMessage('danger', 'QA Rejects were not added!');
     }
 }
 
-if(isset($_POST['purge'])){
+if (isset($_POST['purge'])) {
     $productID = $util->testInput($_POST['p_Part']);
     $prodDate = $util->testInput($_POST['p_LogDate']);
     $purge = $util->testInput($_POST['p_purge']);
-    
-    if($db->addPurge($productID,$prodDate,$purge))
-    {
-        echo $util->showMessage('success','Purge added to production log!');
-    }else{
+
+    if ($db->addPurge($productID, $prodDate, $purge)) {
+        echo $util->showMessage('success', 'Purge added to production log!');
+    } else {
         echo $util->showMessage('danger', 'Purge was not added ot production log!');
     }
 }
@@ -41,13 +39,15 @@ if(isset($_POST['purge'])){
 //Handles Ajax call to add production log
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $data = json_decode(file_get_contents("php://input"), true);
-    
+
     if (isset($data["action"]) && $data["action"] === "addLog") {
-        if (isset($data["prodLogData"]) && isset($data["prodLogData"])&& isset($data["tempData"])) {
-            if($db->insertProdLog($data["prodLogData"],$data["materialData"], $data["tempData"]))
-            {
-                echo $util->showMessage('success','Production, material and temp logs added!');
-            }else{
+
+        if (isset($data["prodLogData"]) && isset($data["materialLogData"]) && isset($data["tempData"])) {
+            $result = $db->insertProdLog($data["prodLogData"], $data["materialData"], $data["tempData"]);
+
+            if ($result["success"]) {
+                echo $util->showMessage('success', 'Production, material and temp logs added!');
+            } else {
                 echo $util->showMessage('danger', 'Logs were not added nor updated!');
             }
         } else {
@@ -58,6 +58,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         echo "Unauthorized request!";
         http_response_code(403); // Forbidden status
     }
+}
+
+//Handle getting previous log for in progress log insert
+if (isset($_GET['getLastLog'])) {
+    $productID = $_GET['ProductID'];
+    $log = $db->getLastMaterialLogForRun($productID);
+
+    if (!$log) {
+        echo json_encode(["error" => "No last log found for productID {$productID} "]);
+    } else {
+        echo json_encode($log);
+    }
+    exit;
 }
 
 //Handle AJax read4wks call to fill table

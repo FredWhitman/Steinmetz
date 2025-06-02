@@ -1,15 +1,16 @@
 const addLogForm = document.getElementById("add-productionLog-form");
 //const showAlert = document.getElementById("showAlert");
-const addLogModal = new bootstrap.Modal(document.getElementById("addProductionModal"));
-
+const addLogModal = new bootstrap.Modal(
+  document.getElementById("addProductionModal")
+);
 
 //Function to total the lbs of material in hoppers 1-4 and display that value the Blender Total input
-document.addEventListener("DOMContentLoaded", function(){
+document.addEventListener("DOMContentLoaded", function () {
   const modal = document.getElementById("addProductionModal");
-  modal.addEventListener("shown.bs.modal",function(){
+  modal.addEventListener("shown.bs.modal", function () {
     addBlenderOnBlur(); //Call the addBlenderOnBlur function when modal is displayed.
-  })
-})
+  });
+});
 
 //add New User Ajax Request
 addLogForm.addEventListener("submit", async (e) => {
@@ -27,33 +28,33 @@ addLogForm.addEventListener("submit", async (e) => {
   } else {
     document.getElementById("add-log-btn").value = "Please Wait...";
     const logInfo = {
-      action:"addLog",
-      prodLogData:{
+      action: "addLog",
+      prodLogData: {
         productID: formData.get("partName"),
         prodDate: formData.get("logDate"),
         runStatus: formData.get("prodRun"),
-        prevProdLogID: '0',
-        runLogID: '0',
-        matLogID: '0',
-        tempLogID: '0',
+        prevProdLogID: "0",
+        runLogID: "0",
+        matLogID: "0",
+        tempLogID: "0",
         pressCounter: formData.get("pressCounter"),
         startUpRejects: formData.get("startUpRejects"),
-        purgeLbs: '0',
-        comments: formData.get("commentText")
+        purgeLbs: "0",
+        Comments: formData.get("commentText"),
       },
-      materialData:{
-          prodLogID: '0',
-          mat1: formData.get("Mat1Name"),
-          matused1: formData.get("hop1Lbs"),
-          mat2: formData.get("Mat2Name"),
-          matused2: formData.get("hop2Lbs"),
-          mat3: formData.get("Mat3Name"),
-          matused3: formData.get("hop3Lbs"),
-          mat4: formData.get("Mat4Name"),
-          matused4: formData.get("hop4Lbs")
+      materialData: {
+        prodLogID: "0",
+        mat1: formData.get("Mat1Name"),
+        matused1: formData.get("hop1Lbs"),
+        mat2: formData.get("Mat2Name"),
+        matused2: formData.get("hop2Lbs"),
+        mat3: formData.get("Mat3Name"),
+        matused3: formData.get("hop3Lbs"),
+        mat4: formData.get("Mat4Name"),
+        matused4: formData.get("hop4Lbs"),
       },
-      tempData:{
-        prodLogID: '0',
+      tempData: {
+        prodLogID: "0",
         bigDryerTemp: formData.get("bigDryerTemp"),
         bigDryerDew: formData.get("bigDryerDew"),
         pressDryerTemp: formData.get("pressDryerTemp"),
@@ -70,14 +71,14 @@ addLogForm.addEventListener("submit", async (e) => {
         m6: formData.get("m6"),
         m7: formData.get("m7"),
         chillerTemp: formData.get("chiller"),
-        moldTemp: formData.get("tcuTemp")
-      }
-    }
+        moldTemp: formData.get("tcuTemp"),
+      },
+    };
 
     const data = await fetch("../src/Classes/productionActions.php", {
       method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(logInfo) 
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(logInfo),
     });
 
     const response = await data.text();
@@ -86,12 +87,8 @@ addLogForm.addEventListener("submit", async (e) => {
     addLogForm.reset();
     addLogForm.classList.remove("was-validated");
     addLogModal.hide();
-    
   }
-
 });
-
-
 
 //Function to total the lbs of material in hoppers 1-4 and display that value the Blender Total input
 function addBlenderOnBlur() {
@@ -134,19 +131,49 @@ function addBlenderOnBlur() {
         " Part Name: " +
         partID +
         " Production Date: " +
-        prodDate.value
+        prodDate
     );
 
     switch (prodStatus) {
       case "0":
         console.log("In Progress:");
-        // get Production run id, use that to get previsou production log id. 
-        
+        // get Production run id, use that to get previsou production log id.
+        console.log("In Progress:");
+        let productID = document.getElementById("partName").value;
+        fetch(
+          `../src/classes/productionActions.php?getLastLog=1&productID=${productID}`
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Fetched Previous Log Data:", data); // Debugging output
 
+            if (!data || data.error) {
+              console.error("Error fetching previous log:", data.error);
+              return;
+            }
 
+            //subtract current hopper values from previous log and update dHop1 thru 4 values
+            let preMatUsed1 = Number(data.mat1Used) || 0;
+            let preMatUsed2 = Number(data.mat2Used) || 0;
+
+            // Populate hopper values with retrieved data
+            document.getElementById("dHop1").value = Number(data.mat1Used) || 0;
+            document.getElementById("dHop2").value = Number(data.mat2Used) || 0;
+            document.getElementById("dHop3").value = Number(data.mat3Used) || 0;
+            document.getElementById("dHop4").value = Number(data.mat4Used) || 0;
+
+            // Validate totals
+            let totalUsed =
+              Number(data.mat1Used) +
+              Number(data.mat2Used) +
+              Number(data.mat3Used) +
+              Number(data.mat4Used);
+            document.getElementById("dTotal").value = validateTotals(totalUsed);
+          })
+          .catch((error) => console.error("Error fetching last log:", error));
         break;
 
-      case "1":
+      case "1": //Start Production Run
         console.log("Start production run");
         doStartDailyUsage(
           Number(hop1.value),
@@ -177,12 +204,8 @@ function addBlenderOnBlur() {
         console.log("Daily Sum: " + dSum);
         break;
 
-      case "2":
+      case "2": //end Production Run
         console.log("End Production Run:");
-
-        break;
-
-      default:
         break;
     }
   });
@@ -266,17 +289,4 @@ function validateDecimalInput(event) {
   }
 }
 
-function getDailyUsage() {
-  const bigDryerTemp = document.getElementById("bigDryerTemp");
-
-  bigDryerTemp.addEventListener("", function () {
-    /* TODO: Check radio button for production status if start copy values from blender 
-                  and calculate percentage of each hopper.
-            TODO: Check radio button and if in progress pull last production record for this run
-                  and subtract these values from the current. Display new values and calculate percentages
-            TODO: Check radio button and if end pull last production record for the run and fill daily usage.
-                  Pull all production logs for entire production run and total all material consumed, number of pads produced and reject
-  
-          */
-  });
-}
+function getpreviousLog() {}
