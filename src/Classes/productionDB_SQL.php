@@ -236,7 +236,7 @@ class productionDB extends database
             $sql = 'SELECT * FROM materialLog WHERE logID = :prodLogID';
             $stmt = $this->con->prepare($sql);
             $stmt->execute([
-                'prodLog' => $prodLogID
+                'prodLogID' => $prodLogID,
             ]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             return $row;

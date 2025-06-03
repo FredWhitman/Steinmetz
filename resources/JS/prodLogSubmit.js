@@ -1,8 +1,6 @@
 const addLogForm = document.getElementById("add-productionLog-form");
 //const showAlert = document.getElementById("showAlert");
-const addLogModal = new bootstrap.Modal(
-  document.getElementById("addProductionModal")
-);
+const addLogModal = new bootstrap.Modal(document.getElementById("addProductionModal"));
 
 //Function to total the lbs of material in hoppers 1-4 and display that value the Blender Total input
 document.addEventListener("DOMContentLoaded", function () {
@@ -140,11 +138,10 @@ function addBlenderOnBlur() {
         // get Production run id, use that to get previsou production log id.
         console.log("In Progress:");
         let productID = document.getElementById("partName").value;
-        fetch(
-          `../src/classes/productionActions.php?getLastLog=1&productID=${productID}`
-        )
+        fetch(`../src/classes/productionActions.php?getLastLog=1&productID=${productID}`)
           .then((response) => response.json())
-          .then((data) => {
+          .then((data) => 
+          {
             console.log("Fetched Previous Log Data:", data); // Debugging output
 
             if (!data || data.error) {
@@ -153,22 +150,57 @@ function addBlenderOnBlur() {
             }
 
             //subtract current hopper values from previous log and update dHop1 thru 4 values
-            let preMatUsed1 = Number(data.mat1Used) || 0;
-            let preMatUsed2 = Number(data.mat2Used) || 0;
+            let preMatUsed1 = parseFloat(data.matUsed1) || 0;
+            let preMatUsed2 = parseFloat(data.matUsed2) || 0;
+            let preMatUsed3 = parseFloat(data.matUsed3) || 0;
+            let preMatUsed4 = parseFloat(data.matUsed4) || 0;
+            
+            let dailyHop1 = parseFloat(hop1.value) - parseFloat(preMatUsed1);
+            let dailyHop2 = parseFloat(hop2.value) - parseFloat(preMatUsed2);
+            let dailyHop3 = parseFloat(hop3.value) - parseFloat(preMatUsed3);
+            let dailyHop4 = parseFloat(hop4.value) - parseFloat(preMatUsed4);
 
             // Populate hopper values with retrieved data
-            document.getElementById("dHop1").value = Number(data.mat1Used) || 0;
-            document.getElementById("dHop2").value = Number(data.mat2Used) || 0;
-            document.getElementById("dHop3").value = Number(data.mat3Used) || 0;
-            document.getElementById("dHop4").value = Number(data.mat4Used) || 0;
+  /*           document.getElementById("dHop1").value = dailyHop1;
+            document.getElementById("dHop2").value = dailyHop2;
+            
+            document.getElementById("dHop3").value = (dailyHop3 === "NaN" )? 0:dailyHop3;
+            document.getElementById("dHop4").value = dailyHop4;
+
+            let dailyTotal = dailyHop1+dailyHop2+dailyHop3+dailyHop4;
+            document.getElementById("dTotal").value = dailyTotal; */
+                        
+            /* let pDHop1 = doPercentage(dailyTotal,dailyHop1);
+            let pDHop2 = doPercentage(dailyTotal,dailyHop2);
+            let pDHop3 = doPercentage(dailyTotal,dailyHop3);
+            let pDHop4 = doPercentage(dailyTotal,dailyHop4);
+            let pdTotal = pDHop1+pDHop2+pDHop3+pDHop4;
+ */
+            /* console.log("% H1: ", Number(pDHop1));
+            console.log("% H2: ", Number(pDHop2));
+            console.log("% H3: ", Number(pDHop3));
+            console.log("% H4: ", Number(pDHop4));
+            console.log("% Total: ", Number(pdTotal));
+            document.getElementById("dHop1p").value = pDHop1;
+            document.getElementById("dHop2p").value = pDHop2;
+            document.getElementById("dHop3p").value = pDHop3;
+            document.getElementById("dHop4p").value = pDHop4;
+            document.getElementById("dTotalp").value = pdTotal; */
+            
+            doStartDailyUsage(
+          Number(dailyHop1),
+          Number(dailyHop2),
+          Number(dailyHop3),
+          Number(dailyHop4)
+        );
 
             // Validate totals
-            let totalUsed =
+            /* let totalUsed =
               Number(data.mat1Used) +
               Number(data.mat2Used) +
               Number(data.mat3Used) +
               Number(data.mat4Used);
-            document.getElementById("dTotal").value = validateTotals(totalUsed);
+            document.getElementById("dTotal").value = validateTotals(totalUsed); */
           })
           .catch((error) => console.error("Error fetching last log:", error));
         break;

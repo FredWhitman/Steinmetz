@@ -1,9 +1,12 @@
 <?php
-/* header("Access-Control-Allow-Origin: *"); // Allows requests from any domain
-header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
 
-error_log("PHP Received Request: " . json_encode($_SERVER)); */
+header("Content-Type: application/json");
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST");
+error_reporting(E_ALL);
+ini_set('display_errors', 0); // Prevents PHP from printing errors in JSON response
+
+
 
 
 require_once 'productionDB_SQL.php';
@@ -62,7 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 //Handle getting previous log for in progress log insert
 if (isset($_GET['getLastLog'])) {
-    $productID = $_GET['ProductID'];
+    $productID = $_GET['productID'];
     $log = $db->getLastMaterialLogForRun($productID);
 
     if (!$log) {
