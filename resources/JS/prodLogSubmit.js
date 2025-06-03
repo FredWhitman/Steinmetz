@@ -1,6 +1,8 @@
 const addLogForm = document.getElementById("add-productionLog-form");
 //const showAlert = document.getElementById("showAlert");
-const addLogModal = new bootstrap.Modal(document.getElementById("addProductionModal"));
+const addLogModal = new bootstrap.Modal(
+  document.getElementById("addProductionModal")
+);
 
 //Function to total the lbs of material in hoppers 1-4 and display that value the Blender Total input
 document.addEventListener("DOMContentLoaded", function () {
@@ -132,16 +134,18 @@ function addBlenderOnBlur() {
         prodDate
     );
 
+    /* Check prodStatus and either copy hopper data to daily hopper data or pull previous log
+    and substract current material info from previous log and add to daily usage */
     switch (prodStatus) {
       case "0":
         console.log("In Progress:");
         // get Production run id, use that to get previsou production log id.
-        console.log("In Progress:");
         let productID = document.getElementById("partName").value;
-        fetch(`../src/classes/productionActions.php?getLastLog=1&productID=${productID}`)
+        fetch(
+          `../src/classes/productionActions.php?getLastLog=1&productID=${productID}`
+        )
           .then((response) => response.json())
-          .then((data) => 
-          {
+          .then((data) => {
             console.log("Fetched Previous Log Data:", data); // Debugging output
 
             if (!data || data.error) {
@@ -154,13 +158,22 @@ function addBlenderOnBlur() {
             let preMatUsed2 = parseFloat(data.matUsed2) || 0;
             let preMatUsed3 = parseFloat(data.matUsed3) || 0;
             let preMatUsed4 = parseFloat(data.matUsed4) || 0;
-            
-            let dailyHop1 = parseFloat(hop1.value) - parseFloat(preMatUsed1);
-            let dailyHop2 = parseFloat(hop2.value) - parseFloat(preMatUsed2);
-            let dailyHop3 = parseFloat(hop3.value) - parseFloat(preMatUsed3);
-            let dailyHop4 = parseFloat(hop4.value) - parseFloat(preMatUsed4);
-           
-            doStartDailyUsage(Number(dailyHop1),Number(dailyHop2),Number(dailyHop3),Number(dailyHop4));
+
+            let dailyHop1 =
+              parseFloat(hop1.value) - parseFloat(preMatUsed1).toFixed(3);
+            let dailyHop2 =
+              parseFloat(hop2.value) - parseFloat(preMatUsed2).toFixed(3);
+            let dailyHop3 =
+              parseFloat(hop3.value) - parseFloat(preMatUsed3).toFixed(3);
+            let dailyHop4 =
+              parseFloat(hop4.value) - parseFloat(preMatUsed4).toFixed(3);
+
+            doStartDailyUsage(
+              Number(dailyHop1),
+              Number(dailyHop2),
+              Number(dailyHop3),
+              Number(dailyHop4)
+            );
           })
           .catch((error) => console.error("Error fetching last log:", error));
         break;
@@ -198,11 +211,48 @@ function addBlenderOnBlur() {
 
       case "2": //end Production Run
         console.log("End Production Run:");
+
+        let partID = document.getElementById("partName").value;
+        fetch(
+          `../src/classes/productionActions.php?endRun=1&productID=${partID}`
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Fetched Previous Log Data:", data); // Debugging output
+
+            if (!data || data.error) {
+              console.error("Error fetching previous log:", data.error);
+              return;
+            }
+            //subtract current hopper values from previous log and update dHop1 thru 4 values
+            let preMatUsed1 = parseFloat(data.matUsed1) || 0;
+            let preMatUsed2 = parseFloat(data.matUsed2) || 0;
+            let preMatUsed3 = parseFloat(data.matUsed3) || 0;
+            let preMatUsed4 = parseFloat(data.matUsed4) || 0;
+
+            let dailyHop1 =
+              parseFloat(hop1.value) - parseFloat(preMatUsed1).toFixed(3);
+            let dailyHop2 =
+              parseFloat(hop2.value) - parseFloat(preMatUsed2).toFixed(3);
+            let dailyHop3 =
+              parseFloat(hop3.value) - parseFloat(preMatUsed3).toFixed(3);
+            let dailyHop4 =
+              parseFloat(hop4.value) - parseFloat(preMatUsed4).toFixed(3);
+
+            doStartDailyUsage(
+              Number(dailyHop1),
+              Number(dailyHop2),
+              Number(dailyHop3),
+              Number(dailyHop4)
+            );
+          })
+          .catch((error) => console.error("Error fetching last log:", error));
         break;
     }
   });
 }
 
+//fills daily Usage and Percentages
 function doStartDailyUsage(hop1, hop2, hop3, hop4) {
   console.log("Hopper values: " + hop1 + " " + hop2 + " " + hop3 + " " + hop4);
 
@@ -247,9 +297,10 @@ function doStartDailyUsage(hop1, hop2, hop3, hop4) {
     (Number(dH2p) || 0) +
     (Number(dH3p) || 0) +
     (Number(dH4p) || 0);
-  dtotalp.value = dSump;
+  dtotalp.value = dSump.toFixed(0);
 }
 
+//calculates and returns percentages
 function doPercentage(total, hop) {
   //take hop value and divide by total and then multiply by 100
 
@@ -280,5 +331,3 @@ function validateDecimalInput(event) {
     event.target.value = parseFloat(value).toFixed(3);
   }
 }
-
-function getpreviousLog() {}

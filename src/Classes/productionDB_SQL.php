@@ -217,11 +217,60 @@ class productionDB extends database
                 ':prodLogID' => $matLogID
             ]);
 
+            if ($prodData['runStatus'] === 'end') {
+                //Insert values into prodrunLog
+                $totals = $this->getMaterialTotals($prodRunID);
+                if (!$totals) throw new Exception('Failed to get production run totals from getMaterialTotals');
+
+                $sqlProdRunLogUpdate = "UPDATE prodrunlog SET endDate = :endDate, mat1Lbs = :mat1Lbs, mat2Lbs = :mat2Lbs, mat3Lbs = :mat3Lbs, mat4Lbs = :mat4Lbs, partsProduced = :produced, startUpRejects= :startUpRejects, qaRejects=:qaRejects,purgelbs = :purge, runComplete = 'yes' WHERE logID = :prodRunID";
+                $stmtProdlogUpdate = $this->con->prepare($sqlProdRunLogUpdate);
+                $result = $stmtProdlogUpdate->execute([
+                    ':endDate' => $totals['prodDate'],
+                    ':mat1Lbs' => $totals['total_matUsed1'],
+                    ':mat2Lbs' => $totals['total_matUsed2'],
+                    ':mat3Lbs' => $totals['total_matUsed3'],
+                    ':mat4Lbs' => $totals['total_matUsed4'],
+                    ':produced' => $totals['total_produced'],
+                    ':startUpRejects' => $totals['total_startUpRejects'],
+                    ':qaRejects' => $totals['total_qaRejects'],
+                    ':purge' => $totals['total_total_purgeLbs'],
+                    ':prodRunID' => $prodRunID
+                ]);
+                if (!$result) throw new Exception('Failed to update production run log.');
+            }
+
             $this->con->commit();
             return ["success" => true, "message" => "Transaction completed successlly.", "prodLogID" => $prodLogID];
         } catch (PDOException $e) {
             $this->con->rollBack();
             error_log('ERROR PDO TRANSACTION FAILED FOR insertProdLog: ' . $e->getMessage());
+        }
+    }
+
+    private function getMaterialTotals($prodRunID)
+    {
+        try {
+            $sqlGetTotals = "SELECT p.runLogID, p.prodDate, 
+                            SUM(m.matUsed1) AS total_matUsed1,
+                            SUM(m.matUsed2) AS total_matUsed2, 
+                            SUM(m.matUsed3) AS total_matUsed3, 
+                            SUM(m.matUsed4) AS total_matUsed4,
+                            SUM(p.pressCounter) AS total_produced,
+                            SUM(p.startUpRejects) AS total_startUpRejects,
+                            SUM(p.qaRejects) AS total_qaRejects,
+                            SUM(p.purgeLbs) AS total_purgeLbs
+                        FROM productionlogs p
+                        LEFT JOIN materialLog m ON p.logID = m.prodLogID
+                        WHERE p.runLogID = :prodRunID
+                        GROUP BY p.runLogID";
+
+            $stmtGetTotals = $this->con->prepare($sqlGetTotals);
+            $result = $stmtGetTotals->fetch(PDO::FETCH_ASSOC);
+
+            error_log("Retrived production totals for end of run and passed to insert function.");
+            return $result;
+        } catch (PDOException $e) {
+            error_log("ERROR: Failed to get production totals for end of run: " . $e->getMessage());
         }
     }
 

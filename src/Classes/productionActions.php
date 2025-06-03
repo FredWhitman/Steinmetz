@@ -76,6 +76,20 @@ if (isset($_GET['getLastLog'])) {
     exit;
 }
 
+
+if (isset($_GET['endRun'])) {
+    $productID = $GET['productID'];
+    $log = $db->getLastMaterialLogForRun($productID);
+
+    if (!$log) {
+        echo json_encode(["error" => "No last log found for productID {$productID} "]);
+    } else {
+        echo json_encode($log);
+    }
+    exit;
+}
+
+
 //Handle AJax read4wks call to fill table
 if (isset($_GET['read4wks'])) {
 
