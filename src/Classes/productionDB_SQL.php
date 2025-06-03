@@ -87,17 +87,22 @@ class productionDB extends database
             $stmtInsert->bindParam(":productID", $productID, PDO::PARAM_INT);
             $stmtInsert->bindParam(":rejects", $rejects, PDO::PARAM_INT);
             $stmtInsert->bindParam(":comments", $comments, PDO::PARAM_INT);
-            $stmtInsert->execute();
+            $InsertResult = $stmtInsert->execute();
 
             //Update productionLogs table
-
             $sqlUpdate = 'UPDATE productionlogs SET qaRejects =  qaRejects + :rejects WHERE logID = :prodLogID';
-            $stmtUpdate = $this->con->prepare($sqlUpdate);
-            $stmtUpdate->bindParam(":rejects", $rejects, PDO::PARAM_INT);
-            $stmtUpdate->bindParam(":prodLogID", $prodLogID, PDO::PARAM_INT);
-            $stmtUpdate->execute();
+            $stmtUpdateLog = $this->con->prepare($sqlUpdate);
+            $stmtUpdateLog->bindParam(":rejects", $rejects, PDO::PARAM_INT);
+            $stmtUpdateLog->bindParam(":prodLogID", $prodLogID, PDO::PARAM_INT);
+            $stmtUpdateLog->execute();
 
-            if ($stmtUpdate->rowCount() === 0) {
+            $sqlProductUpdate = "UPDATE productInventory SET partQty = partQty - :rejects WHERE productID = :productID";
+            $stmtInvUpdate = $this->con->prepare($sqlProductUpdate);
+            $stmtInvUpdate->bindParam('rejects', $rejects, PDO::PARAM_INT);
+            $stmtInvUpdate->bindParam('productID', $productID, PDO::PARAM_INT);
+            $stmtInvUpdate->execute();
+
+            if ($stmtUpdateLog->rowCount() === 0 && $InsertResult === true && $stmtInvUpdate->rowCount() === 0) {
                 $this->con->rollback();
                 error_log("Transaction Failed: QA Rejects were not added and productionlogs qarejects was not updated.");
                 return false;
@@ -110,6 +115,23 @@ class productionDB extends database
         } catch (PDOException $e) {
             $this->con->rollback();
             error_log("QA Rejects Transaction failed: " . $e->getMessage());
+        }
+    }
+
+    private function getProductInventory($productID)
+    {
+        try {
+            $sql = "SELECT productID, PartQty FROM productinvnentory WHERE productID = :productID";
+
+            $stmt = $this->con->prepare($sql);
+            $stmt->execute([
+                ':productID' => $productID
+            ]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            return $result;
+        } catch (PDOException $e) {
+            error_log("ERROR: Failed to get product inventory for {$productID}: " . $e->getMessage());
         }
     }
 
@@ -150,6 +172,7 @@ class productionDB extends database
         }
     }
 
+    public function AddLotChange() {}
     public function insertProdLog($prodData, $materialData, $tempData)
     {
         try {

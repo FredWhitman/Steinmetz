@@ -15,8 +15,11 @@
     <!-- Custom styles for this template -->
     <link href="../resources/vendors/css/dashboard.css" rel="stylesheet">
     <link href="../resources/css/myCSS.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://www.devwares.com/docs/contrast/javascript/sections/timepicker/">
+
 </head>
 <!--  -->
+
 <body>
     <!--Navbar -->
     <?php require_once '../includes/steinmetzNavbar.php'; ?>
@@ -293,7 +296,7 @@
                             <div class="card">
                                 <div class="card-header">Comments</div>
                                 <div class="card-body">
-                                    <textarea class="form-control" name="commentText"id="commentText" rows="5"></textarea>
+                                    <textarea class="form-control" name="commentText" id="commentText" rows="5"></textarea>
                                 </div>
                             </div>
                             <div class="d-flex justify-content-center p-2">
@@ -608,11 +611,11 @@
                         </div>
                         <div>
                             <label for="message-text" class="col-form-label">Comments</label>
-                            <textarea class="form-control" type="text" id="comment-text" name = "qaComments"></textarea>
+                            <textarea class="form-control" type="text" id="comment-text" name="qaComments"></textarea>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" value = "Add Rejects" class="btn btn-success" id="add-qaReject-btn">Add Rejects</button>
+                            <button type="submit" value="Add Rejects" class="btn btn-success" id="add-qaReject-btn">Add Rejects</button>
                         </div>
                     </form>
                 </div>
@@ -650,7 +653,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" value = "Add Purge" class="btn btn-success" id="add-purge-btn">Add Purge</button>
+                            <button type="submit" value="Add Purge" class="btn btn-success" id="add-purge-btn">Add Purge</button>
                         </div>
                     </form>
                 </div>
@@ -658,9 +661,65 @@
         </div>
     </div>
     <!-- Add purge to production log end -->
-    
-    
-    
+
+    <!-- Add Lot Changes to production log start-->
+    <div class="modal fade" id="addLotChangeModal" tabindex="-1" aria-labelledby="addLotChangeModal">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Lot Change</h1>
+                </div>
+                <div class="modal-body">
+                    <form id="add-lotchange-form" class="needs-validation p-2" novalidate>
+                        <div class="mb-3">
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="lcPartName">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="lcPartName" name="lcPart" required></select></div>
+                                    <div class="invalid-feedback">Part name is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="lcPartName">Material Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="lcMatName" name="lcMat" required></select></div>
+                                    <div class="invalid-feedback">Material is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="lcLotDate">Production Date</label><input class="form-control" type="date" tabindex="2" id="lclotDate" name="lcLotDate" required></div>
+                                    <div class="invalid-feedback">Production date is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="lcaTime">Time</label><input class="form-control" type="time" id="lclotTime" name="lcLotTime" value="09:00" required></div>
+                                    <div class="invalid-feedback">Change time is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="input-group sm-3"><label class="input-group-text" for="lcOldLot">Old Lot</label><input type="text" tabindex="1" class="form-control form-control-sm" id="lcOldLot" name="lcOldLot" required></div>
+                                <div class="invalid-feedback">Old lot number is required!</div>
+                            </div>
+                            <div class="row">
+                                <div class="input-group sm-3"><label class="input-group-text" for="lcNewLot">New Lot</label><input type="text" tabindex="1" class="form-control form-control-sm" id="lcNewLot" name="lcNewLot" required></div>
+                                <div class="invalid-feedback">New lot numger is required!</div>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="message-text" class="col-form-label">Comments</label>
+                            <textarea class="form-control" type="text" id="comment-text" name="lcComments"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" value="Add Lot Change" class="btn btn-success" id="add-lotchange-btn">Add Lot Change</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add Lot Changes to production log end-->
+
     <!-- Table to hold the last 4 weeks of production  -->
     <div class="container-fluid">
         <div class="mt-5">
@@ -670,6 +729,7 @@
                         <h4 class="text-primary">Production Data</h4>
                     </div>
                     <div>
+                        <button class="btn btn-primary" type="button" id="loadLotChangeForm" data-bs-toggle="modal" data-bs-target="#addLotChangeModal">Add Lot Change</button>
                         <button class="btn btn-primary" type="button" id="loadPurgeForm" data-bs-toggle="modal" data-bs-target="#addPurgeModal">Add Purge</button>
                         <button class="btn btn-primary" type="button" id="loadQARejectForm" data-bs-toggle="modal" data-bs-target="#addQARejectsModal">Add QA Rejects</button>
                         <button class="btn btn-primary" type="button" id="loadProdLogForm" data-bs-toggle="modal" data-bs-target="#addProductionModal">Add Production Log</button>
@@ -720,6 +780,7 @@
     <script type="text/javascript" src="../resources/js/prodLogSubmit.js"></script>
     <script type="text/javascript" src="../resources/js/qaRejects.js"></script>
     <script type="text/javascript" src="../resources/js/purge.js"></script>
+    <script type="text/javascript" src="../resources/js/lotChange.js"></script>
 </body>
 
 </html>

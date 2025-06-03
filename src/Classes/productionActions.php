@@ -144,3 +144,8 @@ if (isset($_GET['previous'])) {
     }
     exit;
 }
+
+//Handle Lot change AJAX requests from logChanges.js
+if (isset($_POST['lotChange'])) {
+    error_log("productionActions->lotChange triggered!");
+}
