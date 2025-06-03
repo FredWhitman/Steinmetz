@@ -159,48 +159,8 @@ function addBlenderOnBlur() {
             let dailyHop2 = parseFloat(hop2.value) - parseFloat(preMatUsed2);
             let dailyHop3 = parseFloat(hop3.value) - parseFloat(preMatUsed3);
             let dailyHop4 = parseFloat(hop4.value) - parseFloat(preMatUsed4);
-
-            // Populate hopper values with retrieved data
-  /*           document.getElementById("dHop1").value = dailyHop1;
-            document.getElementById("dHop2").value = dailyHop2;
-            
-            document.getElementById("dHop3").value = (dailyHop3 === "NaN" )? 0:dailyHop3;
-            document.getElementById("dHop4").value = dailyHop4;
-
-            let dailyTotal = dailyHop1+dailyHop2+dailyHop3+dailyHop4;
-            document.getElementById("dTotal").value = dailyTotal; */
-                        
-            /* let pDHop1 = doPercentage(dailyTotal,dailyHop1);
-            let pDHop2 = doPercentage(dailyTotal,dailyHop2);
-            let pDHop3 = doPercentage(dailyTotal,dailyHop3);
-            let pDHop4 = doPercentage(dailyTotal,dailyHop4);
-            let pdTotal = pDHop1+pDHop2+pDHop3+pDHop4;
- */
-            /* console.log("% H1: ", Number(pDHop1));
-            console.log("% H2: ", Number(pDHop2));
-            console.log("% H3: ", Number(pDHop3));
-            console.log("% H4: ", Number(pDHop4));
-            console.log("% Total: ", Number(pdTotal));
-            document.getElementById("dHop1p").value = pDHop1;
-            document.getElementById("dHop2p").value = pDHop2;
-            document.getElementById("dHop3p").value = pDHop3;
-            document.getElementById("dHop4p").value = pDHop4;
-            document.getElementById("dTotalp").value = pdTotal; */
-            
-            doStartDailyUsage(
-          Number(dailyHop1),
-          Number(dailyHop2),
-          Number(dailyHop3),
-          Number(dailyHop4)
-        );
-
-            // Validate totals
-            /* let totalUsed =
-              Number(data.mat1Used) +
-              Number(data.mat2Used) +
-              Number(data.mat3Used) +
-              Number(data.mat4Used);
-            document.getElementById("dTotal").value = validateTotals(totalUsed); */
+           
+            doStartDailyUsage(Number(dailyHop1),Number(dailyHop2),Number(dailyHop3),Number(dailyHop4));
           })
           .catch((error) => console.error("Error fetching last log:", error));
         break;
