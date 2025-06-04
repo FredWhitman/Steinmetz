@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
 addLogForm.addEventListener("submit", async (e) => {
   //prevent form from submitting data to DB
   e.preventDefault();
-
+  console.log("Production log submit button has been clicked!");
   const formData = new FormData(addLogForm);
   //formData.append("addLog", 1);
   //check to make sure the input fields are not empty
@@ -46,13 +46,13 @@ addLogForm.addEventListener("submit", async (e) => {
       materialData: {
         prodLogID: "0",
         mat1: formData.get("Mat1Name"),
-        matused1: formData.get("hop1Lbs"),
+        matUsed1: formData.get("hop1Lbs"),
         mat2: formData.get("Mat2Name"),
-        matused2: formData.get("hop2Lbs"),
+        matUsed2: formData.get("hop2Lbs"),
         mat3: formData.get("Mat3Name"),
-        matused3: formData.get("hop3Lbs"),
+        matUsed3: formData.get("hop3Lbs"),
         mat4: formData.get("Mat4Name"),
-        matused4: formData.get("hop4Lbs"),
+        matUsed4: formData.get("hop4Lbs"),
       },
       tempData: {
         prodLogID: "0",
@@ -75,12 +75,17 @@ addLogForm.addEventListener("submit", async (e) => {
         moldTemp: formData.get("tcuTemp"),
       },
     };
-
+    console.log(
+      "Arrays prodLogDat, materialData and tempdata have filled with form data."
+    );
     const data = await fetch("../src/Classes/productionActions.php", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(logInfo),
     });
+    console.log(
+      "JSON has been strigify(logInfo) and POSTED to productionActions.php"
+    );
 
     const response = await data.text();
     showAlert.innerHTML = response;

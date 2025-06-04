@@ -196,8 +196,8 @@
                                         <div class="col">
                                             <div class="input-group sm-1">
                                                 <label for="bigDryerTemp" class="input-group-text" style="font-size: .75rem">Big Dryer</label>
-                                                <input class="form-control" style="font-size: .75rem" type="number" tabindex="10" min="70" max="240" name="bigDryerTemp" id="bigDryerTemp" required>
-                                                <input class="form-control" style="font-size: .75rem" type="number" tabindex="11" min="-60" max="0" name="bigDryerDew" id="bigDryerDew" required>
+                                                <input class="form-control" style="font-size: .75rem" type="number" tabindex="10" min="0" max="240" name="bigDryerTemp" id="bigDryerTemp" required>
+                                                <input class="form-control" style="font-size: .75rem" type="number" tabindex="11" min="-60" name="bigDryerDew" id="bigDryerDew" required>
                                             </div>
                                         </div>
                                         <div class="col">
@@ -208,8 +208,8 @@
                                         <div class="col">
                                             <div class="input-group sm-1">
                                                 <label for="PressDryerTemp" class="input-group-text" style="font-size: .75rem">Press Dryer</label>
-                                                <input class="form-control" type="number" style="font-size: .75rem" name="pressDryerTemp" min="70" max="240" tabindex="12" id="PressDryerTemp">
-                                                <input class="form-control" style="font-size: .75rem" type="number" name="pressDryerDew" min="-60" max="0" tabindex="13" id="">
+                                                <input class="form-control" type="number" style="font-size: .75rem" name="pressDryerTemp" min="0" max="240" tabindex="12" id="PressDryerTemp">
+                                                <input class="form-control" style="font-size: .75rem" type="number" name="pressDryerDew" min="-60" tabindex="13" id="">
                                             </div>
                                         </div>
                                         <div class="col">
@@ -661,7 +661,7 @@
         </div>
     </div>
     <!-- Add purge to production log end -->
-
+    <!--------------------------------------------------------------------------------------------------------------->
     <!-- Add Lot Changes to production log start-->
     <div class="modal fade" id="addLotChangeModal" tabindex="-1" aria-labelledby="addLotChangeModal">
         <div class="modal-dialog modal-sm">

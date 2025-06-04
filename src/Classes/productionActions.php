@@ -65,15 +65,13 @@ if (isset($_GET['getLastLog'])) {
     $productID = $_GET['productID'];
     $log = $db->getLastMaterialLogForRun($productID);
 
-    if (!$log) {
+    if (!$log || empty($log)) {
         echo json_encode(["error" => "No last log found for productID {$productID} "]);
     } else {
         echo json_encode($log);
     }
     exit;
 }
-
-
 
 if (isset($_GET['endRun'])) {
     $productID = $GET['productID'];
