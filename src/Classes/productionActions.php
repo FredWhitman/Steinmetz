@@ -6,9 +6,6 @@ header("Access-Control-Allow-Methods: GET, POST");
 error_reporting(E_ALL);
 ini_set('display_errors', 0); // Prevents PHP from printing errors in JSON response
 
-
-
-
 require_once 'productionDB_SQL.php';
 require_once 'util.php';
 $db = new productionDB;
@@ -45,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if (isset($data["action"]) && $data["action"] === "addLog") {
 
-        if (isset($data["prodLogData"]) && isset($data["materialLogData"]) && isset($data["tempData"])) {
+        if (isset($data["prodLogData"]) && isset($data["materialData"]) && isset($data["tempData"])) {
             $result = $db->insertProdLog($data["prodLogData"], $data["materialData"], $data["tempData"]);
 
             if ($result["success"]) {
@@ -54,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 echo $util->showMessage('danger', 'Logs were not added nor updated!');
             }
         } else {
-            echo "Missing required data!";
+            echo "Missing required data! Failed to pass log data!";
             http_response_code(400);
         }
     } else {
@@ -77,6 +74,7 @@ if (isset($_GET['getLastLog'])) {
 }
 
 
+
 if (isset($_GET['endRun'])) {
     $productID = $GET['productID'];
     $log = $db->getLastMaterialLogForRun($productID);
@@ -88,7 +86,6 @@ if (isset($_GET['endRun'])) {
     }
     exit;
 }
-
 
 //Handle AJax read4wks call to fill table
 if (isset($_GET['read4wks'])) {

@@ -39,6 +39,7 @@ addLogForm.addEventListener("submit", async (e) => {
         tempLogID: "0",
         pressCounter: formData.get("pressCounter"),
         startUpRejects: formData.get("startUpRejects"),
+        qaRejects: "0",
         purgeLbs: "0",
         Comments: formData.get("commentText"),
       },
@@ -262,10 +263,10 @@ function doStartDailyUsage(hop1, hop2, hop3, hop4) {
   let dHop4 = document.getElementById("dHop4");
   let dTotal = document.getElementById("dTotal");
 
-  dHop1.value = hop1;
-  dHop2.value = hop2;
-  dHop3.value = hop3;
-  dHop4.value = hop4;
+  dHop1.value = hop1.toFixed(3);
+  dHop2.value = hop2.toFixed(3);
+  dHop3.value = hop3.toFixed(3);
+  dHop4.value = hop4.toFixed(3);
   let dSum =
     (Number(dHop1.value) || 0) +
     (Number(dHop2.value) || 0) +
