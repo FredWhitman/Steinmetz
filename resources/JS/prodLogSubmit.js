@@ -75,13 +75,13 @@ addLogForm.addEventListener("submit", async (e) => {
         moldTemp: formData.get("tcuTemp"),
       },
     };
-    
+
     const data = await fetch("../src/Classes/productionActions.php", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(logInfo),
     });
-    
+
     const response = await data.text();
     showAlert.innerHTML = response;
     document.getElementById("add-log-btn").value = "Add Log";
@@ -89,11 +89,10 @@ addLogForm.addEventListener("submit", async (e) => {
     addLogForm.classList.remove("was-validated");
     addLogModal.hide();
     //calling fetchLast4Weeks inside main.js
-    setTimeout(() =>{
+    setTimeout(() => {
       //console.log("Refreshing last 4 weeks data...");
       window.fetchLast4Weeks();
-    },500);
-
+    }, 500);
   }
 });
 
@@ -151,50 +150,77 @@ function addBlenderOnBlur() {
         fetch(
           `../src/classes/productionActions.php?getLastLog=1&productID=${productID}`
         )
-          .then(response => response.text())//Get raw data
-
-          /* .then((response) => response.json()) */
+          .then((response) => response.text()) //Get raw data
           .then((data) => {
             console.log("Raw reponse from server: ", data); // Debugging output
-            
+
+            //remove any leading numbers or invalid characters before parsing
+            const validJson = data.trim().replace(/^[^{]+/, "");
+
             try {
-              if(data.trim().startsWith("{")){
-                const jsonData = JSON.parse(data);
-              console.log("Parsed Json: ", jsonData);
-              }else{
-                 console.error("Invalid JSON format unexpected output before JSON")
+              const jsonData = JSON.parse(validJson);
+              console.log("Parsed JSON: ", jsonData);
+
+              if (!data || data.error) {
+                console.error("Error fetching previous log:", data.error);
+                return;
               }
-              
+
+              console.log("matUsed1 type: ", typeof jsonData.matUsed1);
+              console.log("matUsed1 value before parsing: ", jsonData.matUsed1);
+
+              //subtract current hopper values from previous log and update dHop1 thru 4 values
+              const preMatUsed1 =
+                jsonData.matUsed1 !== undefined
+                  ? parseFloat(jsonData.matUsed1)
+                  : null;
+              const preMatUsed2 =
+                jsonData.matUsed2 !== undefined
+                  ? parseFloat(jsonData.matUsed2)
+                  : null;
+              const preMatUsed3 =
+                jsonData.matUsed3 !== undefined
+                  ? parseFloat(jsonData.matUsed3)
+                  : null;
+              const preMatUsed4 =
+                jsonData.matUsed4 !== undefined
+                  ? parseFloat(jsonData.matUsed4)
+                  : null;
+
+              console.log(
+                "prodLogSubmit->addBlenderOnBur->hop4AddEvent->preMatUsed1 = : " +
+                  preMatUsed1
+              );
+              console.log(
+                "prodLogSubmit->addBlenderOnBur->hop4AddEvent->preMatUsed2 = : " +
+                  preMatUsed2
+              );
+              console.log(
+                "prodLogSubmit->addBlenderOnBur->hop4AddEvent->preMatUsed3 = : " +
+                  preMatUsed3
+              );
+              console.log(
+                "prodLogSubmit->addBlenderOnBur->hop4AddEvent->preMatUsed4 = : " +
+                  preMatUsed4
+              );
+
+              let dailyHop1 = parseFloat(hop1.value) - parseFloat(preMatUsed1);
+              let dailyHop2 = parseFloat(hop2.value) - parseFloat(preMatUsed2);
+              let dailyHop3 = parseFloat(hop3.value) - parseFloat(preMatUsed3);
+              let dailyHop4 = parseFloat(hop4.value) - parseFloat(preMatUsed4);
+
+              doStartDailyUsage(
+                Number(dailyHop1),
+                Number(dailyHop2),
+                Number(dailyHop3),
+                Number(dailyHop4)
+              );
             } catch (error) {
-             console.error("Invalid JSON format response: ", data.error);
+              console.error(
+                "prodLogSumbit->Invalid JSON format response:",
+                error
+              );
             }
-            
-            if (!data || data.error) {
-              console.error("Error fetching previous log:", data.error);
-              return;
-            }
-
-            //subtract current hopper values from previous log and update dHop1 thru 4 values
-            let preMatUsed1 = parseFloat(data.matUsed1) || 0;
-            let preMatUsed2 = parseFloat(data.matUsed2) || 0;
-            let preMatUsed3 = parseFloat(data.matUsed3) || 0;
-            let preMatUsed4 = parseFloat(data.matUsed4) || 0;
-
-            let dailyHop1 =
-              parseFloat(hop1.value) - parseFloat(preMatUsed1);
-            let dailyHop2 =
-              parseFloat(hop2.value) - parseFloat(preMatUsed2);
-            let dailyHop3 =
-              parseFloat(hop3.value) - parseFloat(preMatUsed3);
-            let dailyHop4 =
-              parseFloat(hop4.value) - parseFloat(preMatUsed4);
-
-            doStartDailyUsage(
-              Number(dailyHop1),
-              Number(dailyHop2),
-              Number(dailyHop3),
-              Number(dailyHop4)
-            );
           })
           .catch((error) => console.error("Error fetching last log:", error));
         break;
@@ -245,6 +271,7 @@ function addBlenderOnBlur() {
               console.error("Error fetching previous log:", data.error);
               return;
             }
+
             //subtract current hopper values from previous log and update dHop1 thru 4 values
             let preMatUsed1 = parseFloat(data.matUsed1) || 0;
             let preMatUsed2 = parseFloat(data.matUsed2) || 0;

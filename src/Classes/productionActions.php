@@ -1,7 +1,6 @@
 <?php
 
 header("Content-Type: application/json");
-ob_start(); 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST");
 
@@ -64,11 +63,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 //Handle getting previous log for in progress log insert
 if (isset($_GET['getLastLog'])) {
-    error_log('productionActions->$_GET[productID] = ' .$_GET['productID']);
+    error_log('productionActions->$_GET[productID] = ' . $_GET['productID']);
     $productID = $_GET['productID'];
+
+    header('Content-Type: application/json'); // Set proper header
     ob_clean(); //removes any accidental ouput
+
     $log = $db->getLastMaterialLogForRun($_GET['productID']);
-        
+
     if (!$log || empty($log)) {
         echo json_encode(["error" => "No last log found for productID {$productID} "]);
     } else {
