@@ -151,10 +151,24 @@ function addBlenderOnBlur() {
         fetch(
           `../src/classes/productionActions.php?getLastLog=1&productID=${productID}`
         )
-          .then((response) => response.json())
-          .then((data) => {
-            console.log("Fetched Previous Log Data:", data); // Debugging output
+          .then(response => response.text())//Get raw data
 
+          /* .then((response) => response.json()) */
+          .then((data) => {
+            console.log("Raw reponse from server: ", data); // Debugging output
+            
+            try {
+              if(data.trim().startsWith("{")){
+                const jsonData = JSON.parse(data);
+              console.log("Parsed Json: ", jsonData);
+              }else{
+                 console.error("Invalid JSON format unexpected output before JSON")
+              }
+              
+            } catch (error) {
+             console.error("Invalid JSON format response: ", data.error);
+            }
+            
             if (!data || data.error) {
               console.error("Error fetching previous log:", data.error);
               return;

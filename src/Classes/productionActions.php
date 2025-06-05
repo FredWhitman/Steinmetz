@@ -1,9 +1,11 @@
 <?php
 
 header("Content-Type: application/json");
+ob_start(); 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST");
-error_reporting(E_ALL);
+
+error_reporting(0);
 ini_set('display_errors', 0); // Prevents PHP from printing errors in JSON response
 
 require_once 'productionDB_SQL.php';
@@ -64,15 +66,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 if (isset($_GET['getLastLog'])) {
     error_log('productionActions->$_GET[productID] = ' .$_GET['productID']);
     $productID = $_GET['productID'];
-    $log = $db->getLastMaterialLogForRun($productID);
-    error_log('productionActions->$log: ' . print_r($log));
-    
+    ob_clean(); //removes any accidental ouput
+    $log = $db->getLastMaterialLogForRun($_GET['productID']);
+        
     if (!$log || empty($log)) {
         echo json_encode(["error" => "No last log found for productID {$productID} "]);
     } else {
         echo json_encode($log);
     }
-    exit;
+    exit();
 }
 
 if (isset($_GET['endRun'])) {

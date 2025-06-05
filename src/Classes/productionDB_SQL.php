@@ -372,9 +372,10 @@ class productionDB extends database
             $stmt = $this->con->prepare($sql);
             $stmt->bindParam(':prodLogID', $prodLogID ,  PDO::PARAM_STR);
             $stmt->execute();
+             $rowCount = $stmt->rowCount();
+            error_log('getLastMaterialLogForRun->row.rowcount: ' . print_r($rowCount));
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            error_log('getLastMaterialLogForRun->row: ' . print_r($row));
+           
 
             if (!$row) {
                 error_log("No matching row found for prodLogID: " . $prodLogID);
