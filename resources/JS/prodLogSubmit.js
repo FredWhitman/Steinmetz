@@ -75,24 +75,25 @@ addLogForm.addEventListener("submit", async (e) => {
         moldTemp: formData.get("tcuTemp"),
       },
     };
-    console.log(
-      "Arrays prodLogDat, materialData and tempdata have filled with form data."
-    );
+    
     const data = await fetch("../src/Classes/productionActions.php", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(logInfo),
     });
-    console.log(
-      "JSON has been strigify(logInfo) and POSTED to productionActions.php"
-    );
-
+    
     const response = await data.text();
     showAlert.innerHTML = response;
     document.getElementById("add-log-btn").value = "Add Log";
     addLogForm.reset();
     addLogForm.classList.remove("was-validated");
     addLogModal.hide();
+    //calling fetchLast4Weeks inside main.js
+    setTimeout(() =>{
+      //console.log("Refreshing last 4 weeks data...");
+      window.fetchLast4Weeks();
+    },500);
+
   }
 });
 
@@ -166,13 +167,13 @@ function addBlenderOnBlur() {
             let preMatUsed4 = parseFloat(data.matUsed4) || 0;
 
             let dailyHop1 =
-              parseFloat(hop1.value) - parseFloat(preMatUsed1).toFixed(3);
+              parseFloat(hop1.value) - parseFloat(preMatUsed1);
             let dailyHop2 =
-              parseFloat(hop2.value) - parseFloat(preMatUsed2).toFixed(3);
+              parseFloat(hop2.value) - parseFloat(preMatUsed2);
             let dailyHop3 =
-              parseFloat(hop3.value) - parseFloat(preMatUsed3).toFixed(3);
+              parseFloat(hop3.value) - parseFloat(preMatUsed3);
             let dailyHop4 =
-              parseFloat(hop4.value) - parseFloat(preMatUsed4).toFixed(3);
+              parseFloat(hop4.value) - parseFloat(preMatUsed4);
 
             doStartDailyUsage(
               Number(dailyHop1),

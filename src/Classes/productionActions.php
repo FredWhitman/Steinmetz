@@ -62,9 +62,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 //Handle getting previous log for in progress log insert
 if (isset($_GET['getLastLog'])) {
+    error_log('productionActions->$_GET[productID] = ' .$_GET['productID']);
     $productID = $_GET['productID'];
     $log = $db->getLastMaterialLogForRun($productID);
-
+    error_log('productionActions->$log: ' . print_r($log));
+    
     if (!$log || empty($log)) {
         echo json_encode(["error" => "No last log found for productID {$productID} "]);
     } else {
