@@ -258,7 +258,7 @@ class productionDB extends database
             $stmtInsertMatLog = $this->con->prepare($sqlInsertMaterialLog);
             $stmtInsertMatLog->execute($materialData);
             //error_log('Executing $stmtInsertMatLog Query: ' . $stmtInsertMatLog->queryString);
-            
+
             $matLogID = $this->con->query("SELECT LAST_INSERT_ID()")->fetchColumn();
 
             if (!$matLogID) throw new Exception("Failed to insert into materialLog or set matLogID.");
@@ -279,7 +279,7 @@ class productionDB extends database
 
             if (!$tempLogID) throw new Exception('Failed to insert tempLog.');
             ////////////////////////////INSERT TEMPLOG END/////////////////////////////////////////////
-            
+
             //update productionLog with $matLogID & tempLogID
             $sqlUpdateProdLog = "UPDATE productionlogs SET matLogID = :matLogID, tempLogID = :tempLogID WHERE logID = :prodLogID";
             $stmtUpdateProdLog = $this->con->prepare($sqlUpdateProdLog);
@@ -288,7 +288,7 @@ class productionDB extends database
                 ':tempLogID' => $tempLogID,
                 ':prodLogID' => $prodLogID
             ]);
-                        
+
             // check to see if this is the end of the production run and fetch material data for the run
             // and update prodrunlog with totals, end date and completed
             if ($prodData['runStatus'] === 'end') {
@@ -312,7 +312,7 @@ class productionDB extends database
                 ]);
                 if (!$result) throw new Exception('Failed to update production run log.');
             }
-            
+
             //Update product Inventory
             $partsToAdd = $prodData['pressCounter'] - $prodData['startUpRejects'];
             $sqlInventoryUpdate = 'UPDATE productInventory SET partQty = partQty - :partsToAdd WHERE productID = :productID';
@@ -321,7 +321,6 @@ class productionDB extends database
 
             $this->con->commit();
             return ["success" => true, "message" => "Transaction completed successlly.", "prodLogID" => $prodLogID];
-
         } catch (PDOException $e) {
             $this->con->rollBack();
             error_log('PDO Rollback');
@@ -362,24 +361,23 @@ class productionDB extends database
     {
         $prodRunID = $this->getProdRunID($productID);
 
-        error_log('getLastMaterialLogForRun->productID = '. $productID);
-        error_log('getLastMaterialLogForRun->prodRunID = '. $prodRunID);
+        error_log('getLastMaterialLogForRun->productID = ' . $productID);
+        error_log('getLastMaterialLogForRun->prodRunID = ' . $prodRunID);
 
         $prodLogID = $this->getPrevProdLog($prodRunID);
-        error_log('getLastMaterialLogForRun->prodLogID = '. $prodLogID);
+        error_log('getLastMaterialLogForRun->prodLogID = ' . $prodLogID);
         try {
             $sql = 'SELECT * FROM materialLog WHERE prodLogID = :prodLogID';
             $stmt = $this->con->prepare($sql);
-            $stmt->bindParam(':prodLogID', $prodLogID ,  PDO::PARAM_STR);
+            $stmt->bindParam(':prodLogID', $prodLogID,  PDO::PARAM_STR);
             $stmt->execute();
-             $rowCount = $stmt->rowCount();
-            error_log('getLastMaterialLogForRun->row.rowcount: ' . print_r($rowCount));
+            //$rowCount = $stmt->rowCount();
+            //error_log('getLastMaterialLogForRun->row.rowcount: ' . print_r($rowCount));
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-           
 
             if (!$row) {
                 error_log("No matching row found for prodLogID: " . $prodLogID);
-                return null; // Explicitly return null instead of 1
+                return []; // Explicitly return null instead of 1
             }
             return $row;
         } catch (PDOException $e) {

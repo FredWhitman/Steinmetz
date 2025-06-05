@@ -63,13 +63,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 //Handle getting previous log for in progress log insert
 if (isset($_GET['getLastLog'])) {
+    header('Content-Type: application/json'); // Set proper header
+    ob_clean(); //removes any accidental output
+    flush(); //Ensure buffered output gets sent immediately
+
     error_log('productionActions->$_GET[productID] = ' . $_GET['productID']);
     $productID = $_GET['productID'];
-
-    header('Content-Type: application/json'); // Set proper header
-    ob_clean(); //removes any accidental ouput
-
     $log = $db->getLastMaterialLogForRun($_GET['productID']);
+
+    error_log('Fetched log data: ' . json_encode($log));
 
     if (!$log || empty($log)) {
         echo json_encode(["error" => "No last log found for productID {$productID} "]);
@@ -81,14 +83,17 @@ if (isset($_GET['getLastLog'])) {
 
 if (isset($_GET['endRun'])) {
     $productID = $GET['productID'];
+    header('Content-Type: application/json'); // Set proper header
+    ob_clean(); //removes any accidental ouput
+    error_log('productionActions->$_GET[productID] = ' . $_GET['productID']);
     $log = $db->getLastMaterialLogForRun($productID);
 
-    if (!$log) {
+    if (!$log || empty($log)) {
         echo json_encode(["error" => "No last log found for productID {$productID} "]);
     } else {
         echo json_encode($log);
     }
-    exit;
+    exit();
 }
 
 //Handle AJax read4wks call to fill table
