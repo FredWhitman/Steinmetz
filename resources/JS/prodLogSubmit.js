@@ -131,7 +131,7 @@ function addBlenderOnBlur() {
       (Number(hop4.value) || 0);
     totalBlended.value = sum;
 
-    let prodDate = document.getElementById("logDate").value;
+    const prodDate = document.getElementById("logDate").value;
     console.log(
       "Production Run Status: " +
         prodStatus +
@@ -160,12 +160,14 @@ function addBlenderOnBlur() {
         break;
       case "1": //Start Production Run
         console.log("Start production run");
+
         doStartDailyUsage(
           Number(hop1.value),
           Number(hop2.value),
           Number(hop3.value),
           Number(hop4.value)
         );
+
         const dH1 = document.getElementById("dHop1").value;
         const dH2 = document.getElementById("dHop2").value;
         const dH3 = document.getElementById("dHop3").value;
@@ -202,24 +204,25 @@ function addBlenderOnBlur() {
     const preMatUsed2 = parseFloat(logData.matUsed2) || 0;
     const preMatUsed3 = parseFloat(logData.matUsed3) || 0;
     const preMatUsed4 = parseFloat(logData.matUsed4) || 0;
-
-    console.log(
-      `Updated values: preMatUsed1 = ${preMatUsed1}, preMatUsed2 = ${preMatUsed2}, preMatUsed3 = ${preMatUsed3}, preMatUsed4 = ${preMatUsed4}`
-    );
-
     //Calculate daily usage dynamically
     const dailyHop1 = parseFloat(hop1.value) - preMatUsed1;
     const dailyHop2 = parseFloat(hop1.value) - preMatUsed2;
     const dailyHop3 = parseFloat(hop1.value) - preMatUsed3;
     const dailyHop4 = parseFloat(hop1.value) - preMatUsed4;
 
-    doStartDailyUsage(
-      Number(dailyHop1),
-      Number(dailyHop2),
-      Number(dailyHop3),
-      Number(dailyHop4)
+    if(prodRun === 0 || prodRun === 2){
+      //in progress and end of run
+      getAndSetDailyUsage(hop1,hop2,hop3,hop4,prevHop1,prevHop4,prevHop4,prevHop4);    
+    }else{
+      //start
+      getAndSetDailyUsage(hop1,hop2,hop3,hop4,0,0,0,0)
+    }
+    
+    console.log(
+      `Updated values: preMatUsed1 = ${preMatUsed1}, preMatUsed2 = ${preMatUsed2}, preMatUsed3 = ${preMatUsed3}, preMatUsed4 = ${preMatUsed4}`
     );
   });
+
   /* // get Production run id, use that to get previsou production log id.
         fetch(
           `../src/classes/productionActions.php?getLastLog=1&productID=${productID}`
@@ -417,6 +420,38 @@ function addBlenderOnBlur() {
   }); */
 }
 
+function getAndSetDailyUsage(hop1,hop2,hop3,hop4,prevHop1,prevHop2,prevHop3,prevHop4 )
+{
+  let dHop1 = document.getElementById("dHop1");
+  let dHop2 = document.getElementById("dHop2");
+  let dHop3 = document.getElementById("dHop3");
+  let dHop4 = document.getElementById("dHop4");
+  let dTotal = document.getElementById("dTotal");
+  let dHop1p = document.getElementById("dHop1p");
+  let dHop2p = document.getElementById("dHop2p");
+  let dHop3p = document.getElementById("dHop3p");
+  let dHop4p = document.getElementById("dHop4p");
+  let dTotalp = document.getElementById("dTotalp");
+
+  let cHop1 = Number(hop1.value).toFixed(3);
+  let cHop2 = Number(hop2.value).toFixed(3);
+  let cHop3 = Number(hop3.value).toFixed(3);
+  let cHop4 = Number(hop4.value).toFixed(3);
+
+  dHop1.value = cHop1 - prevHop1;
+  dHop2.value = cHop2 - prevHop2;
+  dHop3.value = cHop3 - prevHop3;
+  dHop4.value = cHop4 - prevHop4;
+  dSum = dHop1+dHop2+dHop3+dHop4;
+  dTotal.value = dSum.toFixed(3);
+  
+  dHop1p.value = doPercentage(dSum,Number(dHop1.value));
+  dHop2p.value = doPercentage(dSum,Number(dHop2.value));
+  dHop3p.value = doPercentage(dSum,Number(dHop3.value));
+  dHop4p.value = doPercentage(dSum,Number(dHop4.value));
+  dTotalp.value = Number(dHop1p.value)+Number(dHop2p.value)+Number(dHop3p.value)+Number(dHop4p.value);
+}
+
 //function to get last materialLog for the prodRun
 function fetchPreviousMatLogs(actionType, productID) {
   return fetch(
@@ -449,7 +484,7 @@ function fetchPreviousMatLogs(actionType, productID) {
 }
 
 //fills daily Usage and Percentages
-function doStartDailyUsage(hop1, hop2, hop3, hop4) {
+function doStartDailyUsage(_hop1, _hop2, _hop3, _hop4) {
   console.log("Hopper values: " + hop1 + " " + hop2 + " " + hop3 + " " + hop4);
 
   let dHop1 = document.getElementById("dHop1");
