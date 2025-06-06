@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
             data.materials.forEach((item) => {
               //console.log(`Adding Option: ${item.MaterialName}`);
               let option = document.createElement("option");
-              option.value = item.MaterialPartNumber;
+              option.value = item.MaterialName;
               option.textContent = item.MaterialName;
               select.appendChild(option);
             });
@@ -72,9 +72,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             fetchLast4Weeks();
-
-
-
           } else {
             console.warn(`Select element '${selectId}' not found.`);
           }
@@ -84,19 +81,17 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-//Fetch last 4 weeks of production logs Ajax request 
-window.fetchLast4Weeks = async function() {
+//Fetch last 4 weeks of production logs Ajax request
+window.fetchLast4Weeks = async function () {
   //console.log("fetchLast4Weeks() is being called");
-  const data = await fetch('../src/classes/productionActions.php?read4wks=1', 
-    {
-      method: "GET",
-    });
+  const data = await fetch("../src/classes/productionActions.php?read4wks=1", {
+    method: "GET",
+  });
 
-    const response = await data.text();
-    //console.log("Fetched Data:", response); // Debugging output
-    document.getElementById("weeks").innerHTML = response;
-  };
-
+  const response = await data.text();
+  //console.log("Fetched Data:", response); // Debugging output
+  document.getElementById("weeks").innerHTML = response;
+};
 
 fetchLast4Weeks();
 
@@ -112,8 +107,6 @@ tbody.addEventListener("click", (e) => {
     viewLog(id);
   }
 });
-
-
 
 const viewLog = async (id) => {
   //
@@ -197,9 +190,7 @@ const viewLog = async (id) => {
   }
 };
 
-const addLog = async () =>{
-
-}
+const addLog = async () => {};
 const getLog = async (id) => {
   const data = await fetch(
     `../src/Classes/productionActions.php?previous=1&id=${id}`,

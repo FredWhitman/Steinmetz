@@ -156,39 +156,11 @@ function addBlenderOnBlur() {
           "Fetching materialLog data from previous log in production for end production log"
         );
         console.log("End production log!");
-        actionType = "endRun";
+        actionType = "getLastLog";
         break;
       case "1": //Start Production Run
         console.log("Start production run");
 
-        doStartDailyUsage(
-          Number(hop1.value),
-          Number(hop2.value),
-          Number(hop3.value),
-          Number(hop4.value)
-        );
-
-        const dH1 = document.getElementById("dHop1").value;
-        const dH2 = document.getElementById("dHop2").value;
-        const dH3 = document.getElementById("dHop3").value;
-        const dH4 = document.getElementById("dHop4").value;
-        const dT = document.getElementById("dTotal").value;
-        //set the value of a hidden inputbox for later use
-        const status = document.getElementById("prodStatus").value;
-        status.value = 1;
-
-        dH1.value = Number(hop1.value);
-        dH2.value = Number(hop2.value);
-        dH3.value = hop3.value;
-        dH4.value = hop4.value;
-        const dSum =
-          (Number(dH1.value) || 0) +
-          (Number(dH2.value) || 0) +
-          (Number(dH3.value) || 0) +
-          (Number(dH4.value) || 0);
-        dT.value = validateTotals(dSum);
-
-        console.log("Daily Sum: " + dSum);
         break;
     }
 
@@ -204,252 +176,87 @@ function addBlenderOnBlur() {
     const preMatUsed2 = parseFloat(logData.matUsed2) || 0;
     const preMatUsed3 = parseFloat(logData.matUsed3) || 0;
     const preMatUsed4 = parseFloat(logData.matUsed4) || 0;
-    //Calculate daily usage dynamically
+    /* //Calculate daily usage dynamically
     const dailyHop1 = parseFloat(hop1.value) - preMatUsed1;
     const dailyHop2 = parseFloat(hop1.value) - preMatUsed2;
     const dailyHop3 = parseFloat(hop1.value) - preMatUsed3;
-    const dailyHop4 = parseFloat(hop1.value) - preMatUsed4;
+    const dailyHop4 = parseFloat(hop1.value) - preMatUsed4; */
 
-    if(prodRun === 0 || prodRun === 2){
+    if (prodStatus === "0" || prodStatus === "2") {
       //in progress and end of run
-      getAndSetDailyUsage(hop1,hop2,hop3,hop4,prevHop1,prevHop4,prevHop4,prevHop4);    
-    }else{
+      console.log("In progress production run!: " + prodStatus);
+      getAndSetDailyUsage(
+        hop1,
+        hop2,
+        hop3,
+        hop4,
+        preMatUsed1,
+        preMatUsed2,
+        preMatUsed3,
+        preMatUsed4
+      );
+    } else {
       //start
-      getAndSetDailyUsage(hop1,hop2,hop3,hop4,0,0,0,0)
+      getAndSetDailyUsage(hop1, hop2, hop3, hop4, 0, 0, 0, 0);
     }
-    
+
     console.log(
       `Updated values: preMatUsed1 = ${preMatUsed1}, preMatUsed2 = ${preMatUsed2}, preMatUsed3 = ${preMatUsed3}, preMatUsed4 = ${preMatUsed4}`
     );
   });
-
-  /* // get Production run id, use that to get previsou production log id.
-        fetch(
-          `../src/classes/productionActions.php?getLastLog=1&productID=${productID}`
-        )
-          .then((response) => response.text()) //Get raw data
-          .then((data) => {
-            console.log("Raw reponse from server: ", data); // Debugging output
-
-            //remove any leading numbers or invalid characters before parsing
-            const validJson = data.trim().replace(/^[^{]+/, "");
-
-            try {
-              const jsonData = JSON.parse(validJson);
-              console.log("Parsed JSON: ", jsonData);
-
-              if (!data || data.error) {
-                console.error("Error fetching previous log:", data.error);
-                return;
-              }
-
-              console.log("matUsed1 type: ", typeof jsonData.matUsed1);
-              console.log("matUsed1 value before parsing: ", jsonData.matUsed1);
-
-              //subtract current hopper values from previous log and update dHop1 thru 4 values
-              const preMatUsed1 =
-                jsonData.matUsed1 !== undefined
-                  ? parseFloat(jsonData.matUsed1)
-                  : null;
-              const preMatUsed2 =
-                jsonData.matUsed2 !== undefined
-                  ? parseFloat(jsonData.matUsed2)
-                  : null;
-              const preMatUsed3 =
-                jsonData.matUsed3 !== undefined
-                  ? parseFloat(jsonData.matUsed3)
-                  : null;
-              const preMatUsed4 =
-                jsonData.matUsed4 !== undefined
-                  ? parseFloat(jsonData.matUsed4)
-                  : null;
-
-              console.log(
-                "prodLogSubmit->addBlenderOnBur->hop4AddEvent->preMatUsed1 = : " +
-                  preMatUsed1
-              );
-              console.log(
-                "prodLogSubmit->addBlenderOnBur->hop4AddEvent->preMatUsed2 = : " +
-                  preMatUsed2
-              );
-              console.log(
-                "prodLogSubmit->addBlenderOnBur->hop4AddEvent->preMatUsed3 = : " +
-                  preMatUsed3
-              );
-              console.log(
-                "prodLogSubmit->addBlenderOnBur->hop4AddEvent->preMatUsed4 = : " +
-                  preMatUsed4
-              );
-
-              let dailyHop1 = parseFloat(hop1.value) - parseFloat(preMatUsed1);
-              let dailyHop2 = parseFloat(hop2.value) - parseFloat(preMatUsed2);
-              let dailyHop3 = parseFloat(hop3.value) - parseFloat(preMatUsed3);
-              let dailyHop4 = parseFloat(hop4.value) - parseFloat(preMatUsed4);
-
-              doStartDailyUsage(
-                Number(dailyHop1),
-                Number(dailyHop2),
-                Number(dailyHop3),
-                Number(dailyHop4)
-              );
-            } catch (error) {
-              console.error(
-                "prodLogSumbit->Invalid JSON format response:",
-                error
-              );
-            }
-          })
-          .catch((error) => console.error("Error fetching last log:", error));
-        break; */
-
-  /* case "1": //Start Production Run
-        console.log("Start production run");
-        doStartDailyUsage(
-          Number(hop1.value),
-          Number(hop2.value),
-          Number(hop3.value),
-          Number(hop4.value)
-        );
-        const dH1 = document.getElementById("dHop1").value;
-        const dH2 = document.getElementById("dHop2").value;
-        const dH3 = document.getElementById("dHop3").value;
-        const dH4 = document.getElementById("dHop4").value;
-        const dT = document.getElementById("dTotal").value;
-        //set the value of a hidden inputbox for later use
-        const status = document.getElementById("prodStatus").value;
-        status.value = 1;
-
-        dH1.value = Number(hop1.value);
-        dH2.value = Number(hop2.value);
-        dH3.value = hop3.value;
-        dH4.value = hop4.value;
-        const dSum =
-          (Number(dH1.value) || 0) +
-          (Number(dH2.value) || 0) +
-          (Number(dH3.value) || 0) +
-          (Number(dH4.value) || 0);
-        dT.value = validateTotals(dSum);
-
-        console.log("Daily Sum: " + dSum);
-        break;
-
-      case "2": //end Production Run
-        console.log("End Production Run:");
-        console.log("prodLogSubmit->endRun->productID", productID);
-
-        //let productID = document.getElementById("partName").value;
-
-        fetch(
-          `../src/classes/productionActions.php?endRun=1&productID=${productID}`
-        )
-          .then((response) => response.text()) //Get raw data
-          .then((data) => {
-            console.log("Raw reponse from server: ", data); // Debugging output
-
-            //remove any leading numbers or invalid characters before parsing
-            const validJson = data.trim().replace(/^[^{]+/, "");
-
-            try {
-              const jsonData = JSON.parse(validJson);
-              console.log("Parsed JSON: ", jsonData);
-
-              if (!data || data.error) {
-                console.error("Error fetching previous log:", data.error);
-                return;
-              }
-
-              console.log("matUsed1 type: ", typeof jsonData.matUsed1);
-              console.log("matUsed1 value before parsing: ", jsonData.matUsed1);
-
-              //subtract current hopper values from previous log and update dHop1 thru 4 values
-              const preMatUsed1 =
-                jsonData.matUsed1 !== undefined
-                  ? parseFloat(jsonData.matUsed1)
-                  : null;
-              const preMatUsed2 =
-                jsonData.matUsed2 !== undefined
-                  ? parseFloat(jsonData.matUsed2)
-                  : null;
-              const preMatUsed3 =
-                jsonData.matUsed3 !== undefined
-                  ? parseFloat(jsonData.matUsed3)
-                  : null;
-              const preMatUsed4 =
-                jsonData.matUsed4 !== undefined
-                  ? parseFloat(jsonData.matUsed4)
-                  : null;
-
-              console.log(
-                "prodLogSubmit->addBlenderOnBur->hop4AddEvent->preMatUsed1 = : " +
-                  preMatUsed1
-              );
-              console.log(
-                "prodLogSubmit->addBlenderOnBur->hop4AddEvent->preMatUsed2 = : " +
-                  preMatUsed2
-              );
-              console.log(
-                "prodLogSubmit->addBlenderOnBur->hop4AddEvent->preMatUsed3 = : " +
-                  preMatUsed3
-              );
-              console.log(
-                "prodLogSubmit->addBlenderOnBur->hop4AddEvent->preMatUsed4 = : " +
-                  preMatUsed4
-              );
-
-              let dailyHop1 = parseFloat(hop1.value) - parseFloat(preMatUsed1);
-              let dailyHop2 = parseFloat(hop2.value) - parseFloat(preMatUsed2);
-              let dailyHop3 = parseFloat(hop3.value) - parseFloat(preMatUsed3);
-              let dailyHop4 = parseFloat(hop4.value) - parseFloat(preMatUsed4);
-
-              doStartDailyUsage(
-                Number(dailyHop1),
-                Number(dailyHop2),
-                Number(dailyHop3),
-                Number(dailyHop4)
-              );
-            } catch (error) {
-              console.error(
-                "prodLogSumbit->Invalid JSON format response:",
-                error
-              );
-            }
-          })
-          .catch((error) => console.error("Error fetching last log:", error));
-        break;
-    }
-  }); */
 }
 
-function getAndSetDailyUsage(hop1,hop2,hop3,hop4,prevHop1,prevHop2,prevHop3,prevHop4 )
-{
-  let dHop1 = document.getElementById("dHop1");
-  let dHop2 = document.getElementById("dHop2");
-  let dHop3 = document.getElementById("dHop3");
-  let dHop4 = document.getElementById("dHop4");
-  let dTotal = document.getElementById("dTotal");
-  let dHop1p = document.getElementById("dHop1p");
-  let dHop2p = document.getElementById("dHop2p");
-  let dHop3p = document.getElementById("dHop3p");
-  let dHop4p = document.getElementById("dHop4p");
-  let dTotalp = document.getElementById("dTotalp");
+function getAndSetDailyUsage(
+  hop1,
+  hop2,
+  hop3,
+  hop4,
+  prevHop1,
+  prevHop2,
+  prevHop3,
+  prevHop4
+) {
+  console.log("prodLogSubmit->getAndSetDailyUsage Called!");
+  //daily usage elements
+  const dHop1 = document.getElementById("dHop1");
+  const dHop2 = document.getElementById("dHop2");
+  const dHop3 = document.getElementById("dHop3");
+  const dHop4 = document.getElementById("dHop4");
+  const dTotal = document.getElementById("dTotal");
+  //daily precentage elements
+  const dHop1p = document.getElementById("dHop1p");
+  const dHop2p = document.getElementById("dHop2p");
+  const dHop3p = document.getElementById("dHop3p");
+  const dHop4p = document.getElementById("dHop4p");
+  const dTotalp = document.getElementById("dTotalp");
 
-  let cHop1 = Number(hop1.value).toFixed(3);
-  let cHop2 = Number(hop2.value).toFixed(3);
-  let cHop3 = Number(hop3.value).toFixed(3);
-  let cHop4 = Number(hop4.value).toFixed(3);
+  let cHop1 = parseFloat(hop1.value) || 0;
+  let cHop2 = parseFloat(hop2.value) || 0;
+  let cHop3 = parseFloat(hop3.value) || 0;
+  let cHop4 = parseFloat(hop4.value) || 0;
 
-  dHop1.value = cHop1 - prevHop1;
-  dHop2.value = cHop2 - prevHop2;
-  dHop3.value = cHop3 - prevHop3;
-  dHop4.value = cHop4 - prevHop4;
-  dSum = dHop1+dHop2+dHop3+dHop4;
+  dHop1.value = (cHop1 - prevHop1).toFixed(3);
+  dHop2.value = (cHop2 - prevHop2).toFixed(3);
+  dHop3.value = (cHop3 - prevHop3).toFixed(3);
+  dHop4.value = (cHop4 - prevHop4).toFixed(3);
+  dSum =
+    parseFloat(dHop1.value) +
+    parseFloat(dHop2.value) +
+    parseFloat(dHop3.value) +
+    parseFloat(dHop4.value);
   dTotal.value = dSum.toFixed(3);
-  
-  dHop1p.value = doPercentage(dSum,Number(dHop1.value));
-  dHop2p.value = doPercentage(dSum,Number(dHop2.value));
-  dHop3p.value = doPercentage(dSum,Number(dHop3.value));
-  dHop4p.value = doPercentage(dSum,Number(dHop4.value));
-  dTotalp.value = Number(dHop1p.value)+Number(dHop2p.value)+Number(dHop3p.value)+Number(dHop4p.value);
+
+  let hop1p = doPercentage(dSum, dHop1.value);
+  let hop2p = doPercentage(dSum, dHop2.value);
+  let hop3p = doPercentage(dSum, dHop3.value);
+  let hop4p = doPercentage(dSum, dHop4.value);
+
+  dHop1p.value = parseFloat(hop1p) || 0;
+  dHop2p.value = parseFloat(hop2p) || 0;
+  dHop3p.value = parseFloat(hop3p) || 0;
+  dHop4p.value = parseFloat(hop4p) || 0;
+
+  dTotalp.value = hop1p + hop2p + hop3p + hop4p;
 }
 
 //function to get last materialLog for the prodRun

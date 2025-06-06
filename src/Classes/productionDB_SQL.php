@@ -315,7 +315,7 @@ class productionDB extends database
 
             //Update product Inventory
             $partsToAdd = $prodData['pressCounter'] - $prodData['startUpRejects'];
-            $sqlInventoryUpdate = 'UPDATE productInventory SET partQty = partQty - :partsToAdd WHERE productID = :productID';
+            $sqlInventoryUpdate = 'UPDATE productInventory SET partQty = partQty + :partsToAdd WHERE productID = :productID';
             $stmtUpdateInventory = $this->con->prepare($sqlInventoryUpdate);
             $stmtUpdateInventory->execute(['partsToAdd' => $partsToAdd, 'productID' => $productID]);
 

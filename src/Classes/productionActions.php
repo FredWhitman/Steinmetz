@@ -67,7 +67,7 @@ if (isset($_GET['getLastLog'])) {
     ob_clean(); //removes any accidental output
     flush(); //Ensure buffered output gets sent immediately
 
-    error_log('productionActions->$_GET[productID] = ' . $_GET['productID']);
+    error_log('productionActions->$_GET[productID] =' . $_GET['productID']);
     $productID = $_GET['productID'];
     $log = $db->getLastMaterialLogForRun($_GET['productID']);
 
@@ -85,7 +85,7 @@ if (isset($_GET['endRun'])) {
     $productID = $GET['productID'];
     header('Content-Type: application/json'); // Set proper header
     ob_clean(); //removes any accidental ouput
-    error_log('productionActions->$_GET[productID] = ' . $_GET['productID']);
+    error_log('productionActions->$_GET[productID] =' . $_GET['productID']);
     $log = $db->getLastMaterialLogForRun($productID);
 
     if (!$log || empty($log)) {

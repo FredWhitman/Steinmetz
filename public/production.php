@@ -172,10 +172,10 @@
                                                         <input class="form-control" type="number" step="0.001" name="totalsBlender" id="BlenderTotals" oninput="validateInput(event)" readonly>
                                                     </div>
                                                     <div class="col-2">
-                                                        <input readonly class="form-control" type="text" name="totalDaily" id="dTotal" oninput="validateDecimalInput(event)" readonly>
+                                                        <input readonly class="form-control" type="number" name="totalDaily" id="dTotal" oninput="validateDecimalInput(event)" readonly>
                                                     </div>
                                                     <div class="col-2">
-                                                        <input readonly class="form-control" type="text" name="totalPercent" id="dTotalp" oninput="validateDecimalInput(event)" readonly>
+                                                        <input readonly class="form-control" type="number" name="totalPercent" id="dTotalp" oninput="validateDecimalInput(event)" readonly>
                                                     </div>
                                                 </div>
                                             </div>
