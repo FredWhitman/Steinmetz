@@ -33,6 +33,8 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <!-- Alert container -->
+                    <div id="alertContainer"></div>
                     <!--  Form for Production log start -->
                     <form id="add-productionLog-form" class="needs-validation p-2" novalidate>
                         <!-- Log Information -->

@@ -138,6 +138,18 @@ if (isset($_GET['view'])) {
     exit;
 }
 
+if (isset($_GET['checkLogs'])) {
+    header('Content-Type: application/json');
+    ob_clean();
+
+    $productID = $_GET['productID'];
+    $prodDate = $_GET['logDate'];
+    error_log('productionActions->checkLogs->productID: ' . $productID . ' prodDate: ' . $prodDate);
+
+    $present = $db->checkLogDates($productID, $prodDate);
+    echo json_encode(['exists' => $present]);
+    exit();
+}
 //Handle get previous log Ajax request from main.js    
 if (isset($_GET['previous'])) {
     $id = $_GET['id'];

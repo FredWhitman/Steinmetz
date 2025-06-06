@@ -190,7 +190,6 @@ const viewLog = async (id) => {
   }
 };
 
-const addLog = async () => {};
 const getLog = async (id) => {
   const data = await fetch(
     `../src/Classes/productionActions.php?previous=1&id=${id}`,

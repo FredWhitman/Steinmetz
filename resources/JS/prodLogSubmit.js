@@ -166,6 +166,7 @@ function addBlenderOnBlur() {
 
     if (!actionType) return;
     const logData = await fetchPreviousMatLogs(actionType, productID);
+
     if (!logData) {
       console.error("Failed to retrieve log data.");
       return;
@@ -176,11 +177,6 @@ function addBlenderOnBlur() {
     const preMatUsed2 = parseFloat(logData.matUsed2) || 0;
     const preMatUsed3 = parseFloat(logData.matUsed3) || 0;
     const preMatUsed4 = parseFloat(logData.matUsed4) || 0;
-    /* //Calculate daily usage dynamically
-    const dailyHop1 = parseFloat(hop1.value) - preMatUsed1;
-    const dailyHop2 = parseFloat(hop1.value) - preMatUsed2;
-    const dailyHop3 = parseFloat(hop1.value) - preMatUsed3;
-    const dailyHop4 = parseFloat(hop1.value) - preMatUsed4; */
 
     if (prodStatus === "0" || prodStatus === "2") {
       //in progress and end of run
@@ -204,6 +200,42 @@ function addBlenderOnBlur() {
       `Updated values: preMatUsed1 = ${preMatUsed1}, preMatUsed2 = ${preMatUsed2}, preMatUsed3 = ${preMatUsed3}, preMatUsed4 = ${preMatUsed4}`
     );
   });
+
+  document.getElementById("logDate").addEventListener("change", function () {
+    const prodDate = this.value;
+    const productID = document.getElementById("partName").value;
+
+    const url = `../src/Classes/productionActions.php?checkLogs=1&productID=${encodeURIComponent(
+      productID
+    )}&logDate=${encodeURIComponent(prodDate)}`;
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data && data.exists) {
+          showAlertMessage(
+            "A production log for this product on the selected date already exists. Please choose another date."
+          );
+        } else {
+          const alertContainer = document.getElementById("alertContainer");
+          alertContainer.innerHTML = "";
+        }
+      })
+      .catch((error) => {
+        console.error("Error checking production date: ", error);
+      });
+  });
+}
+// Function to show a Bootstrap 5 alert
+function showAlertMessage(message) {
+  const alertContainer = document.getElementById("alertContainer");
+  if (alertContainer) {
+    alertContainer.innerHTML = `
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    `;
+  }
 }
 
 function getAndSetDailyUsage(

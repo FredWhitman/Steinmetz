@@ -16,7 +16,7 @@ class productionDB extends database
     public function read4wks()
     {
         try {
-            $sql = 'SELECT * FROM productionLogs WHERE prodDate >= NOW() - INTERVAL 4 WEEK Order By prodDate ASC';
+            $sql = 'SELECT * FROM productionLogs WHERE prodDate >= NOW() - INTERVAL 4 WEEK Order By prodDate Desc';
             $stmt = $this->con->prepare($sql);
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -320,11 +320,27 @@ class productionDB extends database
             $stmtUpdateInventory->execute(['partsToAdd' => $partsToAdd, 'productID' => $productID]);
 
             $this->con->commit();
-            return ["success" => true, "message" => "Transaction completed successlly.", "prodLogID" => $prodLogID];
+            return ["success" => true, "message" => "Transaction completed successfully.", "prodLogID" => $prodLogID];
         } catch (PDOException $e) {
             $this->con->rollBack();
             error_log('PDO Rollback');
             error_log('ERROR PDO TRANSACTION FAILED FOR insertProdLog: ' . $e->getMessage());
+        }
+    }
+
+    public function checkLogDates($productID, $prodDate)
+    {
+        try {
+            $sql = 'SELECT COUNT(*) FROM productionLogs WHERE productID = :productID AND prodDate = :prodDate';
+            $stmt = $this->con->prepare($sql);
+            $stmt->bindParam(':productID', $productID, PDO::PARAM_INT);
+            $stmt->bindParam(':prodDate', $prodDate);
+            $stmt->execute();
+            $count = $stmt->fetchColumn();
+            return ($count > 0);
+        } catch (PDOException $e) {
+            error_log("Error checking production date: " . $e->getMessage());
+            return false;
         }
     }
 
