@@ -592,6 +592,8 @@
                     <h1 class="modal-title fs-5" id="addQARejectsModal">QA Rejects</h1>
                 </div>
                 <div class="modal-body">
+                    <!-- Alert container -->
+                    <div id="alertContainer1"></div>
                     <form id="add-qaReject-form" class="needs-validation p-2" novalidate>
                         <div class="mb-3">
                             <div class="row pb-2">

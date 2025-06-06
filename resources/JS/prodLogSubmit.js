@@ -213,7 +213,8 @@ function addBlenderOnBlur() {
       .then((data) => {
         if (data && data.exists) {
           showAlertMessage(
-            "A production log for this product on the selected date already exists. Please choose another date."
+            "A production log for this product on the selected date already exists. Please choose another date.",
+            "alertContainer"
           );
         } else {
           const alertContainer = document.getElementById("alertContainer");
@@ -226,8 +227,8 @@ function addBlenderOnBlur() {
   });
 }
 // Function to show a Bootstrap 5 alert
-function showAlertMessage(message) {
-  const alertContainer = document.getElementById("alertContainer");
+function showAlertMessage(message, containerID) {
+  const alertContainer = document.getElementById(containerID);
   if (alertContainer) {
     alertContainer.innerHTML = `
       <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -320,54 +321,6 @@ function fetchPreviousMatLogs(actionType, productID) {
       console.error(`Error fetching ${actionType} log: `, error);
       throw error;
     });
-}
-
-//fills daily Usage and Percentages
-function doStartDailyUsage(_hop1, _hop2, _hop3, _hop4) {
-  console.log("Hopper values: " + hop1 + " " + hop2 + " " + hop3 + " " + hop4);
-
-  let dHop1 = document.getElementById("dHop1");
-  let dHop2 = document.getElementById("dHop2");
-  let dHop3 = document.getElementById("dHop3");
-  let dHop4 = document.getElementById("dHop4");
-  let dTotal = document.getElementById("dTotal");
-
-  dHop1.value = hop1.toFixed(3);
-  dHop2.value = hop2.toFixed(3);
-  dHop3.value = hop3.toFixed(3);
-  dHop4.value = hop4.toFixed(3);
-  let dSum =
-    (Number(dHop1.value) || 0) +
-    (Number(dHop2.value) || 0) +
-    (Number(dHop3.value) || 0) +
-    (Number(dHop4.value) || 0);
-  validateTotals(dSum);
-  dSum = Number(dSum.toFixed(3));
-  dTotal.value = dSum;
-  console.log("Totals: " + dSum);
-
-  let dhop1p = document.getElementById("dHop1p");
-  let dhop2p = document.getElementById("dHop2p");
-  let dhop3p = document.getElementById("dHop3p");
-  let dhop4p = document.getElementById("dHop4p");
-  let dtotalp = document.getElementById("dTotalp");
-
-  let dH1p = doPercentage(dSum, dHop1.value);
-  let dH2p = doPercentage(dSum, dHop2.value);
-  let dH3p = doPercentage(dSum, dHop3.value);
-  let dH4p = doPercentage(dSum, dHop4.value);
-
-  dhop1p.value = dH1p;
-  dhop2p.value = dH2p;
-  dhop3p.value = dH3p;
-  dhop4p.value = dH4p;
-
-  let dSump =
-    (Number(dH1p) || 0) +
-    (Number(dH2p) || 0) +
-    (Number(dH3p) || 0) +
-    (Number(dH4p) || 0);
-  dtotalp.value = dSump.toFixed(0);
 }
 
 //calculates and returns percentages
