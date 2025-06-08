@@ -181,7 +181,7 @@ class productionDB extends database
     {
         try {
             $this->con->beginTransaction();
-
+            
             $productID = $prodData['productID'];
             //Check to see if this is a start production run
             if ($prodData['runStatus'] === '1') {
@@ -195,12 +195,14 @@ class productionDB extends database
                     ]);
                     $prodRunID = $this->con->lastInsertId();
                 } catch (PDOException $e) {
+                    
                     error_log('Error submitting a new production run into prodrunlog: ' . $e->getMessage());
                 }
                 $prevProdLogID = '0';
             } else {
                 //use productID to get production run id
                 $prodRunID = $this->getProdRunID($productID);
+                if(!$prodRunID){ throw new Exception("Failed to get production run ID"); }
                 //use prodRunID to get last prodLogID and set $prevProdLogID
                 $prevProdLogID = $this->getPrevProdLog($prodRunID);
                 error_log('Previous Log ID: ' . $prevProdLogID);
@@ -209,14 +211,16 @@ class productionDB extends database
             $prodData['runLogID'] = $prodRunID;
             $prodData['prevProdLogID'] = $prevProdLogID;
 
-
             //change runStatus to proper value for insert into produciton DB
             if ($prodData['runStatus'] === '2') {
                 $prodData['runStatus'] = 'end';
+                error_log('updating runStatus from 2 to ' . $prodData['runStatus']);
             } else if ($prodData['runStatus'] === '1') {
                 $prodData['runStatus'] = 'start';
+                error_log('updating runStatus from 1 to ' . $prodData['runStatus']);
             } else {
                 $prodData['runStatus'] = 'in progress';
+                error_log('updating runStatus from 0 to ' . $prodData['runStatus']);
             }
 
             /////////////////////INSERT PRODUCTIONLOG INSERT START////////////////////////////
@@ -292,11 +296,14 @@ class productionDB extends database
             // check to see if this is the end of the production run and fetch material data for the run
             // and update prodrunlog with totals, end date and completed
             if ($prodData['runStatus'] === 'end') {
+                error_log('End of prodcution run detected aquiring run production totals');
                 //Insert values into prodrunLog
                 $totals = $this->getMaterialTotals($prodRunID);
-                if (!$totals) throw new Exception('Failed to get production run totals from getMaterialTotals');
 
-                $sqlProdRunLogUpdate = "UPDATE prodrunlog SET endDate = :endDate, mat1Lbs = :mat1Lbs, mat2Lbs = :mat2Lbs, mat3Lbs = :mat3Lbs, mat4Lbs = :mat4Lbs, partsProduced = :produced, startUpRejects= :startUpRejects, qaRejects=:qaRejects,purgelbs = :purge, runComplete = 'yes' WHERE logID = :prodRunID";
+                if (!$totals) throw new Exception('Failed to get production run totals from getMaterialTotals');
+                error_log("\$Totals - Data collected: " . print_r($totals, true));
+                error_log("Material totals collected preparing the update!");
+                $sqlProdRunLogUpdate = "UPDATE prodrunlog SET endDate = :endDate, mat1Lbs = :mat1Lbs, mat2Lbs = :mat2Lbs, mat3Lbs = :mat3Lbs, mat4Lbs = :mat4Lbs, partsProduced = :produced, startUpRejects= :startUpRejects, qaRejects=:qaRejects,purgelbs = :purge, runComplete = :runComplete WHERE logID = :prodRunID";
                 $stmtProdlogUpdate = $this->con->prepare($sqlProdRunLogUpdate);
                 $result = $stmtProdlogUpdate->execute([
                     ':endDate' => $totals['prodDate'],
@@ -308,7 +315,8 @@ class productionDB extends database
                     ':startUpRejects' => $totals['total_startUpRejects'],
                     ':qaRejects' => $totals['total_qaRejects'],
                     ':purge' => $totals['total_total_purgeLbs'],
-                    ':prodRunID' => $prodRunID
+                    ':prodRunID' => $prodRunID,
+                    ':runComplete'=> 'yes' 
                 ]);
                 if (!$result) throw new Exception('Failed to update production run log.');
             }
@@ -317,7 +325,8 @@ class productionDB extends database
             $partsToAdd = $prodData['pressCounter'] - $prodData['startUpRejects'];
             $sqlInventoryUpdate = 'UPDATE productInventory SET partQty = partQty + :partsToAdd WHERE productID = :productID';
             $stmtUpdateInventory = $this->con->prepare($sqlInventoryUpdate);
-            $stmtUpdateInventory->execute(['partsToAdd' => $partsToAdd, 'productID' => $productID]);
+            $result = $stmtUpdateInventory->execute(['partsToAdd' => $partsToAdd, 'productID' => $productID]);
+            if(!$result)throw new Exception("Failed to update product inventory!");
 
             $this->con->commit();
             return ["success" => true, "message" => "Transaction completed successfully.", "prodLogID" => $prodLogID];
@@ -328,6 +337,7 @@ class productionDB extends database
         }
     }
 
+    //check production logs for the date of production log about to be added.
     public function checkLogDates($productID, $prodDate)
     {
         try {
@@ -343,7 +353,8 @@ class productionDB extends database
             return false;
         }
     }
-
+    
+    //Passing the production run id and return the material,productIDs, qarejects, purge totals for the production run.
     private function getMaterialTotals($prodRunID)
     {
         try {
@@ -362,9 +373,11 @@ class productionDB extends database
                         GROUP BY p.runLogID";
 
             $stmtGetTotals = $this->con->prepare($sqlGetTotals);
+            $stmtGetTotals->bindParam(':prodRunID', $prodRunID, PDO::PARAM_INT);
+            $stmtGetTotals->execute();
             $result = $stmtGetTotals->fetch(PDO::FETCH_ASSOC);
-
-            error_log("Retrived production totals for end of run and passed to insert function.");
+            if(!$result)throw new Exception("Error: productionDB_SQL->getMaterialTotals for prodRunID logID: " .$prodRunID);
+            error_log("Retrieved production totals for end of run and passed to insert function.");
             return $result;
         } catch (PDOException $e) {
             error_log("ERROR: Failed to get production totals for end of run: " . $e->getMessage());

@@ -156,7 +156,7 @@ function addBlenderOnBlur() {
           "Fetching materialLog data from previous log in production for end production log"
         );
         console.log("End production log!");
-        actionType = "getLastLog";
+        actionType = "endRun";
         break;
       case "1": //Start Production Run
         console.log("Start production run");
@@ -201,6 +201,7 @@ function addBlenderOnBlur() {
     );
   });
 
+  //adds listener to date field change and check to make sure a record doesn't already exist.
   document.getElementById("logDate").addEventListener("change", function () {
     const prodDate = this.value;
     const productID = document.getElementById("partName").value;

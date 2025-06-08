@@ -41,6 +41,8 @@ if (isset($_POST['purge'])) {
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $data = json_decode(file_get_contents("php://input"), true);
 
+    error_log('productionActions->InsertProdLog: ' ."\n" . print_r($data,true));
+
     if (isset($data["action"]) && $data["action"] === "addLog") {
 
         if (isset($data["prodLogData"]) && isset($data["materialData"]) && isset($data["tempData"])) {
@@ -67,11 +69,11 @@ if (isset($_GET['getLastLog'])) {
     ob_clean(); //removes any accidental output
     flush(); //Ensure buffered output gets sent immediately
 
-    error_log('productionActions->$_GET[productID] =' . $_GET['productID']);
+    //error_log('productionActions->$_GET[productID] =' . $_GET['productID']);
     $productID = $_GET['productID'];
     $log = $db->getLastMaterialLogForRun($_GET['productID']);
 
-    error_log('Fetched log data: ' . json_encode($log));
+    //error_log('Fetched log data: ' . json_encode($log));
 
     if (!$log || empty($log)) {
         echo json_encode(["error" => "No last log found for productID {$productID} "]);
@@ -81,11 +83,14 @@ if (isset($_GET['getLastLog'])) {
     exit();
 }
 
+
 if (isset($_GET['endRun'])) {
-    $productID = $GET['productID'];
+    $productID = $_GET['productID'];
+    //error_log("productionActions->endRun->$productID");
     header('Content-Type: application/json'); // Set proper header
     ob_clean(); //removes any accidental ouput
-    error_log('productionActions->$_GET[productID] =' . $_GET['productID']);
+    flush();
+    error_log('productionActions->endRun->$_GET[productID] =' . $_GET['productID']);
     $log = $db->getLastMaterialLogForRun($productID);
 
     if (!$log || empty($log)) {
