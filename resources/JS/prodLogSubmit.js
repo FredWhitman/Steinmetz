@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
 addLogForm.addEventListener("submit", async (e) => {
   //prevent form from submitting data to DB
   e.preventDefault();
-  console.log("Production log submit button has been clicked!");
+  //console.log("Production log submit button has been clicked!");
   const formData = new FormData(addLogForm);
   //formData.append("addLog", 1);
   //check to make sure the input fields are not empty
@@ -74,7 +74,8 @@ addLogForm.addEventListener("submit", async (e) => {
         chillerTemp: formData.get("chiller"),
         moldTemp: formData.get("tcuTemp"),
       },
-    };
+     };
+
 
     const data = await fetch("../src/Classes/productionActions.php", {
       method: "POST",
@@ -84,7 +85,6 @@ addLogForm.addEventListener("submit", async (e) => {
 
     const response = await data.text();
     showAlert.innerHTML = response;
-    document.getElementById("add-log-btn").value = "Add Log";
     addLogForm.reset();
     addLogForm.classList.remove("was-validated");
     addLogModal.hide();
@@ -103,12 +103,42 @@ function addBlenderOnBlur() {
 
   // Select all radio buttons within the group
   const radioButtons = document.querySelectorAll('input[name="prodRun"]');
-  console.log("Radio Button group: " + radioButtons);
+  //console.log("Radio Button group: " + radioButtons);
   // Loop through the radio buttons and add an event listener to each one
   radioButtons.forEach((radio) => {
     radio.addEventListener("change", function () {
       console.log(`Selected value: ${this.value}`);
       prodStatus = this.value;
+
+      if(prodStatus === "1"){
+        //get part name and production date and set variables
+        let productID = document.getElementById("partName").value;
+        let logDate = document.getElementById("logDate").value;
+        
+        const url = `../src/Classes/productionActions.php?checkRun=1&productID=${productID}&logDate=${logDate}`;
+        fetch(url)
+          .then((response) => response.text())
+          .then((text) => {
+            console.log('Raw repsonse: ', text);
+            try {
+              const data = JSON.parse(text);
+              console.log("Parsed JSON: ", data);
+              return data;
+            } catch (error) {
+              console.error('Unable to parse JSON: ', error);
+            }
+            /* if (data && data.exists) {
+              showAlertMessage(
+                "A production run for this product has already been started. You will need to end the current production run before starting a new one. ",
+                "alertContainer"
+              );
+            } else {
+              const alertContainer = document.getElementById("alertContainer");
+              alertContainer.innerHTML = "";
+            } */
+          })
+          .catch(error => console.error("Fetch error: ", error));
+      }
     });
   });
 
@@ -132,15 +162,7 @@ function addBlenderOnBlur() {
     totalBlended.value = sum;
 
     const prodDate = document.getElementById("logDate").value;
-    console.log(
-      "Production Run Status: " +
-        prodStatus +
-        " Part Name: " +
-        productID +
-        " Production Date: " +
-        prodDate
-    );
-
+    
     /* Check prodStatus and either copy hopper data to daily hopper data or pull previous log
     and substract current material info from previous log and add to daily usage */
     switch (prodStatus) {
@@ -180,7 +202,7 @@ function addBlenderOnBlur() {
 
     if (prodStatus === "0" || prodStatus === "2") {
       //in progress and end of run
-      console.log("In progress production run!: " + prodStatus);
+      console.log("In progress or end production run!: " + prodStatus);
       getAndSetDailyUsage(
         hop1,
         hop2,
@@ -195,10 +217,7 @@ function addBlenderOnBlur() {
       //start
       getAndSetDailyUsage(hop1, hop2, hop3, hop4, 0, 0, 0, 0);
     }
-
-    console.log(
-      `Updated values: preMatUsed1 = ${preMatUsed1}, preMatUsed2 = ${preMatUsed2}, preMatUsed3 = ${preMatUsed3}, preMatUsed4 = ${preMatUsed4}`
-    );
+    
   });
 
   //adds listener to date field change and check to make sure a record doesn't already exist.

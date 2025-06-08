@@ -142,6 +142,20 @@ if (isset($_GET['view'])) {
     }
     exit;
 }
+if (isset($_GET['checkRun'])){
+    header('Content-Type: application/json');
+    /* ob_clean();
+    flush(); */
+    $productID = $_GET['productID'];
+    $prodDate = $_GET['logDate'];
+    error_log('productionActions->checkRun->productID: ' . $productID . ' prodDate: ' . $prodDate);
+
+    $run = $db->CheckProductionRuns($productID);
+    error_log("Is there an open production run for $productID? " . $run);
+    echo json_encode(['exists'=>$run]);
+
+    exit();
+}
 
 if (isset($_GET['checkLogs'])) {
     header('Content-Type: application/json');

@@ -1,5 +1,9 @@
 <?php
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require_once 'database.php';
 
 class productionDB extends database
@@ -343,7 +347,7 @@ class productionDB extends database
         try {
             $sql = 'SELECT COUNT(*) FROM productionLogs WHERE productID = :productID AND prodDate = :prodDate';
             $stmt = $this->con->prepare($sql);
-            $stmt->bindParam(':productID', $productID, PDO::PARAM_INT);
+            $stmt->bindParam(':productID', $productID, PDO::PARAM_STR);
             $stmt->bindParam(':prodDate', $prodDate);
             $stmt->execute();
             $count = $stmt->fetchColumn();
@@ -352,6 +356,22 @@ class productionDB extends database
             error_log("Error checking production date: " . $e->getMessage());
             return false;
         }
+    }
+
+    //check to see if there is an open production run for the submitted productID
+    public function CheckProductionRuns($productID){
+        error_log('productionDB_SQL->CheckProductionRuns Called');
+        $sql = "SELECT logID, productID, runComplete FROM prodrunlog WHERE productID = :productID AND runComplete = :runComplete";
+        $stmt = $this->con->prepare($sql);
+        $no = 'no';
+        $stmt->bindParam(':productID', $productID , PDO::PARAM_STR);
+        $stmt->bindParam(':runComplete',$no, PDO::PARAM_STR);
+        $stmt->execute();
+        $result = $stmt->fetchColumn();
+
+        error_log('CheckRun $result: '. $result);
+        return ($result > 0);
+
     }
     
     //Passing the production run id and return the material,productIDs, qarejects, purge totals for the production run.
