@@ -120,23 +120,36 @@ function addBlenderOnBlur() {
           .then((response) => response.text())
           .then((text) => {
             console.log('Raw repsonse: ', text);
+            let data;
             try {
-              const data = JSON.parse(text);
+              data = JSON.parse(text);
               console.log("Parsed JSON: ", data);
-              return data;
+              console.log("Type of data.exists:", typeof data.exists, ", value:", data.exists);
             } catch (error) {
               console.error('Unable to parse JSON: ', error);
+              data = null;
             }
-            /* if (data && data.exists) {
+            if (data && data.exists) {
+              console.log("data.exists is true, calling showAlertMessage!")
               showAlertMessage(
                 "A production run for this product has already been started. You will need to end the current production run before starting a new one. ",
                 "alertContainer"
               );
             } else {
+              console.log("data.exists condition not met. data: ", data);
               const alertContainer = document.getElementById("alertContainer");
+              if(alertContainer){
               alertContainer.innerHTML = "";
-            } */
+              }
+            }
+            return data;
           })
+          .then((data)=>{
+            //This then() receives the data returned bu the previous callback.
+            //You can log it here to be sure it's correct.
+            console.log("Final data from chain: ", data);
+            return data; //or continue further processing
+          }) 
           .catch(error => console.error("Fetch error: ", error));
       }
     });
@@ -248,6 +261,7 @@ function addBlenderOnBlur() {
 }
 // Function to show a Bootstrap 5 alert
 function showAlertMessage(message, containerID) {
+  console.log(`showAlertMessage called for containerID: ${containerID} with message: ${message}`);
   const alertContainer = document.getElementById(containerID);
   if (alertContainer) {
     alertContainer.innerHTML = `
@@ -256,6 +270,9 @@ function showAlertMessage(message, containerID) {
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
     `;
+    console.log("ALert Message updated in container!");
+  }else{
+    console.error("Alert container element not found: ", containerID);
   }
 }
 

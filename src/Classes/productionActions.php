@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
@@ -152,7 +153,7 @@ if (isset($_GET['checkRun'])){
 
     $run = $db->CheckProductionRuns($productID);
     error_log("Is there an open production run for $productID? " . $run);
-    echo json_encode(['exists'=>$run]);
+    echo json_encode(['exists'=> $run]);
 
     exit();
 }

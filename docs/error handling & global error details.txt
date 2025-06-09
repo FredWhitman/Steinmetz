@@ -1,0 +1,141 @@
+Below is a more detailed explanation of how you can implement a global error and exception handler in PHP. This approach centralizes all error logging and output formatting so that your application handles unexpected issues gracefully.
+
+---
+
+## **Global Error and Exception Handler**
+
+The idea is to register custom callback functions that PHP will call when an error or an exception occurs. You’ll also catch fatal errors on shutdown. By doing so, you can log details and return a consistent response—especially useful if you’re building an API.
+
+### **Step-by-Step Implementation**
+
+#### **1. Create an ErrorHandler Class**
+
+Create a file called `ErrorHandler.php` and include the following class definition:
+
+```php
+<?php
+/**
+ * A global error and exception handler.
+ * This class centralizes error logging and response formatting.
+ */
+class ErrorHandler {
+
+    /**
+     * Registers custom handlers for errors, exceptions, and shutdown events.
+     */
+    public static function register() {
+        // Custom error handler for standard PHP errors.
+        set_error_handler([__CLASS__, 'handleError']);
+
+        // Custom exception handler for uncaught exceptions.
+        set_exception_handler([__CLASS__, 'handleException']);
+
+        // Custom shutdown function to catch fatal errors.
+        register_shutdown_function([__CLASS__, 'handleShutdown']);
+    }
+
+    /**
+     * Handles PHP errors.
+     *
+     * @param int    $errno   The error number.
+     * @param string $errstr  The error message.
+     * @param string $errfile The filename where the error occurred.
+     * @param int    $errline The line number of the error.
+     *
+     * @throws ErrorException Converts the error into an exception.
+     */
+    public static function handleError($errno, $errstr, $errfile, $errline) {
+        // Log the error details in the server's error log.
+        error_log("Error [$errno]: $errstr in $errfile on line $errline");
+
+        // Convert the error into an exception so it can be handled uniformly.
+        throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+    }
+
+    /**
+     * Handles uncaught exceptions.
+     *
+     * @param Throwable $exception The uncaught exception.
+     */
+    public static function handleException($exception) {
+        // Log detailed exception information.
+        error_log("Uncaught Exception: " . $exception->getMessage() . 
+                  " in " . $exception->getFile() . 
+                  " on line " . $exception->getLine());
+
+        // If headers haven't been sent, you can set the appropriate content type.
+        if (!headers_sent()) {
+            header('Content-Type: application/json');
+        }
+
+        // Return a consistent JSON formatted error response.
+        $response = [
+            'error'   => true,
+            'message' => 'An unexpected error occurred. Please try again later.'
+        ];
+
+        // You could also include additional details, such as an error code,
+        // but be mindful of exposing sensitive info in production.
+        echo json_encode($response);
+        exit(1);
+    }
+
+    /**
+     * Handles fatal errors during script shutdown.
+     * This function is used to detect fatal errors that are not caught by the normal error handler.
+     */
+    public static function handleShutdown() {
+        $error = error_get_last();
+        if ($error !== null) {
+            // Create an ErrorException from the shutdown error.
+            $exception = new ErrorException(
+                $error['message'],
+                0,
+                $error['type'],
+                $error['file'],
+                $error['line']
+            );
+            // Delegate handling of the exception to our exception handler.
+            self::handleException($exception);
+        }
+    }
+}
+```
+
+#### **2. How This Works**
+
+- **set_error_handler**  
+  This function sets a custom error handler, meaning that whenever a standard PHP error occurs (like a notice or warning), your `handleError` method is invoked. In our implementation, we log the error and then convert it into an exception by throwing an `ErrorException`. Converting errors to exceptions allows us to handle everything uniformly.
+
+- **set_exception_handler**  
+  The custom exception handler (`handleException`) catches any uncaught exceptions. This is particularly useful for web applications because it ensures all exceptions are logged and returned in a consistent response format. Notice that we send a JSON response if headers haven’t been sent yet.
+
+- **register_shutdown_function**  
+  This function registers a shutdown callback that is invoked at the end of script execution. It checks using `error_get_last()` for any fatal errors (such as parse errors or other conditions that cause the script to die unexpectedly) and ensures that those errors also receive a proper JSON response and logging. This is key because fatal errors bypass regular error handlers.
+
+#### **3. Register the Custom Handler**
+
+At the very beginning of your main entry point (for example, in `index.php`, `productionActions.php`, or a bootstrap file), register the error handler:
+
+```php
+<?php
+require_once 'ErrorHandler.php';
+ErrorHandler::register();
+
+// The rest of your application starts here.
+```
+
+By registering early, you ensure that every error or exception—even early ones during initialization—is caught and handled.
+
+#### **4. Benefits**
+
+- **Consistency:** All errors and exceptions are logged uniformly and returned in a consistent JSON structure.
+- **Centralization:** You don’t have to wrap every block of code in try/catch; the global handler catches what you miss.
+- **Production Safety:** Even fatal errors are caught, allowing you to log them and return a user-friendly response without exposing sensitive details.
+- **Simplification:** Your controller and business logic code can assume that if an error occurs, it will be handled gracefully, reducing the need to duplicate error handling logic in multiple places.
+
+---
+
+## **Conclusion**
+
+Using a global error and exception handler helps you standardize error reporting, improve logging for debugging, and provide consistent error responses to your API consumers. This structure not only improves the robustness of your application but also simplifies maintenance and troubleshooting in production.

@@ -1,0 +1,164 @@
+Namespaces are a way to organize your PHP code and avoid name collisions between classes, functions, or constants. They act like folders for your code. Here's a detailed explanation along with some examples tailored to a project like yours.
+
+---
+
+## **1. Why Use Namespaces?**
+
+- **Organization:**  
+  As your project grows, you might have multiple classes with similar names (e.g., `Database`, `Controller`, etc.). Namespaces help you group related classes together.
+
+- **Avoid Name Collisions:**  
+  Without namespaces, if two classes share the same name—even if they’re in different parts of your project—you’ll encounter errors. Namespaces resolve this by providing a unique “path” for each class.
+
+- **Autoloading:**  
+  When using tools like Composer with PSR-4 autoloading, your directory structure typically maps to the namespace hierarchy. This means you can automatically load classes without manually requiring each file.
+
+---
+
+## **2. Deciding on a Namespace Structure**
+
+A common approach is to use your project’s name as the top-level namespace, then group classes by functionality. For example, if your project is called “Steinmetz”, you might organize it like this:
+
+- **Steinmetz\\Controllers**  
+  For controller classes that handle HTTP requests.
+
+- **Steinmetz\\Models**  
+  For database models or classes that represent data.
+
+- **Steinmetz\\Views**  
+  If you have classes that manage your view layer, or templates.
+
+- **Steinmetz\\Classes** (or **Steinmetz\\Library**)  
+  For other utility classes or shared library components.
+
+If your GitHub repository structure places your PHP classes in the `src/Classes` folder, you might set the namespace for those files to `Steinmetz\Classes`.
+
+---
+
+## **3. Examples of Namespaces in Your Project**
+
+Let’s consider some concrete examples based on your project files:
+
+### **Example 1: ProductionActions.php**
+
+Suppose this file is located at `src/Classes/ProductionActions.php`. At the top of the file, you can declare:
+
+```php
+<?php
+namespace Steinmetz\Classes;
+
+class ProductionActions {
+    // Your class methods here.
+}
+```
+
+Now, anywhere in your project, if you need to use the `ProductionActions` class, you can reference it with its fully qualified name:
+
+```php
+use Steinmetz\Classes\ProductionActions;
+
+$actions = new ProductionActions();
+```
+
+### **Example 2: productionDB_SQL.php**
+
+If this file is also under `src/Classes`, you could declare:
+
+```php
+<?php
+namespace Steinmetz\Classes;
+
+class ProductionDB_SQL {
+    // Your database methods here.
+}
+```
+
+### **Example 3: Organizing by Functionality**
+
+If you decide to split your files into subdirectories for better organization, consider:
+
+- Move all database-related classes into `src/Models`.
+- Move controllers into `src/Controllers`.
+
+For instance, if you moved `productionDB_SQL.php` to `src/Models`, then modify the file to:
+
+```php
+<?php
+namespace Steinmetz\Models;
+
+class ProductionDB_SQL {
+    // Your code.
+}
+```
+
+And in your controllers or elsewhere, reference it as:
+
+```php
+use Steinmetz\Models\ProductionDB_SQL;
+
+$db = new ProductionDB_SQL(/* connection params */);
+```
+
+### **Example 4: Composer Autoloading Setup**
+
+If you use Composer, add this to your `composer.json` file to map your namespaces to directories:
+
+```json
+{
+    "autoload": {
+        "psr-4": {
+            "Steinmetz\\": "src/"
+        }
+    }
+}
+```
+
+This tells Composer that any class with the namespace prefix `Steinmetz\` is located in the `src/` directory. So a class at `src/Controllers/SomeController.php` with the namespace declaration:
+
+```php
+<?php
+namespace Steinmetz\Controllers;
+
+class SomeController {
+    // Code.
+}
+```
+
+will be automatically loaded when referenced.
+
+---
+
+## **4. Best Practices When Using Namespaces**
+
+- **Consistent Naming:**  
+  Always use the same naming conventions for classes and namespaces (typically StudlyCaps for both).
+
+- **Avoid Deep Nesting:**  
+  Keep your namespace hierarchy as simple as possible. For example, `Steinmetz\Modules\Production\Actions` may be too deep unless your project complexity really demands it.
+
+- **Group Related Classes:**  
+  Organize namespaces logically. For controllers, use a dedicated namespace; for models, use another; for utility classes, use a generic library namespace.
+
+- **Use `use` Statements:**  
+  At the top of your PHP files, import the classes you need with the `use` keyword. This simplifies your code and makes it clearer which classes are being used.
+
+---
+
+## **Summary**
+
+- **Namespaces** help you organize your code and prevent name conflicts.
+- **A Suggested Structure:**  
+  - `Steinmetz\Controllers` for controllers  
+  - `Steinmetz\Models` for database models  
+  - `Steinmetz\Classes` (or `Steinmetz\Library`) for other utility classes
+- **Example Declarations:**  
+  ```php
+  namespace Steinmetz\Classes;
+  ```
+  or, if grouped by functionality:
+  ```php
+  namespace Steinmetz\Models;
+  ```
+- **Autoloading:** Use Composer’s PSR-4 autoloading to automatically load your namespaced classes.
+
+Following these guidelines should make it easier to structure your project and ensure that your code adheres to modern PHP standards. If you have any more questions or need further examples, feel free to ask!
