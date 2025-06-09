@@ -8,8 +8,9 @@
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav">
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" data-bs-auto-close="outside" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Inventory</a>
-                    <ul class="dropdown-menu">
+                    <a class="nav-link" a href=".\Inventory.php" role="button">Inventory</a>
+                    <!-- <a class="nav-link dropdown-toggle" data-bs-auto-close="outside" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Inventory</a> -->
+                    <!-- <ul class="dropdown-menu">
                         <li class="dropend">
                             <a class="dropdown-item dropdown-toggle" data-bs-toggle="dropdown" href="#">Add</a>
                             <ul class="dropdown-menu">
@@ -35,7 +36,7 @@
                                 <li><a href="pfmlist.php" class="dropdown-item">PFM List</a></li>
                             </ul>
                         </li>
-                    </ul>
+                    </ul> -->
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" data-bs-auto-close="outside" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Lot Changes</a>
@@ -47,13 +48,6 @@
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link" a href=".\Production.php" role="button">Production</a>
-                    <!-- <ul class="dropdown-menu">
-                        <li>
-                            <a href=".\newProductionLogs.php" class="dropdown-item">Add Production Log</a>
-                            <a href="" class="dropdown-item">Edit Production Log</a>
-                            <a href=".\viewProductionLog.php" class="dropdown-item">View Production Log</a>
-                        </li>
-                    </ul> -->
                 </li>
             </ul>
         </div>

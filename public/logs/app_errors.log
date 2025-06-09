@@ -1,0 +1,3 @@
+[2025-06-09T19:04:59.167773+02:00] my_app_errors.NOTICE: E_USER_NOTICE: This is a test notice from my application. {"code":1024,"message":"This is a test notice from my application.","file":"C:\\xampp\\htdocs\\Steinmetz\\public\\monologTest.php","line":46} []
+[2025-06-09T19:04:59.178487+02:00] my_app_errors.WARNING: E_USER_WARNING: This is a test warning, something might be wrong! {"code":512,"message":"This is a test warning, something might be wrong!","file":"C:\\xampp\\htdocs\\Steinmetz\\public\\monologTest.php","line":49} []
+[2025-06-09T19:04:59.179206+02:00] my_app_errors.ERROR: Caught Exception: Something unexpected happened! {"exception":"[object] (Exception(code: 0): Something unexpected happened! at C:\\xampp\\htdocs\\Steinmetz\\public\\monologTest.php:53)"} []
