@@ -26,13 +26,13 @@ class inventoryDB_SQL extends database
 
         $this->log = new Logger('inventoryDB_SqlError');
         //send log errors to this fill
-        $this->log->pushHandler(new StreamHandler(__DIR__ .'/logs/inventory_errors.log'), Logger::DEBUG);
+        $this->log->pushHandler(new StreamHandler(__DIR__ . '/logs/inventory_errors.log'), Logger::DEBUG);
         $this->log->pushHandler(new FirePHPHandler());
 
         //register the errorHandler
         ErrorHandler::register($this->log);
     }
-    
+
     /**
      * getInventory
      * 
@@ -42,7 +42,8 @@ class inventoryDB_SQL extends database
      */
     public function getInventory()
     {
-        $this->log->debug('getIventory called!');
+        $this->log->info('getIventory called!');
+
         try {
             $sqlProduct = 'SELECT 
                                 products.productID AS productID,
@@ -58,74 +59,81 @@ class inventoryDB_SQL extends database
             $stmtProduct = $this->con->prepare($sqlProduct);
 
             $stmtProduct->execute();
-            
+
             $products = $stmtProduct->fetchALL(PDO::FETCH_ASSOC);
             $iCount = count($products);
 
             if (!$products) {
                 $this->log->error('Nothing was returned $inventoryProducts.');
-            
             } else {
                 $this->log->info('$inventoryProducts row count :' . $iCount);
             }
-            
+
             $sqlMaterial = 'SELECT 
-                                `materialinventory`.`matPartNumber`,
-                                `materialinventory`.`matLbs`,
-                                `material`.`matPartNumber`,
-                                `material`.`matName`,
-                                `material`.`productID`,
-                                `material`.`minLbs`,
-                                `material`.`customer`
+                            `materialinventory`.`matPartNumber`,
+                            `materialinventory`.`matLbs`,
+                            `material`.`matPartNumber`,
+                            `material`.`matName`,
+                            `material`.`productID`,
+                            `material`.`minLbs`,
+                            `material`.`displayOrder`
                             FROM
-                                `materialinventory`
-                            INNER JOIN `material` ON (`materialinventory`.`matPartNumber` = `material`.`matPartNumber`)';
+                            `materialinventory`
+                            INNER JOIN `material` ON (`materialinventory`.`matPartNumber` = `material`.`matPartNumber`)
+                            ORDER BY
+                            `material`.`displayOrder`';
             $stmtMaterial = $this->con->prepare($sqlMaterial);
             $stmtMaterial->execute();
             $materials = $stmtMaterial->fetchALL(PDO::FETCH_ASSOC);
             $mCount = count($materials);
 
+            //throw exception if $material is empty
             if (!$materials) {
                 $this->log->error('Nothing was returned $materials.');
                 throw new ErrorException(
                     'Failed to get Material!',
                     0,
-                    E_ERROR,'',
+                    E_ERROR,
+                    '',
                 );
             } else {
                 $this->log->info('$materials row count :' . $mCount);
             }
-          
+
             $sqlPFM = 'SELECT 
-                `pfm`.`PartNumber`,
-                `pfm`.`PartName`,
-                `pfm`.`MinimumQty`,
-                `pfm`.`AmstedPFM`,
-                `pfminventory`.`Qty`,
-                `pfm`.`ProductID`,
-                `pfm`.`PFMID`,
-                `pfminventory`.`PartNumber`
+                `pfm`.`pFMID`,
+                `pfm`.`partNumber`,
+                `pfm`.`partName`,
+                `pfm`.`productID`,
+                `pfm`.`minQty`,
+                `pfm`.`amstedPFM`,
+                `pfm`.`displayOrder`,
+                `pfminventory`.`partNumber`,
+                `pfminventory`.`Qty`
                 FROM
                 `pfminventory`
-                INNER JOIN `pfm` ON (`pfminventory`.`PartNumber` = `pfm`.`PartNumber`)';
+                INNER JOIN `pfm` ON (`pfminventory`.`partNumber` = `pfm`.`partNumber`)
+                ORDER BY
+                `pfm`.`displayOrder`';
+
             $stmtPFM = $this->con->prepare($sqlPFM);
             $stmtPFM->execute();
             $pfm = $stmtPFM->fetchAll(PDO::FETCH_ASSOC);
-            $pCunt = count($pfm);
+            $pCount = count($pfm);
 
-            if (!$materials) {
+            if (!$pfm) {
                 $this->log->error('Nothing was returned $inventoryPFMs.');
                 throw new ErrorException(
                     'Failed to get PFM',
                     0,
-                    E_ERROR,'',
+                    E_ERROR,
+                    '',
                 );
             } else {
-                $this->log->info('$inventoryMaterials row count :' . $mCount);
+                $this->log->info('$inventoryMaterials row count :' . $pCount);
             }
             $this->log->info('Returnin table data to controller!');
-           return ['products'  => $products, 'materials' => $materials, 'pfms' => $pfm];
-
+            return ['products'  => $products, 'materials' => $materials, 'pfms' => $pfm];
         } catch (PDOException $e) {
             error_log("Error getting products: " . $e->getMessage());
             //Convert this to an uncaught exception to let ErrorHandler process it
@@ -137,6 +145,32 @@ class inventoryDB_SQL extends database
                 $e->getLine()
             );
         }
+    }
 
+    /**
+     * Undocumented function
+     *
+     * @param [type] $table 
+     * @param [type] $id
+     * @return void
+     */
+    public function getRecord($id, $table)
+    {
+        $this->log->info('getRecord called with these parameters: ' . $id . ' ' . $table);
+        $sql = '';
+
+        if ($table === 'products') {
+            $this->log->info('product record requested');
+            $sql = 'SELECT * products WHERE productID = :productID';
+            $stmt = $this->con->prepare($sql);
+            $stmt->execute([':productID' => $id]);
+            $result = $stmt->fetch();
+            $this->log->info('getRecord returning : ' . $result['productID']);
+            return $result;
+        } else if ($table === 'materials') {
+            $sql = '';
+        } else {
+            $sql = '';
+        }
     }
 }

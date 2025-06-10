@@ -74,8 +74,7 @@ addLogForm.addEventListener("submit", async (e) => {
         chillerTemp: formData.get("chiller"),
         moldTemp: formData.get("tcuTemp"),
       },
-     };
-
+    };
 
     const data = await fetch("../src/Classes/productionActions.php", {
       method: "POST",
@@ -110,27 +109,32 @@ function addBlenderOnBlur() {
       console.log(`Selected value: ${this.value}`);
       prodStatus = this.value;
 
-      if(prodStatus === "1"){
+      if (prodStatus === "1") {
         //get part name and production date and set variables
         let productID = document.getElementById("partName").value;
         let logDate = document.getElementById("logDate").value;
-        
+
         const url = `../src/Classes/productionActions.php?checkRun=1&productID=${productID}&logDate=${logDate}`;
         fetch(url)
           .then((response) => response.text())
           .then((text) => {
-            console.log('Raw repsonse: ', text);
+            console.log("Raw repsonse: ", text);
             let data;
             try {
               data = JSON.parse(text);
               console.log("Parsed JSON: ", data);
-              console.log("Type of data.exists:", typeof data.exists, ", value:", data.exists);
+              console.log(
+                "Type of data.exists:",
+                typeof data.exists,
+                ", value:",
+                data.exists
+              );
             } catch (error) {
-              console.error('Unable to parse JSON: ', error);
+              console.error("Unable to parse JSON: ", error);
               data = null;
             }
             if (data && data.exists) {
-              console.log("data.exists is true, calling showAlertMessage!")
+              console.log("data.exists is true, calling showAlertMessage!");
               showAlertMessage(
                 "A production run for this product has already been started. You will need to end the current production run before starting a new one. ",
                 "alertContainer"
@@ -138,19 +142,19 @@ function addBlenderOnBlur() {
             } else {
               console.log("data.exists condition not met. data: ", data);
               const alertContainer = document.getElementById("alertContainer");
-              if(alertContainer){
-              alertContainer.innerHTML = "";
+              if (alertContainer) {
+                alertContainer.innerHTML = "";
               }
             }
             return data;
           })
-          .then((data)=>{
+          .then((data) => {
             //This then() receives the data returned bu the previous callback.
             //You can log it here to be sure it's correct.
             console.log("Final data from chain: ", data);
             return data; //or continue further processing
-          }) 
-          .catch(error => console.error("Fetch error: ", error));
+          })
+          .catch((error) => console.error("Fetch error: ", error));
       }
     });
   });
@@ -175,7 +179,7 @@ function addBlenderOnBlur() {
     totalBlended.value = sum;
 
     const prodDate = document.getElementById("logDate").value;
-    
+
     /* Check prodStatus and either copy hopper data to daily hopper data or pull previous log
     and substract current material info from previous log and add to daily usage */
     switch (prodStatus) {
@@ -230,7 +234,6 @@ function addBlenderOnBlur() {
       //start
       getAndSetDailyUsage(hop1, hop2, hop3, hop4, 0, 0, 0, 0);
     }
-    
   });
 
   //adds listener to date field change and check to make sure a record doesn't already exist.
@@ -261,7 +264,9 @@ function addBlenderOnBlur() {
 }
 // Function to show a Bootstrap 5 alert
 function showAlertMessage(message, containerID) {
-  console.log(`showAlertMessage called for containerID: ${containerID} with message: ${message}`);
+  console.log(
+    `showAlertMessage called for containerID: ${containerID} with message: ${message}`
+  );
   const alertContainer = document.getElementById(containerID);
   if (alertContainer) {
     alertContainer.innerHTML = `
@@ -271,7 +276,7 @@ function showAlertMessage(message, containerID) {
       </div>
     `;
     console.log("ALert Message updated in container!");
-  }else{
+  } else {
     console.error("Alert container element not found: ", containerID);
   }
 }

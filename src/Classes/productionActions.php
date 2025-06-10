@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 header("Content-Type: application/json");
@@ -42,7 +43,7 @@ if (isset($_POST['purge'])) {
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $data = json_decode(file_get_contents("php://input"), true);
 
-    error_log('productionActions->InsertProdLog: ' ."\n" . print_r($data,true));
+    error_log('productionActions->InsertProdLog: ' . "\n" . print_r($data, true));
 
     if (isset($data["action"]) && $data["action"] === "addLog") {
 
@@ -143,7 +144,7 @@ if (isset($_GET['view'])) {
     }
     exit;
 }
-if (isset($_GET['checkRun'])){
+if (isset($_GET['checkRun'])) {
     header('Content-Type: application/json');
     /* ob_clean();
     flush(); */
@@ -153,7 +154,7 @@ if (isset($_GET['checkRun'])){
 
     $run = $db->CheckProductionRuns($productID);
     error_log("Is there an open production run for $productID? " . $run);
-    echo json_encode(['exists'=> $run]);
+    echo json_encode(['exists' => $run]);
 
     exit();
 }

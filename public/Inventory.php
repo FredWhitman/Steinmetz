@@ -21,13 +21,6 @@
 
 
 
-
-
-
-
-
-
-
     <!-- Table to hold the last 4 weeks of production  -->
     <div class="container-fluid">
         <div class="mt-5">
@@ -51,7 +44,7 @@
                 </div>
             </div>
             <div class="row justify-content-center">
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="table-container-scroll">
                         <!-- <div class="table-responsive"> -->
                         <!-- Table to display our db user list -->
@@ -73,7 +66,7 @@
                         <!-- </div> -->
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="table-container-scroll">
                         <table class="table table-striped table-bordered text-center">
                             <thead class="sticky-header">
@@ -92,7 +85,7 @@
                         </table>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="table-container-scroll">
                         <table class="table table-striped table-bordered text-center">
                             <thead class="sticky-header">
