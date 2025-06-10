@@ -66,7 +66,7 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="products">
 
                             </tbody>
                         </table>
@@ -86,7 +86,7 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="materials">
 
                             </tbody>
                         </table>
@@ -105,7 +105,7 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="pfms">
 
                             </tbody>
                         </table>

@@ -1,60 +1,131 @@
 <?php
-
-use function PHPSTORM_META\map;
-
-require_once 'ErrorHandler.php';
-ErrorHandler::register();
-
 require_once 'database.php';
+require __DIR__ . '/../../vendor/autoload.php';
+
+use Monolog\Logger;
+use Monolog\ErrorHandler;
+use Monolog\Handler\StreamHandler;
+use Monolog\Handler\FirePHPHandler;
 
 
 /**
  * 
  */
+/**
+ * inventoryDB_SQL
+ */
 class inventoryDB_SQL extends database
 {
-
+    private $log;
     // Constructor
     public function __construct()
     {
         $database = new Database();
         $db = $database->dbConnection();
         $this->con = $db;
-    }
 
+        $this->log = new Logger('inventoryDB_SqlError');
+        //send log errors to this fill
+        $this->log->pushHandler(new StreamHandler(__DIR__ .'/logs/inventory_errors.log'), Logger::DEBUG);
+        $this->log->pushHandler(new FirePHPHandler());
+
+        //register the errorHandler
+        ErrorHandler::register($this->log);
+    }
+    
+    /**
+     * getInventory
+     * 
+     * is called from inventoryActions and fills the datatable with product,material & PFMs
+     *
+     * @return void
+     */
     public function getInventory()
     {
+        $this->log->debug('getIventory called!');
         try {
-            $sqlProduct = 'SELECT `products`.`PartName`, `productinventory`.`productID`, `productinventory`.`partQty`, `products`.`MinimumQty`, `products`.`displayOrder`
-                        FROM `products`
-                        INNER JOIN `productinventory` ON (`products`.`ProductID` = `productinventory`.`productID`)
-                        ORDER BY `products`.`displayOrder`';
+            $sqlProduct = 'SELECT 
+                                products.productID AS productID,
+                                productinventory.partQty AS partQty,
+                                products.minQty AS minQty,
+                                products.displayOrder AS displayOrder
+                            FROM
+                                productinventory
+                            INNER JOIN
+                                products ON (productinventory.productID = products.productID)
+                            ORDER BY displayOrder';
+
             $stmtProduct = $this->con->prepare($sqlProduct);
+
             $stmtProduct->execute();
+            
+            $products = $stmtProduct->fetchALL(PDO::FETCH_ASSOC);
+            $iCount = count($products);
 
-            $inventoryProducts = $stmtProduct->fetch(PDO::FETCH_ASSOC);
-            if (!$inventoryProducts) {
+            if (!$products) {
+                $this->log->error('Nothing was returned $inventoryProducts.');
+            
             } else {
+                $this->log->info('$inventoryProducts row count :' . $iCount);
             }
-
+            
             $sqlMaterial = 'SELECT 
-                                `materialinventory`.`MaterialPartNumber`,
-                                `materialinventory`.`Lbs`,
-                                `material`.`MaterialPartNumber`,
-                                `material`.`MaterialName`,
-                                `material`.`ProductID`,
-                                `material`.`MinimumLbs`,
-                                `material`.`Customer`
+                                `materialinventory`.`matPartNumber`,
+                                `materialinventory`.`matLbs`,
+                                `material`.`matPartNumber`,
+                                `material`.`matName`,
+                                `material`.`productID`,
+                                `material`.`minLbs`,
+                                `material`.`customer`
                             FROM
                                 `materialinventory`
-                            INNER JOIN `material` ON (`materialinventory`.`MaterialPartNumber` = `material`.`MaterialPartNumber`)';
+                            INNER JOIN `material` ON (`materialinventory`.`matPartNumber` = `material`.`matPartNumber`)';
             $stmtMaterial = $this->con->prepare($sqlMaterial);
             $stmtMaterial->execute();
-            $inventoryMaterials = $stmtMaterial->fetch(PDO::FETCH_ASSOC);
+            $materials = $stmtMaterial->fetchALL(PDO::FETCH_ASSOC);
+            $mCount = count($materials);
 
-            if (!$inventoryMaterials) {
+            if (!$materials) {
+                $this->log->error('Nothing was returned $materials.');
+                throw new ErrorException(
+                    'Failed to get Material!',
+                    0,
+                    E_ERROR,'',
+                );
             } else {
+                $this->log->info('$materials row count :' . $mCount);
             }
+          
+            $sqlPFM = 'SELECT 
+                `pfm`.`PartNumber`,
+                `pfm`.`PartName`,
+                `pfm`.`MinimumQty`,
+                `pfm`.`AmstedPFM`,
+                `pfminventory`.`Qty`,
+                `pfm`.`ProductID`,
+                `pfm`.`PFMID`,
+                `pfminventory`.`PartNumber`
+                FROM
+                `pfminventory`
+                INNER JOIN `pfm` ON (`pfminventory`.`PartNumber` = `pfm`.`PartNumber`)';
+            $stmtPFM = $this->con->prepare($sqlPFM);
+            $stmtPFM->execute();
+            $pfm = $stmtPFM->fetchAll(PDO::FETCH_ASSOC);
+            $pCunt = count($pfm);
+
+            if (!$materials) {
+                $this->log->error('Nothing was returned $inventoryPFMs.');
+                throw new ErrorException(
+                    'Failed to get PFM',
+                    0,
+                    E_ERROR,'',
+                );
+            } else {
+                $this->log->info('$inventoryMaterials row count :' . $mCount);
+            }
+            $this->log->info('Returnin table data to controller!');
+           return ['products'  => $products, 'materials' => $materials, 'pfms' => $pfm];
+
         } catch (PDOException $e) {
             error_log("Error getting products: " . $e->getMessage());
             //Convert this to an uncaught exception to let ErrorHandler process it
@@ -66,5 +137,6 @@ class inventoryDB_SQL extends database
                 $e->getLine()
             );
         }
+
     }
 }
