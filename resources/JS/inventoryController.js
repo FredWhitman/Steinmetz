@@ -57,8 +57,9 @@ function buildMaterialsTable(materials) {
               <td><span ${colorStyle}> ${row.matName}</span></td>
               <td><span ${colorStyle}> ${row.matLbs}</span></td>
               <td>
-                <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 editLink" style="font-size: 10px; data-bs-toggle ="modal" data-bs-target="#editProductModal">Edit Product</a>
-                <a href="#" class="btn btn-success btn-sm rounded-pill py-0 updateLink" style="font-size: 10px; data-bs-toggle ="modal" data-bs-target="#updateInventoryModal">Update Qty</a>
+                <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 editLink" style = "font-size: 10px; data-bs-placement = "top" title = "edit product" data-bs-toggle = "modal" data-bs-target="#editProductModal"><i class = "bi bi-pencil"></i></a>
+                
+                <a href="#" class="btn btn-success btn-sm rounded-pill py-0 updateLink" style="font-size: 10px;" data-bs-placement="top" title= "update product qty" data-bs-toggle="modal" data-bs-target="#updateInventoryModal"><i class="bi bi-file-earmark-check"></i></a>
               </td>
               </tr>`;
   }
@@ -76,6 +77,7 @@ function buildPfmsTable(pfms) {
               <td>
                 <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 editLink" style="font-size: 10px; data-bs-toggle ="modal" data-bs-target="#editProductModal">Edit Product</a>
                 <a href="#" class="btn btn-success btn-sm rounded-pill py-0 updateLink" style="font-size: 10px; data-bs-toggle ="modal" data-bs-target="#updateInventoryModal">Update Qty</a>
+
               </td>
               </tr>`;
   }

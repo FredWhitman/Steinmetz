@@ -3,6 +3,8 @@
     "description": "Steinmetz production and inventory  management",
     "type": "project",
     "require": {
+        "php":"^8.2",
+        "twbs/bootstrap-icons": "^1.13.1",
         "monolog/monolog": "^3.9"
     },
     "license": "proprietary",
@@ -17,4 +19,5 @@
         }
     ],
     "minimum-stability": "stable"
+
 }
