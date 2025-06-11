@@ -20,7 +20,45 @@
     <!--Navbar -->
     <?php require_once '../includes/steinmetzNavbar.php'; ?>
 
-
+<!-- Add Edit Product start-->
+    <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModal">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="editProductModal">Update Product Details</h1>
+                </div>
+                <div class="modal-body">
+                    <form id="add-qaReject-form" class="needs-validation p-2" novalidate>
+                        <div class="mb-3">
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="qaPartName">Product Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="qaPartName" name="qaPart" required></select></div>
+                                    <div class="invalid-feedback">Product name is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-group sm-3"><label class="input-group-text" for="qaRejects">Min Quantity</label><input type="number" tabindex="1" class="form-control form-control-sm" id="qaRejects" name="rejects" required></div>
+                                <div class="invalid-feedback">Minimum qauntity required!</div>
+                            </div>
+                        </div>
+                        <div>
+                            
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" value="Update" class="btn btn-success" id="update-product-btn">Update Product</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--  Edit Product end-->
 
     <!-- Table to hold the last 4 weeks of production  -->
     <div class="container-fluid">
