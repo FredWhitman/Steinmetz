@@ -66,7 +66,7 @@ class inventoryDB_SQL extends database
             if (!$products) {
                 $this->log->error('Nothing was returned $inventoryProducts.');
             } else {
-                $this->log->info('$inventoryProducts row count :' . $iCount);
+                //$this->log->info('$inventoryProducts row count :' . $iCount);
             }
 
             $sqlMaterial = 'SELECT 
@@ -97,7 +97,7 @@ class inventoryDB_SQL extends database
                     '',
                 );
             } else {
-                $this->log->info('$materials row count :' . $mCount);
+                //$this->log->info('$materials row count :' . $mCount);
             }
 
             $sqlPFM = 'SELECT 
@@ -106,7 +106,7 @@ class inventoryDB_SQL extends database
                 `pfm`.`partName`,
                 `pfm`.`productID`,
                 `pfm`.`minQty`,
-                `pfm`.`amstedPFM`,
+                `pfm`.`customer`,
                 `pfm`.`displayOrder`,
                 `pfminventory`.`partNumber`,
                 `pfminventory`.`Qty`
@@ -130,7 +130,7 @@ class inventoryDB_SQL extends database
                     '',
                 );
             } else {
-                $this->log->info('$inventoryMaterials row count :' . $pCount);
+                //$this->log->info('$inventoryPFM row count :' . $pCount);
             }
             $this->log->info('Returnin table data to controller!');
             return ['products'  => $products, 'materials' => $materials, 'pfms' => $pfm];
@@ -161,16 +161,40 @@ class inventoryDB_SQL extends database
 
         if ($table === 'products') {
             $this->log->info('product record requested');
-            $sql = 'SELECT * products WHERE productID = :productID';
+            $sql = 'SELECT * FROM products WHERE productID = :productID';
             $stmt = $this->con->prepare($sql);
             $stmt->execute([':productID' => $id]);
             $result = $stmt->fetch();
+            if (!$result) {
+                $this->log->warning("NO record found for the $id in table $table. ");
+            }
+
             $this->log->info('getRecord returning : ' . $result['productID']);
             return $result;
         } else if ($table === 'materials') {
-            $sql = '';
+            $sql = 'SELECT * FROM material WHERE matPartNumber = :matPartNumber';
+            try {
+                $stmt = $this->con->prepare($sql);
+                $stmt->execute([':matPartNumber' => $id]);
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                if (!$result) {
+                    $this->log->warning("NO record found for the $id in table $table. ");
+                }
+                $this->log->info('getRecord returning : ' . $result['matPartNumber']);
+                return $result;
+            } catch (PDOException $e) {
+                $this->log->error("Error getting material record for $id in table $table.");
+            }
         } else {
-            $sql = '';
+            $sql = 'SELECT * FROM pfm WHERE pFMID = :pFMID';
+            $stmt = $this->con->prepare($sql);
+            $stmt->execute([':pFMID' => $id]);
+            $result = $stmt->fetch();
+            if (!$result) {
+                $this->log->warning("NO record found for the $id in table $table. ");
+            }
+            $this->log->info('getRecord returning : ' . $result['productID']);
+            return $result;
         }
     }
 }

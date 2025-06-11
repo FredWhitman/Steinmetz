@@ -32,7 +32,7 @@
                         <div class="mb-3">
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="partName">Product Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="partName" name="p_Part" required></select></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="partName">Product Name</label><input type="text" tabindex="1" class="form-control form-control-sm" id="partName" name="p_Part" required></input></div>
                                     <div class="invalid-feedback">Product name is required!</div>
                                 </div>
                             </div>
@@ -51,7 +51,7 @@
                                 <div class="invalid-feedback">qauntity required!</div>
                             </div>
                             <div class="row pb-2">
-                                <div class="input-group sm-3"><label class="input-group-text" for="partWeight">Part Weight (g)</label><input type="number" step=".01" class="form-control form-control-sm" id="partWeight" name="p_partWeight" required></div>
+                                <div class="input-group sm-3"><label class="input-group-text" for="partWeight">Part Weight (lbs)</label><input type="number" step=".01" class="form-control form-control-sm" id="partWeight" name="p_partWeight" required></div>
                                 <div class="invalid-feedback">weight required!</div>
                             </div>
                             <div class="row pb-2">
@@ -95,13 +95,13 @@
                         <div class="mb-3">
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="matName">Material Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="matName" name="p_material" required></select></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="matName">Material Name</label><input type="text" tabindex="1" class="form-control form-control-sm" id="matName" name="p_material" required></input></div>
                                     <div class="invalid-feedback">Material name is required!</div>
                                 </div>
                             </div>
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="minQty">Used for</label><input type="number" tabindex="1" class="form-control form-control-sm" id="productID" name="m_productID" required></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="minQty">Used for</label><input type="text" tabindex="1" class="form-control form-control-sm" id="productID" name="m_productID" required></div>
                                     <div class="invalid-feedback">Minimum qauntity required!</div>
                                 </div>
                             </div>
@@ -110,21 +110,18 @@
                                 <div class="invalid-feedback">qauntity required!</div>
                             </div>
                             <div class="row pb-2">
-                                <div class="input-group sm-3"><label class="input-group-text" for="customer">Customer</label><input type="text" class="form-control form-control-sm" id="customer" name="p_customer" required></div>
+                                <div class="input-group sm-3"><label class="input-group-text" for="customer">Customer</label><input type="text" class="form-control form-control-sm" id="mCustomer" name="m_customer" required></div>
                                 <div class="invalid-feedback">customer required!</div>
                             </div>
                             <div class="row pb-2">
-                                <div class="input-group sm-3"><label class="input-group-text" for="displayOrder">Display Order</label><input type="number" class="form-control form-control-sm" id="displayOrder" name="p_displayOrder" required></div>
+                                <div class="input-group sm-3"><label class="input-group-text" for="displayOrder">Display Order</label><input type="number" class="form-control form-control-sm" id="mDisplayOrder" name="m_displayOrder" required></div>
                                 <div class="invalid-feedback">displayOrder required!</div>
                             </div>
                         </div>
                 </div>
-                <div>
-
-                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" value="Update" class="btn btn-success" id="update-product-btn">Update Product</button>
+                    <button type="submit" value="Update" class="btn btn-success" id="update-product-btn">Update Material</button>
                 </div>
                 </form>
             </div>
@@ -132,6 +129,59 @@
     </div>
     </div>
     <!--  Edit Material end-->
+
+    <!-- Add PFM start-->
+    <div class="modal fade" id="editPFMModal" tabindex="-1" aria-labelledby="editPFMModal">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="editPFMModal">Update PFM Details</h1>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-material-form" class="needs-validation p-2" novalidate>
+                        <div class="mb-3">
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="matName">PFM Part Number</label><input type="text" tabindex="1" class="form-control form-control-sm" id="pNumber" name="pf_number" required></input></div>
+                                    <div class="invalid-feedback">Part Number is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="matName">PFM Name</label><input type="text" tabindex="1" class="form-control form-control-sm" id="pName" name="pf_name" required></input></div>
+                                    <div class="invalid-feedback">Name is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="minQty">Used for</label><input type="text" tabindex="1" class="form-control form-control-sm" id="pProductID" name="p_productID" required></div>
+                                    <div class="invalid-feedback">product used for required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="input-group sm-3"><label class="input-group-text" for="minLbs">Min. Qty</label><input type="number" class="form-control form-control-sm" id="pMinQty" name="p_minQty" required></div>
+                                <div class="invalid-feedback">qauntity required!</div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="input-group sm-3"><label class="input-group-text" for="customer">Customer</label><input type="text" class="form-control form-control-sm" id="pCustomer" name="p_customer" required></div>
+                                <div class="invalid-feedback">customer required!</div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="input-group sm-3"><label class="input-group-text" for="displayOrder">Display Order</label><input type="number" class="form-control form-control-sm" id="pDisplayOrder" name="p_displayOrder" required></div>
+                                <div class="invalid-feedback">displayOrder required!</div>
+                            </div>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" value="Update" class="btn btn-success" id="update-product-btn">Update Material</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+    <!--  Edit PFM end-->
 
     <!-- Table to hold the last 4 weeks of production  -->
     <div class="container-fluid">

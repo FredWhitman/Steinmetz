@@ -35,8 +35,8 @@ if (isset($_GET['getInventory'])) {
     exit();
 }
 
-//Handle Edit product Ajax request from main.js editUser
-if (isset($_GET['editProduct'])) {
+//Handle Edit product Ajax request from main.js editProduct
+if (isset($_GET['editProducts'])) {
 
     header('Content-Type: application/json');
     if (!isset($_GET['id']) || !isset($_GET['table'])) {
@@ -50,6 +50,58 @@ if (isset($_GET['editProduct'])) {
     $table = $_GET['table'];
     $record = $db->getRecord($id, $table);
 
-    echo json_encode($record);
+    if (!$record) {
+        echo json_encode(["error" => "Record not found!"]);
+        exit();
+    }
+
+    echo json_encode($record, JSON_FORCE_OBJECT);
+
+    exit();
+}
+
+//Handle Edit material Ajax request from inventoryController.js editMaterial
+if (isset($_GET['editMaterials'])) {
+
+    header('Content-Type: application/json');
+    if (!isset($_GET['id']) || !isset($_GET['table'])) {
+        echo json_encode(["error" => "Missing required parameters"]);
+        $log->warning("No required paramaters!");
+        exit();
+    }
+
+    $log->info('editMaterial called with this data: ' . $_GET['id'] . ' ' . $_GET['table']);
+    $id = $_GET['id'];
+    $table = $_GET['table'];
+    $record = $db->getRecord($id, $table);
+
+    if (!$record) {
+        echo json_encode(["error" => "Record not found!"]);
+        exit();
+    }
+
+    echo json_encode($record, JSON_FORCE_OBJECT);
+    exit();
+}
+
+if (isset($_GET['editPfms'])) {
+    header('Content-Type: application/json');
+    if (!isset($_GET['id']) || !isset($_GET['table'])) {
+        echo json_encode(["error" => "Missing required parameters"]);
+        $log->warning("No required paramaters!");
+        exit();
+    }
+
+    $log->info('editPFMs called with this data: ' . $_GET['id'] . ' ' . $_GET['table']);
+    $id = $_GET['id'];
+    $table = $_GET['table'];
+    $record = $db->getRecord($id, $table);
+
+    if (!$record) {
+        echo json_encode(["error" => "Record not found!"]);
+        exit();
+    }
+
+    echo json_encode($record, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
     exit();
 }
