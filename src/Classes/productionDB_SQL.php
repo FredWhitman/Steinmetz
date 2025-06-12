@@ -180,7 +180,15 @@ class productionDB extends database
     {
         error_log("");
     }
-
+    
+    /**
+     * insertProdLog
+     *
+     * @param  mixed $prodData form data array
+     * @param  mixed $materialData form data array
+     * @param  mixed $tempData form data array
+     * @return void
+     */
     public function insertProdLog($prodData, $materialData, $tempData)
     {
         try {
@@ -341,7 +349,14 @@ class productionDB extends database
         }
     }
 
-    //check production logs for the date of production log about to be added.
+    //check production logs for the date of production log about to be added.    
+    /**
+     * checkLogDates
+     *
+     * @param  mixed $productID
+     * @param  mixed $prodDate
+     * @return void
+     */
     public function checkLogDates($productID, $prodDate)
     {
         try {
@@ -358,7 +373,14 @@ class productionDB extends database
         }
     }
 
-    //check to see if there is an open production run for the submitted productID
+      
+    /**
+     * CheckProductionRuns
+     * check to see if there is an open production run for the submitted productID 
+
+     * @param  mixed $productID
+     * @return void
+     */
     public function CheckProductionRuns($productID){
         error_log('productionDB_SQL->CheckProductionRuns Called');
         $sql = "SELECT logID, productID, runComplete FROM prodrunlog WHERE productID = :productID AND runComplete = :runComplete";
@@ -374,7 +396,14 @@ class productionDB extends database
 
     }
     
-    //Passing the production run id and return the material,productIDs, qarejects, purge totals for the production run.
+    /**
+     * getMaterialTotals
+     *
+     * Passing the production run id and return the material,productIDs, qarejects, purge totals for the production run.    
+     * 
+     * @param  mixed $prodRunID
+     * @return void
+     */
     private function getMaterialTotals($prodRunID)
     {
         try {
@@ -404,8 +433,15 @@ class productionDB extends database
         }
     }
 
-    //This function witll return the material info ffrom the previous production log
-    //so that daily used can be filled out on the add productionlog form
+     /**
+     * getLastMaterialLogForRun
+     * 
+     *This function witll return the material info ffrom the previous production log
+     *so that daily used can be filled out on the add productionlog form  \
+       
+     * @param  mixed $productID
+     * @return void
+     */
     public function getLastMaterialLogForRun($productID)
     {
         $prodRunID = $this->getProdRunID($productID);

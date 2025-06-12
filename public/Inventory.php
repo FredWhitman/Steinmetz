@@ -20,7 +20,7 @@
     <!--Navbar -->
     <?php require_once '../includes/steinmetzNavbar.php'; ?>
 
-    <!-- Add Edit Product start-->
+    <!-- Edit Product start-->
     <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModal">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">

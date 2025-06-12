@@ -148,10 +148,11 @@ class inventoryDB_SQL extends database
     }
 
     /**
-     * Undocumented function
+     * getRecord
+     *  This function returns either a product, material or pfm record for editting.
      *
-     * @param [type] $table 
-     * @param [type] $id
+     * @param [type] $table //This is the table that will be queried
+     * @param [type] $id  //record id used for the query
      * @return void
      */
     public function getRecord($id, $table)
@@ -185,7 +186,7 @@ class inventoryDB_SQL extends database
             } catch (PDOException $e) {
                 $this->log->error("Error getting material record for $id in table $table.");
             }
-        } else {
+        } else {//pfms
             $sql = 'SELECT * FROM pfm WHERE pFMID = :pFMID';
             $stmt = $this->con->prepare($sql);
             $stmt->execute([':pFMID' => $id]);
@@ -196,5 +197,46 @@ class inventoryDB_SQL extends database
             $this->log->info('getRecord returning : ' . $result['productID']);
             return $result;
         }
+    }
+
+    public function editInventory($data){
+        try {
+            
+            $this->log->info('editInventory called and transaction begun.');
+
+            $sql ="UPDATE products 
+                    SET partName = :partName, 
+                        minQty = :minQty, 
+                        boxesPerSkid = :boxesPerSkid, 
+                        partsPerBox = :partsPerBox, 
+                        partWeight = :partWeight, 
+                        displayOrder = :displayOrder, 
+                        customer = :customer, 
+                        productionType = :productionType 
+                    WHERE productID = : productID";
+
+            $stmt = $this->con->prepare($sql);
+            $stmt->bindParam(':productID', $data['productID'], PDO::PARAM_STR);
+            $stmt->bindParam(':partName', $data['partName'], PDO::PARAM_STR);
+            $stmt->bindParam(':minQty', $data['minQty'], PDO::PARAM_INT);
+            $stmt->bindParam(':boxesPerSkid', $data['boxesPerSkid'], PDO::PARAM_INT);
+            $stmt->bindParam(':partsPerBox', $data['partsPerBox'], PDO::PARAM_INT);
+            $stmt->bindParam(':partWeight', $data['partWeight'], PDO::PARAM_INT);
+            $stmt->bindParam(':displayOrder', $data['displayOrder'], PDO::PARAM_INT);        
+            $stmt->bindParam(':customer', $data['customer'], PDO::PARAM_INT);    
+            $stmt->bindParam(':productionType', $data['productionType'], PDO::PARAM_INT);
+            $result= $stmt->execute();
+            
+            if(!$result){
+                $this->log->error('Failed to update product: ' . $data['productID']);
+            }
+            $this->log->info('Product Updated!');
+            return ["success" => true, "message" => "Transaction completed successfully.", "product: " => $data['productID']];
+
+        } catch (PDOException $e) {
+            $this->log->error("ERROR updateInventory");
+        }
+        
+        
     }
 }

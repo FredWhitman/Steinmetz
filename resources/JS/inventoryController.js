@@ -1,4 +1,5 @@
 const tbodyProducts = document.getElementById("products"); //Set the tbody to display last 4 weeks of production
+const editProductForm = document.getElementById("edit-product-form");
 
 //Fetch inventory logs Ajax request
 window.fetchProductsMaterialPFM = async function () {
@@ -65,6 +66,7 @@ function buildMaterialsTable(materials) {
   return html;
 }
 
+
 function buildPfmsTable(pfms) {
   let html = "";
   for (const row of pfms) {
@@ -82,23 +84,7 @@ function buildPfmsTable(pfms) {
   return html;
 }
 
-/* document.getElementById("products").addEventListener("click", (e) => {
-  if (e.target.closest("a.editLink")) {
-    e.preventDefault();
-    let rowElement = e.target.closest("tr"); // Get the parent row
-    let id = rowElement ? rowElement.getAttribute("data-id") : null;
-    let table = "products";
-
-    console.log("extracted ID: ", id);
-    console.log("Table: ", table);
-    if (id && id.trim() !== "") {
-      editProduct(id.trim(), table);
-    } else {
-      console.error("ERROR: `data-id` is missing or incorrect!");
-    }
-  }
-}); */
-
+/// This applies listeners to each table and monitors for a click
 const setupEditEventListener = (elementId, table) => {
   document.getElementById(elementId).addEventListener("click", (e) => {
     if (e.target.closest("a.editLink")) {
@@ -123,6 +109,7 @@ setupEditEventListener("products", "products");
 setupEditEventListener("materials", "materials");
 setupEditEventListener("pfms", "pfms");
 
+//fills update modal for with queried data
 const fetchAndFillForm = async (id, table) => {
   console.log("Fetching record:", id, table);
 
@@ -186,86 +173,22 @@ const fetchAndFillForm = async (id, table) => {
   }
 };
 
-/* const editProduct = async (id, table) => {
-  console.log("id: ", id);
-  console.log("table: ", table);
-  let url = `../src/classes/inventoryActions.php?editProduct=1&id=${id}&table=${table}`;
-  //console.log("Fetching: ", url);
-  const response = await fetch(url);
-  const rawText = await response.text();
-  console.log("RAW server response: ", rawText);
+editProductForm.addEventListener("submit", async (e) => {
+  //prevent form from submitting data to DB
+  e.preventDefault();
+  //console.log("Edit Product submit button has been clicked!");
+  const formData = new FormData(editProductForm);
 
-  try {
-    const responseData = JSON.parse(rawText);
-    console.log("Parsed response: ", responseData);
-
-    if (!responseData || responseData.error) {
-      console.error("Error from server: ", responseData.error);
-      return;
-    }
-    document.getElementById("partName").value = responseData["partName"] || "";
-    document.getElementById("minQty").value = responseData["minQty"] || "";
-    document.getElementById("boxSkid").value =
-      responseData["boxesPerSkid"] || "";
-    document.getElementById("partBox").value =
-      responseData["partsPerBox"] || "";
-    document.getElementById("partWeight").value =
-      responseData["partWeight"] || "";
-    document.getElementById("customer").value = responseData["customer"] || "";
-    document.getElementById("partType").value =
-      responseData["productionType"] || "";
-    document.getElementById("displayOrder").value =
-      responseData["displayOrder"] || "";
-  } catch (error) {
-    console.error("Failed to parse JSON: ", error);
-  }
-};
-
-document.getElementById("materials").addEventListener("click", (e) => {
-  if (e.target.closest("a.editLink")) {
+  //check to make sure the input fields are not empty
+  if (!editProductForm.checkValidity()) {
     e.preventDefault();
-    let rowElement = e.target.closest("tr"); // Get the parent row
-    let id = rowElement ? rowElement.getAttribute("data-id") : null;
-    let table = "materials";
+    e.stopPropagation();
+    editProductForm.classList.add("was-validated");
+    return false;
+  } else {
+     const data = {
 
-    console.log("extracted ID: ", id);
-    console.log("Table: ", table);
-
-    if (id && id.trim() !== "") {
-      editMaterials(id.trim(), table);
-    } else {
-      console.error("ERROR: `data-id` is missing or incorrect!");
-    }
+     }
   }
+
 });
-
-const editMaterials = async (id, table) => {
-  console.log("id: ", id);
-  console.log("table: ", table);
-  let url = `../src/classes/inventoryActions.php?editMaterial=1&id=${id}&table=${table}`;
-  //console.log("Fetching: ", url);
-  const response = await fetch(url);
-  const rawText = await response.text();
-  console.log("RAW server response: ", rawText);
-
-  try {
-    const responseData = JSON.parse(rawText);
-    console.log("Parsed response: ", responseData);
-
-    if (!responseData || responseData.error) {
-      console.error("Error from server: ", responseData.error);
-      return;
-    }
-
-    document.getElementById("matName").value = responseData["matName"] || "";
-    document.getElementById("productID").value =
-      responseData["productID"] || "";
-    document.getElementById("minLbs").value = responseData["minLbs"] || "";
-    document.getElementById("mCustomer").value = responseData["customer"] || "";
-    document.getElementById("mDisplayOrder").value =
-      responseData["displayOrder"] || "";
-  } catch (error) {
-    console.error("Failed to parse JSON: ", error);
-  }
-};
- */

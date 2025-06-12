@@ -105,3 +105,29 @@ if (isset($_GET['editPfms'])) {
     echo json_encode($record, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
     exit();
 }
+
+//Handles Ajax call to edit inventory items
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    $log->info(" " . "\n" . print_r($data, true));
+
+    if (isset($data["action"]) && $data["action"] === "editProduct") {
+        if (isset($data["products"])) {
+            $result = $db->editInventory($data);
+
+            if ($result["success"]) {
+                echo $util->showMessage('success', 'Product has been updated!');
+            } else {
+                echo $util->showMessage('danger', 'Failed to update product details.');
+            }
+        } else {
+            echo "Missing required data! Failed to pass log data!";
+            http_response_code(400);
+        }
+    } else {
+        echo "Unauthorized request!";
+        http_response_code(403); // Forbidden status
+    }
+
+}
