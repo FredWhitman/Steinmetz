@@ -59,12 +59,13 @@ AUTO_INCREMENT=590 ROW_FORMAT=DYNAMIC CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_g
 /* Structure for the `material` table : */
 
 CREATE TABLE `material` (
-  `MaterialPartNumber` VARCHAR(20) COLLATE latin1_swedish_ci NOT NULL,
-  `MaterialName` VARCHAR(50) COLLATE latin1_swedish_ci DEFAULT NULL,
-  `ProductID` VARCHAR(20) COLLATE latin1_swedish_ci DEFAULT NULL,
-  `MinimumLbs` INTEGER(11) DEFAULT NULL,
-  `Customer` VARCHAR(50) COLLATE latin1_swedish_ci DEFAULT NULL COMMENT 'Material for Customer Products',
-  PRIMARY KEY USING BTREE (`MaterialPartNumber`)
+  `matPartNumber` VARCHAR(20) COLLATE latin1_swedish_ci NOT NULL,
+  `matName` VARCHAR(50) COLLATE latin1_swedish_ci DEFAULT NULL,
+  `productID` VARCHAR(20) COLLATE latin1_swedish_ci DEFAULT NULL,
+  `minLbs` INTEGER(11) DEFAULT NULL,
+  `customer` VARCHAR(50) COLLATE latin1_swedish_ci DEFAULT NULL COMMENT 'Material for Customer Products',
+  `displayOrder` INTEGER(11) DEFAULT NULL,
+  PRIMARY KEY USING BTREE (`matPartNumber`)
 ) ENGINE=InnoDB
 ROW_FORMAT=DYNAMIC CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci'
 ;
@@ -72,10 +73,10 @@ ROW_FORMAT=DYNAMIC CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci'
 /* Structure for the `materialinventory` table : */
 
 CREATE TABLE `materialinventory` (
-  `MaterialPartNumber` VARCHAR(20) COLLATE latin1_swedish_ci NOT NULL,
-  `Lbs` DOUBLE(15,3) NOT NULL,
-  PRIMARY KEY USING BTREE (`MaterialPartNumber`),
-  UNIQUE KEY `MaterialPartNumber` USING BTREE (`MaterialPartNumber`)
+  `matPartNumber` VARCHAR(20) COLLATE latin1_swedish_ci NOT NULL,
+  `matLbs` DOUBLE(15,3) NOT NULL,
+  PRIMARY KEY USING BTREE (`matPartNumber`),
+  UNIQUE KEY `MaterialPartNumber` USING BTREE (`matPartNumber`)
 ) ENGINE=InnoDB
 ROW_FORMAT=DYNAMIC CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci'
 ;
@@ -95,7 +96,7 @@ CREATE TABLE `materiallog` (
   `matUsed4` DOUBLE(15,3) NOT NULL,
   PRIMARY KEY USING BTREE (`logID`)
 ) ENGINE=InnoDB
-AUTO_INCREMENT=107 ROW_FORMAT=DYNAMIC CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci'
+AUTO_INCREMENT=111 ROW_FORMAT=DYNAMIC CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci'
 ;
 
 /* Structure for the `parttransaction` table : */
@@ -118,14 +119,15 @@ AUTO_INCREMENT=8485 ROW_FORMAT=DYNAMIC CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_
 /* Structure for the `pfm` table : */
 
 CREATE TABLE `pfm` (
-  `PFMID` INTEGER(11) NOT NULL AUTO_INCREMENT,
-  `PartNumber` VARCHAR(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `PartName` VARCHAR(25) COLLATE utf8mb4_general_ci NOT NULL,
-  `ProductID` VARCHAR(25) COLLATE utf8mb4_general_ci NOT NULL,
-  `MinimumQty` INTEGER(11) DEFAULT NULL,
-  `AmstedPFM` INTEGER(11) NOT NULL DEFAULT 0,
-  PRIMARY KEY USING BTREE (`PFMID`),
-  UNIQUE KEY `PFMID` USING BTREE (`PFMID`)
+  `pFMID` INTEGER(11) NOT NULL AUTO_INCREMENT,
+  `partNumber` VARCHAR(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `partName` VARCHAR(25) COLLATE utf8mb4_general_ci NOT NULL,
+  `productID` VARCHAR(25) COLLATE utf8mb4_general_ci NOT NULL,
+  `minQty` INTEGER(11) DEFAULT NULL,
+  `customer` VARCHAR(20) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '0',
+  `displayOrder` INTEGER(11) DEFAULT NULL,
+  PRIMARY KEY USING BTREE (`pFMID`),
+  UNIQUE KEY `PFMID` USING BTREE (`pFMID`)
 ) ENGINE=InnoDB
 AUTO_INCREMENT=27 ROW_FORMAT=DYNAMIC CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci'
 COMMENT='Purchased Finished Material'
@@ -134,10 +136,10 @@ COMMENT='Purchased Finished Material'
 /* Structure for the `pfminventory` table : */
 
 CREATE TABLE `pfminventory` (
-  `PartNumber` VARCHAR(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `partNumber` VARCHAR(50) COLLATE utf8mb4_general_ci NOT NULL,
   `Qty` INTEGER(11) NOT NULL,
-  PRIMARY KEY USING BTREE (`PartNumber`),
-  UNIQUE KEY `PartNumber` USING BTREE (`PartNumber`)
+  PRIMARY KEY USING BTREE (`partNumber`),
+  UNIQUE KEY `PartNumber` USING BTREE (`partNumber`)
 ) ENGINE=InnoDB
 ROW_FORMAT=DYNAMIC CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci'
 ;
@@ -167,10 +169,10 @@ AUTO_INCREMENT=10 ROW_FORMAT=DYNAMIC CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_ge
 /* Structure for the `productinventory` table : */
 
 CREATE TABLE `productinventory` (
-  `ProductID` VARCHAR(25) COLLATE utf8mb4_general_ci NOT NULL,
-  `PartQty` INTEGER(11) DEFAULT NULL,
-  `BlenderStartTotal` DOUBLE(11,3) DEFAULT NULL,
-  PRIMARY KEY USING BTREE (`ProductID`)
+  `productID` VARCHAR(25) COLLATE utf8mb4_general_ci NOT NULL,
+  `partQty` INTEGER(11) DEFAULT NULL,
+  `updated_last` TIMESTAMP NULL DEFAULT current_timestamp(),
+  PRIMARY KEY USING BTREE (`productID`)
 ) ENGINE=InnoDB
 ROW_FORMAT=DYNAMIC CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci'
 ;
@@ -194,22 +196,22 @@ CREATE TABLE `productionlogs` (
   PRIMARY KEY USING BTREE (`logID`),
   UNIQUE KEY `ProductionID` USING BTREE (`logID`)
 ) ENGINE=InnoDB
-AUTO_INCREMENT=107 ROW_FORMAT=DYNAMIC CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci'
+AUTO_INCREMENT=111 ROW_FORMAT=DYNAMIC CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci'
 ;
 
 /* Structure for the `products` table : */
 
 CREATE TABLE `products` (
-  `ProductID` VARCHAR(25) COLLATE utf8mb4_general_ci NOT NULL,
-  `PartName` VARCHAR(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `MinimumQty` INTEGER(11) DEFAULT NULL,
-  `BoxesPerSkid` INTEGER(4) DEFAULT NULL,
-  `PartsPerBox` INTEGER(4) DEFAULT NULL,
-  `PartWeight` DOUBLE(8,3) DEFAULT NULL,
+  `productID` VARCHAR(25) COLLATE utf8mb4_general_ci NOT NULL,
+  `partName` VARCHAR(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `minQty` INTEGER(11) DEFAULT NULL,
+  `boxesPerSkid` INTEGER(4) DEFAULT NULL,
+  `partsPerBox` INTEGER(4) DEFAULT NULL,
+  `partWeight` DOUBLE(8,3) DEFAULT NULL,
   `displayOrder` INTEGER(11) DEFAULT NULL,
   `customer` VARCHAR(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `productionType` VARCHAR(25) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  PRIMARY KEY USING BTREE (`ProductID`)
+  PRIMARY KEY USING BTREE (`productID`)
 ) ENGINE=InnoDB
 ROW_FORMAT=DYNAMIC CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci'
 ;
@@ -253,7 +255,7 @@ CREATE TABLE `templog` (
   `moldTemp` INTEGER(11) NOT NULL,
   PRIMARY KEY USING BTREE (`logID`)
 ) ENGINE=InnoDB
-AUTO_INCREMENT=107 ROW_FORMAT=DYNAMIC CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci'
+AUTO_INCREMENT=111 ROW_FORMAT=DYNAMIC CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci'
 ;
 
 /* Definition for the `Get_All_Material_Info` procedure : */
@@ -364,37 +366,35 @@ COMMIT;
 
 /* Data for the `material` table  (LIMIT 0,500) */
 
-INSERT INTO `material` (`MaterialPartNumber`, `MaterialName`, `ProductID`, `MinimumLbs`, `Customer`) VALUES
-  (' LC10358','Red Pad Colorant','98-1-10881',100,'Amsted'),
-  ('01622858','Texin 255','10601',20000,'Amsted'),
-  ('01623811','Texin 990R','10454',1400,'Amsted'),
-  ('02983811','Texin 945U','10454',1400,'Amsted'),
-  ('0931474','Yellow  BBG Colorant','WE-5525',99,'Amsted'),
-  ('100708001','Chemlon 109H','WE-5525',1400,'Amsted'),
-  ('1195A10','1195A10 Elastollan','10454',10,NULL),
-  ('223451','Avalon 95AB','10601',1000,NULL),
-  ('223478','Avalon 60DB','10601',1000,NULL),
-  ('255 Mix','255 Mix','10601',0,NULL),
-  ('A92P4637','A92P4637','10454',10,NULL),
-  ('Andur 75DPLF','Andur 75DPLF Drum ','T-Part',1,NULL),
-  ('ARC6608-NT','ARC6608-NT','WE-5525',0,'Amsted'),
-  ('B1_Blend_Alt','B1_Blend_Alt','10454',1,'Amsted'),
-  ('BSP1000','BSP1000 (Black TPU Pigment)','10601',50,NULL),
-  ('Desmopan 9390AU','Desmopan 9390AU','10454',0,NULL),
-  ('Desmopan 9395AU','Desmopan 9395AU','10454',0,NULL),
-  ('Elastollan C95A10','Elastollan C95A10','10601',0,NULL),
-  ('Elastollan S95A55N','Elastollan S95A55N','10601',2000,NULL),
-  ('Laripur 5725','Laripur 5725','10601',0,NULL),
-  ('RV53631502','Teal Blue','10454',800,'Amsted'),
-  ('RV64631325','Texin 255 Green','10601',2000,'Amsted'),
-  ('T-Color','T-Color','10522A',0,NULL),
-  ('T-Material','T-Material','10522A',0,NULL),
-  ('Texin 292A','Texin 292A','10601',0,NULL);
+INSERT INTO `material` (`matPartNumber`, `matName`, `productID`, `minLbs`, `customer`, `displayOrder`) VALUES
+  (' LC10358','Red Pad Colorant','98-1-10881',100,'Amsted',8),
+  ('01622858','Texin 255','10601',20000,'Amsted',1),
+  ('01623811','Texin 990R','10454',1400,'Amsted',2),
+  ('02983811','Texin 945U','10454',1400,'Amsted',3),
+  ('0931474','Yellow  BBG Colorant','WE-5525',99,'Amsted',11),
+  ('100708001','Chemlon 109H','WE-5525',1400,'Amsted',9),
+  ('1195A10','1195A10 Elastollan','10454',10,NULL,20),
+  ('223451','Avalon 95AB','10601',1000,NULL,14),
+  ('223478','Avalon 60DB','10601',1000,NULL,22),
+  ('255 Mix','255 Mix','10601',0,NULL,12),
+  ('A92P4637','A92P4637','10454',10,NULL,21),
+  ('ARC6608-NT','ARC6608-NT','WE-5525',0,'Amsted',4),
+  ('B1_Blend_Alt','B1_Blend_Alt','10454',1,'Amsted',13),
+  ('BSP1000','BSP1000 (Black TPU Pigment)','10601',50,NULL,10),
+  ('Desmopan 9390AU','Desmopan 9390AU','10454',0,NULL,19),
+  ('Desmopan 9395AU','Desmopan 9395AU','10454',0,NULL,18),
+  ('Elastollan C95A10','Elastollan C95A10','10601',0,NULL,17),
+  ('Elastollan S95A55N','Elastollan S95A55N','10601',2000,NULL,16),
+  ('Laripur 5725','Laripur 5725','10601',0,NULL,15),
+  ('LC11700','Yellow pigment Drumco','WE-5525',0,NULL,7),
+  ('RV53631502','Teal Blue','10454',800,'Amsted',6),
+  ('RV64631325','Texin 255 Green','10601',2000,'Amsted',5),
+  ('Texin 292A','Texin 292A','10601',0,NULL,23);
 COMMIT;
 
 /* Data for the `materialinventory` table  (LIMIT 0,500) */
 
-INSERT INTO `materialinventory` (`MaterialPartNumber`, `Lbs`) VALUES
+INSERT INTO `materialinventory` (`matPartNumber`, `matLbs`) VALUES
   (' LC10358',0.000),
   ('01622858',33160.414),
   ('01623811',1467.658),
@@ -530,43 +530,47 @@ INSERT INTO `materiallog` (`logID`, `prodLogID`, `mat1`, `matUsed1`, `mat2`, `ma
   (103,103,'ARC6608-NT',7624.907,'Yellow  BBG Colorant',116.116,'',0.000,'',0.000),
   (104,104,'Texin 990R',3308.031,'Teal Blue',115.583,'empty',0.000,'Texin 945U',3304.183),
   (105,105,'Texin 990R',3834.724,'Teal Blue',134.209,'empty',0.000,'Texin 945U',381.410),
-  (106,106,'Texin 990R',4220.509,'Teal Blue',145.941,'empty',0.000,'Texin 945U',4200.509);
+  (106,106,'Texin 990R',4220.509,'Teal Blue',145.941,'empty',0.000,'Texin 945U',4200.509),
+  (107,107,'Texin 255',2004.303,'Texin 255 Green',30.641,'',0.000,'',0.000),
+  (108,108,'Texin 255',4106.076,'Texin 255 Green',64.198,'',0.000,'',0.000),
+  (109,109,'01622858',6200.599,'RV64631325',97.616,'',0.000,'',0.000),
+  (110,110,'Texin 255',8303.261,'Texin 255 Green',130.771,'',0.000,'',0.000);
 COMMIT;
 
 /* Data for the `pfm` table  (LIMIT 0,500) */
 
-INSERT INTO `pfm` (`PFMID`, `PartNumber`, `PartName`, `ProductID`, `MinimumQty`, `AmstedPFM`) VALUES
-  (1,'0 Inspection Stickers','0 Inspection Stickers','10601',1000,1),
-  (2,'1 Inspection Stickers','1 Inspection Stickers','10601',1000,1),
-  (3,'10 1/2\" x 17\"','Box Dividers','10601',6000,1),
-  (4,'10603-2','Copper Pins - 10603-2','98-1-10894',500,1),
-  (5,'17 1/2\" x 10 1/2\" x17\"','Brake Beam Guide Boxes','WE-5525',120,1),
-  (6,'18 3/4\" x 10 1/8\" x 20 3/4\"','Adapter Plus Boxes','10601',1000,1),
-  (7,'2 Inspection Stickers','2 Inspection Stickers','10601',1000,1),
-  (8,'3 Inspection Stickers','3 Inspection Stickers','10601',500,1),
-  (9,'349-61A0','Copper Pins - 10603','10601',80000,1),
-  (10,'4 Inspection Stickers','4 Inspection Stickers','10601',1000,1),
-  (11,'Blank Label','Blank Label','10601',500,1),
-  (12,'Blue Stickers','Blue Stickers','10454',1000,1),
-  (13,'Green Stickers','Green Stickers','10601',1000,1),
-  (14,'QC Accepted Stickers','QC Accepted Stickers','10601',1000,1),
-  (15,'QC Approval Stickers','QC Approval Stickers','10601',1000,1),
-  (16,'Red Stickers','Red Stickers','98-1-10881',1000,1),
-  (17,'S-458-1 \"10454 Labels\"','10454 Labels','10454',1000,1),
-  (18,'S-458-1 \"10457 Labels\"','10457 Labels','10457',500,1),
-  (19,'S-458-1 \"10471 Labels\"','10471 Labels','10471',500,1),
-  (20,'S-458-1 \"10522A Labels\"','10522A Labels','10522A',500,1),
-  (21,'S-458-1 \"10601 Labels\"','10601 Labels','10601',1000,1),
-  (22,'S-458-1 \"98-1-10835 Labels\"','98-1-10835 Labels','98-1-10835',1000,1),
-  (23,'S-458-1 \"98-1-10881 Labels\"','98-1-10881','98-1-10881',1000,1),
-  (24,'S-458-1 \"98-1-10894 Labels\"','98-1-10894 Labels','98-1-10894',500,1),
-  (25,'S-458-1 \"WE-5525 Labels\"','WE-5525 Labels','WE-5525',500,1),
-  (26,'Yellow Stickers','Yellow Stickers','WE-5525',500,1);
+INSERT INTO `pfm` (`pFMID`, `partNumber`, `partName`, `productID`, `minQty`, `customer`, `displayOrder`) VALUES
+  (1,'0 Inspection Stickers','0 Inspection Stickers','10601',1000,'Amsted',22),
+  (2,'1 Inspection Stickers','1 Inspection Stickers','10601',1000,'Amsted',26),
+  (3,'10 1/2\" x 17\"','Box Dividers','10601',6000,'Amsted',3),
+  (4,'10603-2','Copper Pins - 10603-2','98-1-10894',500,'Amsted',4),
+  (5,'17 1/2\" x 10 1/2\" x17\"','Brake Beam Guide Boxes','WE-5525',120,'Amsted',2),
+  (6,'18 3/4\" x 10 1/8\" x 20 3/4\"','Adapter Plus Boxes','10601',1000,'Amsted',1),
+  (7,'2 Inspection Stickers','2 Inspection Stickers','10601',1000,'Amsted',25),
+  (8,'3 Inspection Stickers','3 Inspection Stickers','10601',500,'Amsted',18),
+  (9,'349-61A0','Copper Pins - 10603','10601',80000,'Amsted',27),
+  (10,'4 Inspection Stickers','4 Inspection Stickers','10601',1000,'Amsted',24),
+  (11,'Blank Label','Blank Label','10601',500,'Amsted',23),
+  (12,'Blue Stickers','Blue Stickers','10454',1000,'Amsted',15),
+  (13,'Green Stickers','Green Stickers','10601',1000,'Amsted',14),
+  (14,'QC Accepted Stickers','QC Accepted Stickers','10601',1000,'Amsted',20),
+  (15,'QC Approval Stickers','QC Approval Stickers','10601',1000,'Amsted',19),
+  (16,'Red Stickers','Red Stickers','98-1-10881',1000,'Amsted',16),
+  (17,'S-458-1 \"10454 Labels\"','10454 Labels','10454',1000,'Amsted',6),
+  (18,'S-458-1 \"10457 Labels\"','10457 Labels','10457',500,'Amsted',11),
+  (19,'S-458-1 \"10471 Labels\"','10471 Labels','10471',500,'Amsted',12),
+  (20,'S-458-1 \"10522A Labels\"','10522A Labels','10522A',500,'Amsted',13),
+  (21,'S-458-1 \"10601 Labels\"','10601 Labels','10601',1000,'Amsted',5),
+  (22,'S-458-1 \"98-1-10835 Labels\"','98-1-10835 Labels','98-1-10835',1000,'Amsted',9),
+  (23,'S-458-1 \"98-1-10881 Labels\"','98-1-10881','98-1-10881',1000,'Amsted',7),
+  (24,'S-458-1 \"98-1-10894 Labels\"','98-1-10894 Labels','98-1-10894',500,'Amsted',10),
+  (25,'S-458-1 \"WE-5525 Labels\"','WE-5525 Labels','WE-5525',500,'Amsted',8),
+  (26,'Yellow Stickers','Yellow Stickers','WE-5525',500,'Amsted',17);
 COMMIT;
 
 /* Data for the `pfminventory` table  (LIMIT 0,500) */
 
-INSERT INTO `pfminventory` (`PartNumber`, `Qty`) VALUES
+INSERT INTO `pfminventory` (`partNumber`, `Qty`) VALUES
   ('0 Inspection Stickers',4000),
   ('1 Inspection Stickers',4000),
   ('10 1/2\" x 17\"',26000),
@@ -607,18 +611,17 @@ INSERT INTO `prodrunlog` (`logID`, `productID`, `startDate`, `endDate`, `mat1Lbs
   (6,'WE-5525','2025-05-08','2025-05-29',7624.904,116.116,0.000,0.000,12978,98,0,0.000,'yes'),
   (7,'98-1-10881','2025-05-14','2025-05-16',226.945,7.930,0.000,223.380,350,25,0,0.000,'yes'),
   (8,'10454','2025-05-19','2025-05-31',22723.287,774.754,0.000,19240.110,7498,18,0,0.000,'yes'),
-  (9,'10601','2025-06-02',NULL,0.000,0.000,0.000,0.000,0,0,0,0.000,'no');
+  (9,'10601','2025-06-02',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,0.000,'no');
 COMMIT;
 
 /* Data for the `productinventory` table  (LIMIT 0,500) */
 
-INSERT INTO `productinventory` (`ProductID`, `PartQty`, `BlenderStartTotal`) VALUES
+INSERT INTO `productinventory` (`productID`, `partQty`, `updated_last`) VALUES
   ('10454',13093,NULL),
   ('10457',-20,NULL),
   ('10471',0,NULL),
   ('10522A',0,NULL),
-  ('10601',30106,NULL),
-  ('10601A',0,NULL),
+  ('10601',24094,NULL),
   ('98-1-10702',36,NULL),
   ('98-1-10730',84,NULL),
   ('98-1-10835',896,NULL),
@@ -736,12 +739,16 @@ INSERT INTO `productionlogs` (`logID`, `productID`, `prodDate`, `runStatus`, `pr
   (103,'WE-5525','2025-05-29','end',101,6,103,103,738,52,0,0.000,'Ran out of pigment and ended production run'),
   (104,'10454','2025-05-29','in progress',102,8,0,0,402,2,0,0.000,NULL),
   (105,'10454','2025-05-30','in progress',104,8,0,0,952,0,0,0.000,NULL),
-  (106,'10454','2025-05-31','end',105,8,0,0,916,0,0,0.000,NULL);
+  (106,'10454','2025-05-31','end',105,8,0,0,916,0,0,0.000,NULL),
+  (107,'10601','2025-06-02','start',0,9,107,107,1130,8,0,0.000,NULL),
+  (108,'10601','2025-06-03','in progress',107,9,108,108,1636,0,0,0.000,NULL),
+  (109,'10601','2025-06-04','in progress',108,9,109,109,1628,0,0,0.000,NULL),
+  (110,'10601','2025-06-05','in progress',109,9,110,110,1626,0,0,0.000,NULL);
 COMMIT;
 
 /* Data for the `products` table  (LIMIT 0,500) */
 
-INSERT INTO `products` (`ProductID`, `PartName`, `MinimumQty`, `BoxesPerSkid`, `PartsPerBox`, `PartWeight`, `displayOrder`, `customer`, `productionType`) VALUES
+INSERT INTO `products` (`productID`, `partName`, `minQty`, `boxesPerSkid`, `partsPerBox`, `partWeight`, `displayOrder`, `customer`, `productionType`) VALUES
   ('10454','10454',7000,20,32,1.243,2,'Amsted','Injection'),
   ('10457','10457',500,20,32,NULL,10,'Amsted','Cast'),
   ('10471','10471',500,20,32,NULL,9,'Amsted','Cast'),
@@ -749,8 +756,8 @@ INSERT INTO `products` (`ProductID`, `PartName`, `MinimumQty`, `BoxesPerSkid`, `
   ('10601','10601',20000,20,32,1.303,1,'Amsted','Injection'),
   ('98-1-10702','98-1-10702',500,20,32,NULL,11,'Amsted','Cast'),
   ('98-1-10730','98-1-10730',100,20,32,NULL,7,'Amsted','Cast'),
-  ('98-1-10835','98-1-10835',NULL,20,32,NULL,6,'Amsted','Injection'),
-  ('98-1-10881','98-1-10881',2000,20,32,NULL,4,'Amsted','Injection'),
+  ('98-1-10835','98-1-10835',10,20,32,1.242,6,'Amsted','Injection'),
+  ('98-1-10881','98-1-10881',2000,20,32,1.242,4,'Amsted','Injection'),
   ('98-1-10894','98-1-10894',50,0,0,NULL,5,'Amsted','Injection'),
   ('98-1-11020','98-1-11020',1000,20,32,NULL,8,'Amsted','Injection'),
   ('WE-5525','WE-5525',1000,20,50,NULL,3,'Amsted','Injection');
@@ -864,7 +871,11 @@ INSERT INTO `templog` (`logID`, `prodLogID`, `bigDryerTemp`, `bigDryerDew`, `pre
   (103,103,180,-60,180,-60,516,0,0,0,0,0,0,0,0,0,0,65,105),
   (104,104,180,-40,0,0,410,410,410,410,411,411,411,411,411,411,410,67,83),
   (105,105,180,-40,0,0,410,409,409,410,410,410,410,410,409,409,410,67,85),
-  (106,106,179,-40,0,0,410,410,410,411,410,409,409,410,411,410,410,65,84);
+  (106,106,179,-40,0,0,410,410,410,411,410,409,409,410,411,410,410,65,84),
+  (107,107,180,-40,0,0,430,430,430,430,436,435,435,435,435,434,436,65,92),
+  (108,108,180,-40,0,0,430,430,430,430,436,435,435,435,436,436,436,65,97),
+  (109,109,180,-40,0,0,430,430,430,430,435,435,436,436,436,435,436,64,95),
+  (110,110,180,-40,0,0,430,430,430,430,434,435,435,434,435,434,435,65,98);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
