@@ -1,5 +1,8 @@
 const tbodyProducts = document.getElementById("products"); //Set the tbody to display last 4 weeks of production
 const editProductForm = document.getElementById("edit-product-form");
+const editProductModal = new bootstrap.Modal(
+  document.getElementById("editProductModal")
+);
 
 //Fetch inventory logs Ajax request
 window.fetchProductsMaterialPFM = async function () {
@@ -65,7 +68,6 @@ function buildMaterialsTable(materials) {
   }
   return html;
 }
-
 
 function buildPfmsTable(pfms) {
   let html = "";
@@ -133,11 +135,12 @@ const fetchAndFillForm = async (id, table) => {
     // first variable is db field name second is the element name
     const fieldMappings = {
       products: {
+        productID: "hiddenProductID",
         partName: "partName",
         minQty: "minQty",
         boxesPerSkid: "boxSkid",
         partsPerBox: "partBox",
-        partweight: "partWeight",
+        partWeight: "partWeight",
         customer: "customer",
         productionType: "partType",
         displayOrder: "displayOrder",
@@ -174,6 +177,7 @@ const fetchAndFillForm = async (id, table) => {
 };
 
 editProductForm.addEventListener("submit", async (e) => {
+  console.log("submit edit Product button was clicked!");
   //prevent form from submitting data to DB
   e.preventDefault();
   //console.log("Edit Product submit button has been clicked!");
@@ -185,10 +189,43 @@ editProductForm.addEventListener("submit", async (e) => {
     e.stopPropagation();
     editProductForm.classList.add("was-validated");
     return false;
-  } else {
-     const data = {
-
-     }
   }
+  const productData = {
+    action: "editProduct",
+    products: {
+      productID: formData.get("productID"),
+      partName: formData.get("p_Part"),
+      minQty: formData.get("p_minQty"),
+      boxesPerSkid: formData.get("p_boxSkid"),
+      partsPerBox: formData.get("p_partBox"),
+      partWeight: formData.get("p_partWeight"),
+      customer: formData.get("p_customer"),
+      displayOrder: formData.get("p_displayOrder"),
+      productionType: formData.get("p_partType"),
+    },
+  };
 
+  console.log("Raw data output: ", productData);
+
+  const data = await fetch("../src/Classes/inventoryActions.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(productData),
+  });
+
+  try {
+    const response = await data.text();
+    showAlert.innerHTML = response;
+    editProductForm.reset();
+    editProductForm.classList.remove("was-validated");
+    editProductModal.hide();
+
+    //calling fetchLast4Weeks inside main.js
+    setTimeout(() => {
+      //console.log("Refreshing last 4 weeks data...");
+      window.fetchProductsMaterialPFM();
+    }, 300);
+  } catch (error) {
+    console.error("Failed to submit form: ", error);
+  }
 });

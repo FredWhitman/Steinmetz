@@ -30,6 +30,7 @@
                 <div class="modal-body">
                     <form id="edit-product-form" class="needs-validation p-2" novalidate>
                         <div class="mb-3">
+                            <input type="hidden" name="productID" id="hiddenProductID" />
                             <div class="row pb-2">
                                 <div class="col">
                                     <div class="input-group sm-3"><label class="input-group-text" for="partName">Product Name</label><input type="text" tabindex="1" class="form-control form-control-sm" id="partName" name="p_Part" required></input></div>
@@ -51,7 +52,7 @@
                                 <div class="invalid-feedback">qauntity required!</div>
                             </div>
                             <div class="row pb-2">
-                                <div class="input-group sm-3"><label class="input-group-text" for="partWeight">Part Weight (lbs)</label><input type="number" step=".01" class="form-control form-control-sm" id="partWeight" name="p_partWeight" required></div>
+                                <div class="input-group sm-3"><label class="input-group-text" for="partWeight">Part Weight (lbs)</label><input type="number" step=".001" class="form-control form-control-sm" id="partWeight" name="p_partWeight" required></div>
                                 <div class="invalid-feedback">weight required!</div>
                             </div>
                             <div class="row pb-2">

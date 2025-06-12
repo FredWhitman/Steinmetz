@@ -3,9 +3,11 @@ require_once 'inventoryDB_SQL.php';
 require __DIR__ . '/../../vendor/autoload.php';
 require_once 'util.php';
 
+
 use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
 use Monolog\ErrorHandler;
+use Monolog\Handler\StreamHandler;
+use Monolog\Handler\FirePHPHandler;
 use Psr\Log\LogLevel; // You can import LogLevel for clarity, or use string constants
 
 
@@ -16,7 +18,7 @@ $util = new Util;
 $log = new Logger('inventoryActionErrors');
 
 // Example: Log all errors to a file
-$log->pushHandler(new StreamHandler('logs/inventory_errors.log', Logger::ERROR)); // Log everything from DEBUG level
+$log->pushHandler(new StreamHandler(__DIR__ . '/logs/inventory_errors.log', Logger::DEBUG)); // Log everything from DEBUG level
 
 
 // Register the Monolog ErrorHandler
@@ -108,13 +110,21 @@ if (isset($_GET['editPfms'])) {
 
 //Handles Ajax call to edit inventory items
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
     $data = json_decode(file_get_contents("php://input"), true);
 
-    $log->info(" " . "\n" . print_r($data, true));
+    //log data sent from form
+    $log->info("Posted data sent to handler " . "\n" . print_r($data, true));
+
 
     if (isset($data["action"]) && $data["action"] === "editProduct") {
+        $log->info("editProduct was present in data!");
+
         if (isset($data["products"])) {
+
             $result = $db->editInventory($data);
+
+            $log->info("update status: " . print_r($result, true));
 
             if ($result["success"]) {
                 echo $util->showMessage('success', 'Product has been updated!');
@@ -129,5 +139,4 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         echo "Unauthorized request!";
         http_response_code(403); // Forbidden status
     }
-
 }
