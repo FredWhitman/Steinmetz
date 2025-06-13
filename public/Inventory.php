@@ -19,6 +19,12 @@
 <body>
     <!--Navbar -->
     <?php require_once '../includes/steinmetzNavbar.php'; ?>
+    <div id="loader" class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75" style="z-index: 1050;">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+
 
     <!-- Edit Product start-->
     <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModal">
@@ -192,12 +198,11 @@
                     <div>
                         <h4 class="text-primary">Inventory Data</h4>
                     </div>
-                    <!-- <div>
-                        <button class="btn btn-primary" type="button" id="loadLotChangeForm" data-bs-toggle="modal" data-bs-target="#addLotChangeModal">Add Lot Change</button>
-                        <button class="btn btn-primary" type="button" id="loadPurgeForm" data-bs-toggle="modal" data-bs-target="#addPurgeModal">Add Purge</button>
-                        <button class="btn btn-primary" type="button" id="loadQARejectForm" data-bs-toggle="modal" data-bs-target="#addQARejectsModal">Add QA Rejects</button>
-                        <button class="btn btn-primary" type="button" id="loadProdLogForm" data-bs-toggle="modal" data-bs-target="#addProductionModal">Add Production Log</button>
-                    </div> -->
+                    <div>
+                        <button class="btn btn-primary" type="button" id="loadProductForm" data-bs-toggle="modal" data-bs-target="#addProduct">Add Product</button>
+                        <button class="btn btn-primary" type="button" id="loadMaterialForm" data-bs-toggle="modal" data-bs-target="#addMaterial">Add Material</button>
+                        <button class="btn btn-primary" type="button" id="loadPFMForm" data-bs-toggle="modal" data-bs-target="#addPFM">Add PFM</button>
+                    </div>
                 </div>
             </div>
             <hr>
@@ -275,6 +280,7 @@
     <script type="text/javascript" src="../resources/vendors/js/bootstrap.bundle.min.js"></script>
     <!-- Custom javascript -->
     <script type="text/javascript" src="../resources/js/inventoryController.js"></script>
+    
 </body>
 
 </html>

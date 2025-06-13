@@ -4,9 +4,22 @@ const editProductModal = new bootstrap.Modal(
   document.getElementById("editProductModal")
 );
 
+function showLoader() {
+  const loader = document.getElementById("loader");
+  if (loader) loader.classList.remove("d-none");
+}
+
+function hideLoader() {
+  const loader = document.getElementById("loader");
+  if (loader) loader.classList.add("d-none");
+}
+
 //Fetch inventory logs Ajax request
 window.fetchProductsMaterialPFM = async function () {
+
+  showLoader();
   try {
+    const start = performance.now();
     const response = await fetch(
       "../src/classes/inventoryActions.php?getInventory=1",
       {
@@ -15,6 +28,7 @@ window.fetchProductsMaterialPFM = async function () {
     );
     const jsonData = await response.json();
     console.log("Parsed inventory data: ", jsonData);
+    console.log("Fetch duration: ", performance.now()-start);
     //jsonData contains three arrays:
     //jsonData.products, jsonData.materials, jsonData.pfms
 
@@ -27,6 +41,12 @@ window.fetchProductsMaterialPFM = async function () {
     document.getElementById("products").innerHTML = productsHTML;
     document.getElementById("materials").innerHTML = materialsHTML;
     document.getElementById("pfms").innerHTML = pfmsHTML;
+
+    console.log("Render duration: ", performance.now()-start);
+
+    setTimeout(() =>{
+      hideLoader();
+    },0);
   } catch (error) {
     console.error("Error fetching inventory: ", error);
   }
@@ -85,6 +105,7 @@ function buildPfmsTable(pfms) {
   }
   return html;
 }
+
 
 /// This applies listeners to each table and monitors for a click
 const setupEditEventListener = (elementId, table) => {
