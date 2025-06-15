@@ -101,7 +101,7 @@ class inventoryDB_SQL extends database
             }
 
             $sqlPFM = 'SELECT 
-                `pfm`.`pFMID`,
+                `pfm`.`pfmID`,
                 `pfm`.`partNumber`,
                 `pfm`.`partName`,
                 `pfm`.`productID`,
@@ -188,18 +188,24 @@ class inventoryDB_SQL extends database
                 $this->log->error("Error getting material record for $id in table $table.");
             }
         } else { //pfms
-            $sql = 'SELECT * FROM pfm WHERE pFMID = :pFMID';
+            $sql = 'SELECT * FROM pfm WHERE pfmID = :pfmID';
             $stmt = $this->con->prepare($sql);
-            $stmt->execute([':pFMID' => $id]);
+            $stmt->execute([':pfmID' => $id]);
             $result = $stmt->fetch();
             if (!$result) {
                 $this->log->warning("NO record found for the $id in table $table. ");
             }
-            $this->log->info('getRecord returning : ' . $result['productID']);
+            $this->log->info('getRecord returning : ' . $result['pfmID']);
             return $result;
         }
     }
-
+    
+    /**
+     * editInventory
+     *
+     * @param  mixed $data form data sent 
+     * @return void
+     */
     public function editInventory($data)
     {
         $this->log->info("editInventory : " .print_r($data,true));
@@ -243,12 +249,12 @@ class inventoryDB_SQL extends database
                 if (!$result) {
                     $errorInfo = $stmt->errorInfo();
                     $this->log->error('SQL Error: ' . implode(" | ", $errorInfo));
-                    return ["success" => false, "message" => "Database update failed.", "error" => $errorInfo];
+                    return ["success" => false, "message" => "Product update failed.", "error" => $errorInfo];
                 }
                 $this->log->info('Product Updated!');
                 return ["success" => true, "message" => "Transaction completed successfully.", "product" => $data['products']['productID']];
             } catch (PDOException $e) {
-                $this->log->error("ERROR updateInventory: " . $e->getMessage());
+                $this->log->error("ERROR product update failed: " . $e->getMessage());
                 return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
             }
         }else if($data["action"] === 'editMaterial'){
@@ -278,9 +284,9 @@ class inventoryDB_SQL extends database
                  if (!$result) {
                     $errorInfo = $stmt->errorInfo();
                     $this->log->error('SQL Error: ' . implode(" | ", $errorInfo));
-                    return ["success" => false, "message" => "Database update failed.", "error" => $errorInfo];
+                    return ["success" => false, "message" => "Material update failed.", "error" => $errorInfo];
                 }
-                $this->log->info('Product Updated!');
+                $this->log->info('Material Updated!');
                 return ["success" => true, "message" => "Transaction completed successfully.", "material" => $data['materials']['matName']];
             } catch (PDOException $e) {
                 $this->log->error("ERROR updateInventory: " . $e->getMessage());
@@ -288,7 +294,42 @@ class inventoryDB_SQL extends database
             }
             
         }else{
+            $this->log->info('edit PFM has begun.');
+            $sql = 'UPDATE pfm 
+                    SET 
+                        partNumber = :partNumber,
+                        partName = :partName,
+                        productID = :productID,
+                        minQty = :minQty,
+                        customer = :customer,
+                        displayOrder = :displayOrder
+                    WHERE pfmID = :pfmID';
 
+            $stmt = $this->con->prepare($sql);
+            $stmt->bindParam(':pfmID',$data['pfm']['pfmID'] ,PDO::PARAM_STR);
+            $stmt->bindParam(':partNumber',$data['pfm']['partNumber'] ,PDO::PARAM_STR);
+            $stmt->bindParam(':partName',$data['pfm']['partName'] ,PDO::PARAM_STR);
+            $stmt->bindParam(':productID',$data['pfm']['productID'] ,PDO::PARAM_STR);
+            $stmt->bindParam(':minQty',$data['pfm']['minQty'] ,PDO::PARAM_INT);
+            $stmt->bindParam(':customer',$data['pfm']['customer'] ,PDO::PARAM_STR);
+            $stmt->bindParam(':displayOrder',$data['pfm']['displayOrder'] ,PDO::PARAM_INT);
+
+            $this->log->info('Executing update query with values '. json_encode($data));
+            try {
+                $result = $stmt->execute();
+                $affectedRows = $stmt->rowCount();
+                $this->log->info('PFM Rows affected: ' . $affectedRows);
+                if(!$result){
+                    $errorInfo = $stmt->errorInfo();
+                    $this->log->error('SQL error: ' . implode(" | ", $errorInfo));
+                    return ["success" => false, "message" => 'PFM update failed.', "error" => $errorInfo];
+                }
+                $this->log->info("PFM updated!");
+                return ['success' => true, "message" => 'Transaction completed successfully.', 'pfm' => $data['pfm']['partName']];
+            } catch (PDOException $e) {
+                $this->log->error("ERROR update pfm failed!" . $e->getMessage());
+                return ['success' => false, 'message' => "an error occured", "error" => $e->getMessage()];
+            }
         }
             
     }

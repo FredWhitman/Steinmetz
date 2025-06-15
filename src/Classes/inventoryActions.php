@@ -152,6 +152,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             http_response_code(400);
         }
 
+    }else if(isset($data["action"]) && $data["action"] === "editPFM"){
+        if(isset($data["pfm"])){
+            $result = $db->editInventory($data);
+            $log->info("update status: " . print_r($result,true));
+            if($result['success']){
+                echo $util->showMessage('success',$result['message']. ' ' . "PFM: {$result['pfm']} has been updated!");
+            }else{
+                echo $util->showMessage('danger', $result['message']. ' ' . $result['error']);
+            }
+        }else{
+            echo "Missing required data! Failed to pass log data!";
+            http_response_code(400); 
+        }
     }else{
         echo "Unauthorized request!";
         http_response_code(403); // Forbidden status

@@ -146,36 +146,37 @@
                     <h1 class="modal-title fs-5" id="editPFMModal">Update PFM Details</h1>
                 </div>
                 <div class="modal-body">
-                    <form id="edit-material-form" class="needs-validation p-2" novalidate>
+                    <form id="edit-pfm-form" class="needs-validation p-2" novalidate>
                         <div class="mb-3">
+                            <input type="hidden" name="p_pfmID" id="h_pfmID" />
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="matName">PFM Part Number</label><input type="text" tabindex="1" class="form-control form-control-sm" id="pNumber" name="pf_number" required></input></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="pNumber">PFM Part Number</label><input type="text" tabindex="1" class="form-control form-control-sm" id="pNumber" name="pf_Number" required></input></div>
                                     <div class="invalid-feedback">Part Number is required!</div>
                                 </div>
                             </div>
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="matName">PFM Name</label><input type="text" tabindex="1" class="form-control form-control-sm" id="pName" name="pf_name" required></input></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="pName">PFM Name</label><input type="text" tabindex="1" class="form-control form-control-sm" id="pName" name="pf_Name" required></input></div>
                                     <div class="invalid-feedback">Name is required!</div>
                                 </div>
                             </div>
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="minQty">Used for</label><input type="text" tabindex="1" class="form-control form-control-sm" id="pProductID" name="p_productID" required></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="minQty">Used for</label><input type="text" tabindex="1" class="form-control form-control-sm" id="pProductID" name="pf_productID" required></div>
                                     <div class="invalid-feedback">product used for required!</div>
                                 </div>
                             </div>
                             <div class="row pb-2">
-                                <div class="input-group sm-3"><label class="input-group-text" for="minLbs">Min. Qty</label><input type="number" class="form-control form-control-sm" id="pMinQty" name="p_minQty" required></div>
+                                <div class="input-group sm-3"><label class="input-group-text" for="minLbs">Min. Qty</label><input type="number" class="form-control form-control-sm" id="pMinQty" name="pf_minQty" required></div>
                                 <div class="invalid-feedback">qauntity required!</div>
                             </div>
                             <div class="row pb-2">
-                                <div class="input-group sm-3"><label class="input-group-text" for="customer">Customer</label><input type="text" class="form-control form-control-sm" id="pCustomer" name="p_customer" required></div>
+                                <div class="input-group sm-3"><label class="input-group-text" for="customer">Customer</label><input type="text" class="form-control form-control-sm" id="pCustomer" name="pf_customer" required></div>
                                 <div class="invalid-feedback">customer required!</div>
                             </div>
                             <div class="row pb-2">
-                                <div class="input-group sm-3"><label class="input-group-text" for="displayOrder">Display Order</label><input type="number" class="form-control form-control-sm" id="pDisplayOrder" name="p_displayOrder" required></div>
+                                <div class="input-group sm-3"><label class="input-group-text" for="displayOrder">Display Order</label><input type="number" class="form-control form-control-sm" id="pDisplayOrder" name="pf_displayOrder" required></div>
                                 <div class="invalid-feedback">displayOrder required!</div>
                             </div>
                         </div>

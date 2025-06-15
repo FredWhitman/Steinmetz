@@ -100,11 +100,12 @@ function buildMaterialsTable(materials) {
 }
 
 function buildPfmsTable(pfms) {
+  console.log("PFMS Data:", pfms);
   let html = "";
   for (const row of pfms) {
     let colorStyle =
       row.Qty < row.minQty ? "style='color:red; font-weight: bold;'" : "";
-    html += `<tr data-id="${row.pFMID}">
+    html += `<tr data-id="${row.pfmID}">
               <td><span ${colorStyle}>${row.partName}</span></td>
               <td><span ${colorStyle}>${row.Qty}</span></td>
               <td>
@@ -185,6 +186,7 @@ const fetchAndFillForm = async (id, table) => {
         displayOrder: "mDisplayOrder",
       },
       pfms: {
+        pfmID: "h_pfmID",
         partNumber: "pNumber",
         partName: "pName",
         productID: "pProductID",
@@ -253,11 +255,11 @@ editProductForm.addEventListener("submit", async (e) => {
     editProductForm.classList.remove("was-validated");
     editProductModal.hide();
 
-    //calling fetchLast4Weeks inside main.js
+    /* //calling fetchLast4Weeks inside main.js
     setTimeout(() => {
       //console.log("Refreshing last 4 weeks data...");
       window.fetchProductsMaterialPFM();
-    }, 300);
+    }, 300); */
   } catch (error) {
     console.error("Failed to submit form: ", error);
   }
@@ -304,6 +306,53 @@ console.log("submit edit Material button was clicked!");
     editMaterialForm.reset();
     editMaterialForm.classList.remove("was-validated");
     editMaterialModal.hide();
+
+  } catch (error) {
+    console.error("Failed to submit form: ", error);
+  }
+})
+
+editPFMForm.addEventListener("submit", async (e)=>{
+  console.log("submit edit pfm button clicked");
+
+  e.preventDefault();
+  const formData = new FormData(editPFMForm);
+
+  //check to make sure the input fields are not empty
+  if (!editPFMForm.checkValidity()) {
+    e.preventDefault();
+    e.stopPropagation();
+    editPFMForm.classList.add("was-validated");
+    return false;
+  }
+
+  const pfmData = {
+    action: "editPFM",
+    pfm: {
+      pfmID: formData.get("p_pfmID"),
+      partNumber: formData.get("pf_Number"),
+      partName: formData.get("pf_Name"),
+      productID: formData.get("pf_productID"),
+      minQty: formData.get("pf_minQty"),
+      customer: formData.get("pf_customer"),
+      displayOrder: formData.get("pf_displayOrder"),
+    },
+  }
+
+  console.log("Raw data output: ", pfmData);
+
+  const data = await fetch("../src/Classes/inventoryActions.php",{
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(pfmData),
+  });
+
+  try {
+    const response = await data.text();
+    showAlert.innerHTML = response;
+    editPFMForm.reset();
+    editPFMForm.classList.remove("was-validated");
+    editPFMModal.hide();
 
   } catch (error) {
     console.error("Failed to submit form: ", error);
