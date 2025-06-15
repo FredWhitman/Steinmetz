@@ -1,8 +1,18 @@
 const tbodyProducts = document.getElementById("products"); //Set the tbody to display last 4 weeks of production
+
 const editProductForm = document.getElementById("edit-product-form");
-const editProductModal = new bootstrap.Modal(
-  document.getElementById("editProductModal")
-);
+const editProductModal = new bootstrap.Modal(document.getElementById("editProductModal"));
+
+const editMaterialForm = document.getElementById("edit-material-form");
+const editMaterialModal = new bootstrap.Modal(document.getElementById("editMaterialModal"));
+
+const editPFMForm = document.getElementById("edit-pfm-form");
+const editPFMModal = new bootstrap.Modal(document.getElementById("editPFMModal"));
+
+
+const updateInventoryForm = document.getElementById("edit-product-form");
+const updateInventoryModal = new bootstrap.Modal(document.getElementById("editProductModal"));
+
 
 function showLoader() {
   const loader = document.getElementById("loader");
@@ -167,10 +177,11 @@ const fetchAndFillForm = async (id, table) => {
         displayOrder: "displayOrder",
       },
       materials: {
+        matPartNumber: "h_matPartNumber",
         matName: "matName",
         productID: "productID",
         minLbs: "minLbs",
-        customer: "mCustomer",
+        matCustomer: "mCustomer",
         displayOrder: "mDisplayOrder",
       },
       pfms: {
@@ -211,6 +222,7 @@ editProductForm.addEventListener("submit", async (e) => {
     editProductForm.classList.add("was-validated");
     return false;
   }
+
   const productData = {
     action: "editProduct",
     products: {
@@ -250,3 +262,54 @@ editProductForm.addEventListener("submit", async (e) => {
     console.error("Failed to submit form: ", error);
   }
 });
+
+editMaterialForm.addEventListener("submit", async (e)=>{
+console.log("submit edit Material button was clicked!");
+  //prevent form from submitting data to DB
+  e.preventDefault();
+  //console.log("Edit Product submit button has been clicked!");
+  const formData = new FormData(editMaterialForm);
+
+  //check to make sure the input fields are not empty
+  if (!editMaterialForm.checkValidity()) {
+    e.preventDefault();
+    e.stopPropagation();
+    editMaterialForm.classList.add("was-validated");
+    return false;
+  }
+
+  const materialData = {
+    action: "editMaterial",
+    materials: {
+      matPartNumber: formData.get("m_matPartNumber"),
+      matName: formData.get("m_material"),
+      productID: formData.get("m_productID"),
+      minLbs: formData.get("m_minLbs"),
+      matCustomer: formData.get("m_customer"),
+      displayOrder: formData.get("m_displayOrder"),
+    },
+  };
+
+   console.log("Raw data output: ", materialData);
+
+  const data = await fetch("../src/Classes/inventoryActions.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(materialData),
+  });
+
+  try {
+    const response = await data.text();
+    showAlert.innerHTML = response;
+    editMaterialForm.reset();
+    editMaterialForm.classList.remove("was-validated");
+    editMaterialModal.hide();
+
+  } catch (error) {
+    console.error("Failed to submit form: ", error);
+  }
+})
+
+updateInventoryForm.addEventListener("submit", async (e) =>{
+
+})

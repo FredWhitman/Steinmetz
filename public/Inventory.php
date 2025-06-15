@@ -100,9 +100,10 @@
                 <div class="modal-body">
                     <form id="edit-material-form" class="needs-validation p-2" novalidate>
                         <div class="mb-3">
+                            <input type="hidden" name="m_matPartNumber" id="h_matPartNumber" />
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="matName">Material Name</label><input type="text" tabindex="1" class="form-control form-control-sm" id="matName" name="p_material" required></input></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="matName">Material Name</label><input type="text" tabindex="1" class="form-control form-control-sm" id="matName" name="m_material" required></input></div>
                                     <div class="invalid-feedback">Material name is required!</div>
                                 </div>
                             </div>
@@ -125,13 +126,13 @@
                                 <div class="invalid-feedback">displayOrder required!</div>
                             </div>
                         </div>
+                        </div>
+                        <div class="div">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" value="Update" class="btn btn-success" id="update-material-btn">Update Material</button>
+                        </div>
+                    </form>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" value="Update" class="btn btn-success" id="update-product-btn">Update Material</button>
-                </div>
-                </form>
-            </div>
         </div>
     </div>
     </div>

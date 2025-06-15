@@ -37,7 +37,7 @@ if (isset($_GET['getInventory'])) {
     exit();
 }
 
-//Handle Edit product Ajax request from main.js editProduct
+//Handle Edit product Ajax request from inventoryController.js editProduct
 if (isset($_GET['editProducts'])) {
 
     header('Content-Type: application/json');
@@ -127,7 +127,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $log->info("update status: " . print_r($result, true));
 
             if ($result["success"]) {
-                echo $util->showMessage('success', 'Product has been updated!');
+                echo $util->showMessage('success', $result['message'] ." ". "Product ID: {$result['product']} has been updated!");
             } else {
                 echo $util->showMessage('danger', 'Failed to update product details.');
             }
@@ -135,7 +135,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             echo "Missing required data! Failed to pass log data!";
             http_response_code(400);
         }
-    } else {
+    } else if(isset($data["action"]) && $data["action"]==="editMaterial") 
+    {
+        if(isset($data["materials"])){
+            $result = $db->editInventory($data);
+
+            $log->info("update status: " . print_r($result,true));
+
+            if($result["success"]){
+                echo $util->showMessage('success', $result['message']. ' '. "Material: {$result['material']} has been updated!");
+            }else{
+                echo $util->showMessage('danger', $result['message']. ' ' . $result['error']);
+            }
+        } else {
+            echo "Missing required data! Failed to pass log data!";
+            http_response_code(400);
+        }
+
+    }else{
         echo "Unauthorized request!";
         http_response_code(403); // Forbidden status
     }

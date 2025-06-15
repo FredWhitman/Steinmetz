@@ -134,8 +134,9 @@ class inventoryDB_SQL extends database
             }
             $this->log->info('Returnin table data to controller!');
             return ['products'  => $products, 'materials' => $materials, 'pfms' => $pfm];
+
         } catch (PDOException $e) {
-            error_log("Error getting products: " . $e->getMessage());
+            $this->log->error("Error getting products: " . $e->getMessage());
             //Convert this to an uncaught exception to let ErrorHandler process it
             throw new ErrorException(
                 $e->getMessage(),
@@ -201,49 +202,116 @@ class inventoryDB_SQL extends database
 
     public function editInventory($data)
     {
-        $this->log->info("data sent to editInventory function: ", $data);
-        $this->log->info('editInventory called and transaction begun.');
-        $this->log->info("Received partName value: " . $data['products']['partName']);
-        $sql = "UPDATE products 
-                    SET partName = :partName, 
-                        minQty = :minQty, 
-                        boxesPerSkid = :boxesPerSkid, 
-                        partsPerBox = :partsPerBox, 
-                        partWeight = :partWeight, 
-                        displayOrder = :displayOrder, 
-                        customer = :customer, 
-                        productionType = :productionType 
-                    WHERE productID = :productID";
+        $this->log->info("editInventory : " .print_r($data,true));
+        if($data['action'] === 'editProduct'){
+            $this->log->info("edit product has begun!");
 
-        $stmt = $this->con->prepare($sql);
-        $stmt->bindParam(':productID', $data['products']['productID'], PDO::PARAM_STR);
-        $stmt->bindParam(':partName', $data['products']['partName'], PDO::PARAM_STR);
-        $stmt->bindParam(':minQty', $data['products']['minQty'], PDO::PARAM_INT);
-        $stmt->bindParam(':boxesPerSkid', $data['products']['boxesPerSkid'], PDO::PARAM_INT);
-        $stmt->bindParam(':partsPerBox', $data['products']['partsPerBox'], PDO::PARAM_INT);
-        $stmt->bindParam(':partWeight', $data['products']['partWeight'], PDO::PARAM_STR);
-        $stmt->bindParam(':displayOrder', $data['products']['displayOrder'], PDO::PARAM_INT);
-        $stmt->bindParam(':customer', $data['products']['customer'], PDO::PARAM_STR);
-        $stmt->bindParam(':productionType', $data['products']['productionType'], PDO::PARAM_STR);
+            //$this->log->info("data sent to editInventory function: ", $data);
+            //$this->log->info('editInventory called and transaction begun.');
+            //$this->log->info("Received partName value: " . $data['products']['partName']);
+            $sql = "UPDATE products 
+                        SET partName = :partName, 
+                            minQty = :minQty, 
+                            boxesPerSkid = :boxesPerSkid, 
+                            partsPerBox = :partsPerBox, 
+                            partWeight = :partWeight, 
+                            displayOrder = :displayOrder, 
+                            customer = :customer, 
+                            productionType = :productionType 
+                        WHERE productID = :productID";
 
-        $this->log->info("Executing update query with values: " . json_encode($data));
+            $stmt = $this->con->prepare($sql);
+            $stmt->bindParam(':productID', $data['products']['productID'], PDO::PARAM_STR);
+            $stmt->bindParam(':partName', $data['products']['partName'], PDO::PARAM_STR);
+            $stmt->bindParam(':minQty', $data['products']['minQty'], PDO::PARAM_INT);
+            $stmt->bindParam(':boxesPerSkid', $data['products']['boxesPerSkid'], PDO::PARAM_INT);
+            $stmt->bindParam(':partsPerBox', $data['products']['partsPerBox'], PDO::PARAM_INT);
+            $stmt->bindParam(':partWeight', $data['products']['partWeight'], PDO::PARAM_STR);
+            $stmt->bindParam(':displayOrder', $data['products']['displayOrder'], PDO::PARAM_INT);
+            $stmt->bindParam(':customer', $data['products']['customer'], PDO::PARAM_STR);
+            $stmt->bindParam(':productionType', $data['products']['productionType'], PDO::PARAM_STR);
 
-        try {
-            $result = $stmt->execute();
+            $this->log->info("Executing update query with values: " . json_encode($data));
 
-            //check to make sure rows were actually affected
-            $affectedRows = $stmt->rowCount();
-            $this->log->info("Rows affected: " . $affectedRows);
+            try {
+                $result = $stmt->execute();
 
-            if (!$result) {
-                $errorInfo = $stmt->errorInfo();
-                $this->log->error('SQL Error: ' . implode(" | ", $errorInfo));
-                return ["success" => false, "message" => "Database update failed.", "error" => $errorInfo];
+                //check to make sure rows were actually affected
+                $affectedRows = $stmt->rowCount();
+                $this->log->info("Rows affected: " . $affectedRows);
+
+                if (!$result) {
+                    $errorInfo = $stmt->errorInfo();
+                    $this->log->error('SQL Error: ' . implode(" | ", $errorInfo));
+                    return ["success" => false, "message" => "Database update failed.", "error" => $errorInfo];
+                }
+                $this->log->info('Product Updated!');
+                return ["success" => true, "message" => "Transaction completed successfully.", "product" => $data['products']['productID']];
+            } catch (PDOException $e) {
+                $this->log->error("ERROR updateInventory: " . $e->getMessage());
+                return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
             }
-            $this->log->info('Product Updated!');
-            return ["success" => true, "message" => "Transaction completed successfully.", "product: " => $data['products']['productID']];
-        } catch (PDOException $e) {
-            $this->log->error("ERROR updateInventory: " . $e->getMessage());
+        }else if($data["action"] === 'editMaterial'){
+            $this->log->info('edit material has begun.');
+            $sql = 'UPDATE material 
+                        SET 
+                            matName = :matName, 
+                            productID = :productID, 
+                            minLbs = :minLbs, 
+                            matCustomer = :matCustomer, 
+                            displayOrder = :displayOrder
+                        WHERE matPartNumber = :matPartNumber';
+            $stmt = $this->con->prepare($sql);
+            $stmt->bindParam(':matPartNumber', $data['materials']['matPartNumber'], PDO::PARAM_STR);
+            $stmt->bindParam(':matName', $data['materials']['matName'], PDO::PARAM_STR);
+            $stmt->bindParam(':productID', $data['materials']['productID'], PDO::PARAM_STR);
+            $stmt->bindParam(':minLbs', $data['materials']['minLbs'], PDO::PARAM_STR);
+            $stmt->bindParam(':matCustomer', $data['materials']['matCustomer'], PDO::PARAM_STR);
+            $stmt->bindParam(':displayOrder', $data['materials']['displayOrder'], PDO::PARAM_INT);
+
+            $this->log->info("Executing update query with values: " . json_encode($data));
+            try {
+                $result = $stmt->execute();
+                //check to make sure rows were actually affected
+                $affectedRows = $stmt->rowCount();
+                $this->log->info("Rows affected: " . $affectedRows);
+                 if (!$result) {
+                    $errorInfo = $stmt->errorInfo();
+                    $this->log->error('SQL Error: ' . implode(" | ", $errorInfo));
+                    return ["success" => false, "message" => "Database update failed.", "error" => $errorInfo];
+                }
+                $this->log->info('Product Updated!');
+                return ["success" => true, "message" => "Transaction completed successfully.", "material" => $data['materials']['matName']];
+            } catch (PDOException $e) {
+                $this->log->error("ERROR updateInventory: " . $e->getMessage());
+                return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
+            }
+            
+        }else{
+
+        }
+            
+    }
+
+    public function updateInvQty($data)
+    {
+        
+        try {
+            $sql = 'UPDATE product SET qty = qty - :qty WHERE productID = :productID';
+
+            $stmt = $this->con->prepare($sql);
+            $stmt->bindParam(':productID' , $data['productID'] , PDO::PARAM_STR);
+            $result = $stmt->execute();;
+            if(!$result){
+                $errorInfo = $stmt->errorInfo();
+                return["success" => false, "message" => "Database failed to update.", "error" => $errorInfo];
+
+            }else{
+                return ["success" => true, "message" => "Update successful!", "productID: " . $data['productID'] ];
+            }
+
+        } catch (PDOException $e){
+            $this->log->error("ERROR updating inventory: " . $e->getMessage());
             return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
         }
     }
