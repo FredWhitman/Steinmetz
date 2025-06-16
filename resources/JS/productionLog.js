@@ -1,10 +1,10 @@
 //Function to total the lbs of material in hoppers 1-4 and display that value the Blender Total input
-document.addEventListener("DOMContentLoaded", function(){
+document.addEventListener("DOMContentLoaded", function () {
   const modal = document.getElementById("addProductionModal");
-  modal.addEventListener("shown.bs.modal",function(){
+  modal.addEventListener("shown.bs.modal", function () {
     addBlenderOnBlur(); //Call the addBlenderOnBlur function when modal is displayed.
-  })
-})
+  });
+});
 
 function addBlenderOnBlur() {
   //var prodRunStatus = document.getElementsByTagName("prodRun");
@@ -174,5 +174,3 @@ function validateDecimalInput(event) {
     event.target.value = parseFloat(value).toFixed(3);
   }
 }
-
-

@@ -5,7 +5,7 @@ const addLogModal = new bootstrap.Modal(
 );
 
 //Function to total the lbs of material in hoppers 1-4 and display that value the Blender Total input
-sdocument.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
   const modal = document.getElementById("addProductionModal");
   modal.addEventListener("shown.bs.modal", function () {
     addBlenderOnBlur(); //Call the addBlenderOnBlur function when modal is displayed.

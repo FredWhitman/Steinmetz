@@ -86,6 +86,7 @@ if (isset($_GET['editMaterials'])) {
     exit();
 }
 
+//Handle Edit pfm Ajax request from inventoryController.js editPFM
 if (isset($_GET['editPfms'])) {
     header('Content-Type: application/json');
     if (!isset($_GET['id']) || !isset($_GET['table'])) {
@@ -127,7 +128,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $log->info("update status: " . print_r($result, true));
 
             if ($result["success"]) {
-                echo $util->showMessage('success', $result['message'] ." ". "Product ID: {$result['product']} has been updated!");
+                echo $util->showMessage('success', $result['message'] . " " . "Product ID: {$result['product']} has been updated!");
             } else {
                 echo $util->showMessage('danger', 'Failed to update product details.');
             }
@@ -135,37 +136,35 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             echo "Missing required data! Failed to pass log data!";
             http_response_code(400);
         }
-    } else if(isset($data["action"]) && $data["action"]==="editMaterial") 
-    {
-        if(isset($data["materials"])){
+    } else if (isset($data["action"]) && $data["action"] === "editMaterial") {
+        if (isset($data["materials"])) {
             $result = $db->editInventory($data);
 
-            $log->info("update status: " . print_r($result,true));
+            $log->info("update status: " . print_r($result, true));
 
-            if($result["success"]){
-                echo $util->showMessage('success', $result['message']. ' '. "Material: {$result['material']} has been updated!");
-            }else{
-                echo $util->showMessage('danger', $result['message']. ' ' . $result['error']);
+            if ($result["success"]) {
+                echo $util->showMessage('success', $result['message'] . ' ' . "Material: {$result['material']} has been updated!");
+            } else {
+                echo $util->showMessage('danger', $result['message'] . ' ' . $result['error']);
             }
         } else {
             echo "Missing required data! Failed to pass log data!";
             http_response_code(400);
         }
-
-    }else if(isset($data["action"]) && $data["action"] === "editPFM"){
-        if(isset($data["pfm"])){
+    } else if (isset($data["action"]) && $data["action"] === "editPFM") {
+        if (isset($data["pfm"])) {
             $result = $db->editInventory($data);
-            $log->info("update status: " . print_r($result,true));
-            if($result['success']){
-                echo $util->showMessage('success',$result['message']. ' ' . "PFM: {$result['pfm']} has been updated!");
-            }else{
-                echo $util->showMessage('danger', $result['message']. ' ' . $result['error']);
+            $log->info("update status: " . print_r($result, true));
+            if ($result['success']) {
+                echo $util->showMessage('success', $result['message'] . ' ' . "PFM: {$result['pfm']} has been updated!");
+            } else {
+                echo $util->showMessage('danger', $result['message'] . ' ' . $result['error']);
             }
-        }else{
+        } else {
             echo "Missing required data! Failed to pass log data!";
-            http_response_code(400); 
+            http_response_code(400);
         }
-    }else{
+    } else {
         echo "Unauthorized request!";
         http_response_code(403); // Forbidden status
     }

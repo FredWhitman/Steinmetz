@@ -134,7 +134,6 @@ class inventoryDB_SQL extends database
             }
             $this->log->info('Returnin table data to controller!');
             return ['products'  => $products, 'materials' => $materials, 'pfms' => $pfm];
-
         } catch (PDOException $e) {
             $this->log->error("Error getting products: " . $e->getMessage());
             //Convert this to an uncaught exception to let ErrorHandler process it
@@ -199,7 +198,7 @@ class inventoryDB_SQL extends database
             return $result;
         }
     }
-    
+
     /**
      * editInventory
      *
@@ -208,8 +207,8 @@ class inventoryDB_SQL extends database
      */
     public function editInventory($data)
     {
-        $this->log->info("editInventory : " .print_r($data,true));
-        if($data['action'] === 'editProduct'){
+        $this->log->info("editInventory : " . print_r($data, true));
+        if ($data['action'] === 'editProduct') {
             $this->log->info("edit product has begun!");
 
             //$this->log->info("data sent to editInventory function: ", $data);
@@ -257,7 +256,7 @@ class inventoryDB_SQL extends database
                 $this->log->error("ERROR product update failed: " . $e->getMessage());
                 return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
             }
-        }else if($data["action"] === 'editMaterial'){
+        } else if ($data["action"] === 'editMaterial') {
             $this->log->info('edit material has begun.');
             $sql = 'UPDATE material 
                         SET 
@@ -281,7 +280,7 @@ class inventoryDB_SQL extends database
                 //check to make sure rows were actually affected
                 $affectedRows = $stmt->rowCount();
                 $this->log->info("Rows affected: " . $affectedRows);
-                 if (!$result) {
+                if (!$result) {
                     $errorInfo = $stmt->errorInfo();
                     $this->log->error('SQL Error: ' . implode(" | ", $errorInfo));
                     return ["success" => false, "message" => "Material update failed.", "error" => $errorInfo];
@@ -292,8 +291,7 @@ class inventoryDB_SQL extends database
                 $this->log->error("ERROR updateInventory: " . $e->getMessage());
                 return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
             }
-            
-        }else{
+        } else {
             $this->log->info('edit PFM has begun.');
             $sql = 'UPDATE pfm 
                     SET 
@@ -306,20 +304,20 @@ class inventoryDB_SQL extends database
                     WHERE pfmID = :pfmID';
 
             $stmt = $this->con->prepare($sql);
-            $stmt->bindParam(':pfmID',$data['pfm']['pfmID'] ,PDO::PARAM_STR);
-            $stmt->bindParam(':partNumber',$data['pfm']['partNumber'] ,PDO::PARAM_STR);
-            $stmt->bindParam(':partName',$data['pfm']['partName'] ,PDO::PARAM_STR);
-            $stmt->bindParam(':productID',$data['pfm']['productID'] ,PDO::PARAM_STR);
-            $stmt->bindParam(':minQty',$data['pfm']['minQty'] ,PDO::PARAM_INT);
-            $stmt->bindParam(':customer',$data['pfm']['customer'] ,PDO::PARAM_STR);
-            $stmt->bindParam(':displayOrder',$data['pfm']['displayOrder'] ,PDO::PARAM_INT);
+            $stmt->bindParam(':pfmID', $data['pfm']['pfmID'], PDO::PARAM_STR);
+            $stmt->bindParam(':partNumber', $data['pfm']['partNumber'], PDO::PARAM_STR);
+            $stmt->bindParam(':partName', $data['pfm']['partName'], PDO::PARAM_STR);
+            $stmt->bindParam(':productID', $data['pfm']['productID'], PDO::PARAM_STR);
+            $stmt->bindParam(':minQty', $data['pfm']['minQty'], PDO::PARAM_INT);
+            $stmt->bindParam(':customer', $data['pfm']['customer'], PDO::PARAM_STR);
+            $stmt->bindParam(':displayOrder', $data['pfm']['displayOrder'], PDO::PARAM_INT);
 
-            $this->log->info('Executing update query with values '. json_encode($data));
+            $this->log->info('Executing update query with values ' . json_encode($data));
             try {
                 $result = $stmt->execute();
                 $affectedRows = $stmt->rowCount();
                 $this->log->info('PFM Rows affected: ' . $affectedRows);
-                if(!$result){
+                if (!$result) {
                     $errorInfo = $stmt->errorInfo();
                     $this->log->error('SQL error: ' . implode(" | ", $errorInfo));
                     return ["success" => false, "message" => 'PFM update failed.', "error" => $errorInfo];
@@ -331,27 +329,24 @@ class inventoryDB_SQL extends database
                 return ['success' => false, 'message' => "an error occured", "error" => $e->getMessage()];
             }
         }
-            
     }
 
     public function updateInvQty($data)
     {
-        
+
         try {
             $sql = 'UPDATE product SET qty = qty - :qty WHERE productID = :productID';
 
             $stmt = $this->con->prepare($sql);
-            $stmt->bindParam(':productID' , $data['productID'] , PDO::PARAM_STR);
+            $stmt->bindParam(':productID', $data['productID'], PDO::PARAM_STR);
             $result = $stmt->execute();;
-            if(!$result){
+            if (!$result) {
                 $errorInfo = $stmt->errorInfo();
-                return["success" => false, "message" => "Database failed to update.", "error" => $errorInfo];
-
-            }else{
-                return ["success" => true, "message" => "Update successful!", "productID: " . $data['productID'] ];
+                return ["success" => false, "message" => "Database failed to update.", "error" => $errorInfo];
+            } else {
+                return ["success" => true, "message" => "Update successful!", "productID: " . $data['productID']];
             }
-
-        } catch (PDOException $e){
+        } catch (PDOException $e) {
             $this->log->error("ERROR updating inventory: " . $e->getMessage());
             return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
         }

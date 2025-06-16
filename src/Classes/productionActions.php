@@ -144,6 +144,7 @@ if (isset($_GET['view'])) {
     }
     exit;
 }
+
 if (isset($_GET['checkRun'])) {
     header('Content-Type: application/json');
     /* ob_clean();

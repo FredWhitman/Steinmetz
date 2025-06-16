@@ -1,18 +1,24 @@
 const tbodyProducts = document.getElementById("products"); //Set the tbody to display last 4 weeks of production
 
 const editProductForm = document.getElementById("edit-product-form");
-const editProductModal = new bootstrap.Modal(document.getElementById("editProductModal"));
+const editProductModal = new bootstrap.Modal(
+  document.getElementById("editProductModal")
+);
 
 const editMaterialForm = document.getElementById("edit-material-form");
-const editMaterialModal = new bootstrap.Modal(document.getElementById("editMaterialModal"));
+const editMaterialModal = new bootstrap.Modal(
+  document.getElementById("editMaterialModal")
+);
 
 const editPFMForm = document.getElementById("edit-pfm-form");
-const editPFMModal = new bootstrap.Modal(document.getElementById("editPFMModal"));
+const editPFMModal = new bootstrap.Modal(
+  document.getElementById("editPFMModal")
+);
 
-
-const updateInventoryForm = document.getElementById("edit-product-form");
-const updateInventoryModal = new bootstrap.Modal(document.getElementById("editProductModal"));
-
+const updateProductForm = document.getElementById("update-product-form");
+const updateProductModal = new bootstrap.Modal(
+  document.getElementById("updateProductModal")
+);
 
 function showLoader() {
   const loader = document.getElementById("loader");
@@ -26,7 +32,6 @@ function hideLoader() {
 
 //Fetch inventory logs Ajax request
 window.fetchProductsMaterialPFM = async function () {
-
   showLoader();
   try {
     const start = performance.now();
@@ -38,7 +43,7 @@ window.fetchProductsMaterialPFM = async function () {
     );
     const jsonData = await response.json();
     console.log("Parsed inventory data: ", jsonData);
-    console.log("Fetch duration: ", performance.now()-start);
+    console.log("Fetch duration: ", performance.now() - start);
     //jsonData contains three arrays:
     //jsonData.products, jsonData.materials, jsonData.pfms
 
@@ -52,11 +57,11 @@ window.fetchProductsMaterialPFM = async function () {
     document.getElementById("materials").innerHTML = materialsHTML;
     document.getElementById("pfms").innerHTML = pfmsHTML;
 
-    console.log("Render duration: ", performance.now()-start);
+    console.log("Render duration: ", performance.now() - start);
 
-    setTimeout(() =>{
+    setTimeout(() => {
       hideLoader();
-    },0);
+    }, 0);
   } catch (error) {
     console.error("Error fetching inventory: ", error);
   }
@@ -74,7 +79,7 @@ function buildProductsTable(products) {
               <td><span ${colorStyle}> ${row.partQty} </span></td>
               <td>
                 <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 editLink" style = "font-size: 10px; data-bs-placement = "top" title = "edit product" data-bs-toggle = "modal" data-bs-target="#editProductModal"><i class = "bi bi-pencil"></i></a>
-                <a href="#" class="btn btn-success btn-sm rounded-pill py-0 updateLink" style="font-size: 10px;" data-bs-placement="top" title= "update product qty" data-bs-toggle="modal" data-bs-target="#updateInventoryModal"><i class="bi bi-file-earmark-check"></i></a>
+                <a href="#" class="btn btn-success btn-sm rounded-pill py-0 updateLink" style="font-size: 10px;" data-bs-placement="top" title= "update product qty" data-bs-toggle="modal" data-bs-target="#updateProductModal"><i class="bi bi-file-earmark-check"></i></a>
               </td>
               </tr>`;
   }
@@ -117,7 +122,6 @@ function buildPfmsTable(pfms) {
   return html;
 }
 
-
 /// This applies listeners to each table and monitors for a click
 const setupEditEventListener = (elementId, table) => {
   document.getElementById(elementId).addEventListener("click", (e) => {
@@ -126,13 +130,27 @@ const setupEditEventListener = (elementId, table) => {
       let rowElement = e.target.closest("tr");
       let id = rowElement ? rowElement.getAttribute("data-id") : null;
 
-      console.log("Extracted ID:", id);
-      console.log("Extraced Table:", table);
+      console.log("Edit Extracted ID:", id);
+      console.log("Edit Extraced Table:", table);
 
       if (id && id.trim() !== "") {
         fetchAndFillForm(id.trim(), table);
       } else {
         console.error("ERROR: `data-id` is missing or incorrect!");
+      }
+    }
+    if (e.target.closest("a.updateLink")) {
+      e.preventDefault();
+      let rowElement = e.target.closest("tr");
+      let id = rowElement ? rowElement.getAttribute("data-id") : null;
+
+      console.log("Update Extracted ID:", id);
+      console.log("Update Extraced Table:", table);
+
+      if (id && id.trim() !== "") {
+        //update fill function goes here
+      } else {
+        console.error("ERROR: `data-id` is missing or incorrrect!");
       }
     }
   });
@@ -142,6 +160,36 @@ const setupEditEventListener = (elementId, table) => {
 setupEditEventListener("products", "products");
 setupEditEventListener("materials", "materials");
 setupEditEventListener("pfms", "pfms");
+
+const fetchAndFillUpdateForm = async (id, table) => {
+  console.log("fetching product: ", id, table);
+
+  let url = `../src/classes/inventoryActions.php?edit${
+    table.charAt(0).toUpperCase() + table.slice(1)
+  }=1&id=${id}$table=${table}`;
+
+  const response = await fetch(url);
+  const rawText = await response.text();
+  console.log("RAW server response:", rawText);
+  try {
+    const resonseData = JSON.parse(rawText);
+    console.log("Parsed response:", resonseData);
+
+    if (!resonseData || resonseData.error) {
+      console.error("Error from server:", resonseData.error);
+      return;
+    }
+
+    const fieldMappings = {
+      products: {
+        productID: "h_productID",
+        partName: "partName",
+      },
+      materials: {},
+      pfms: {},
+    };
+  } catch (error) {}
+};
 
 //fills update modal for with queried data
 const fetchAndFillForm = async (id, table) => {
@@ -265,8 +313,8 @@ editProductForm.addEventListener("submit", async (e) => {
   }
 });
 
-editMaterialForm.addEventListener("submit", async (e)=>{
-console.log("submit edit Material button was clicked!");
+editMaterialForm.addEventListener("submit", async (e) => {
+  console.log("submit edit Material button was clicked!");
   //prevent form from submitting data to DB
   e.preventDefault();
   //console.log("Edit Product submit button has been clicked!");
@@ -292,7 +340,7 @@ console.log("submit edit Material button was clicked!");
     },
   };
 
-   console.log("Raw data output: ", materialData);
+  console.log("Raw data output: ", materialData);
 
   const data = await fetch("../src/Classes/inventoryActions.php", {
     method: "POST",
@@ -306,13 +354,12 @@ console.log("submit edit Material button was clicked!");
     editMaterialForm.reset();
     editMaterialForm.classList.remove("was-validated");
     editMaterialModal.hide();
-
   } catch (error) {
     console.error("Failed to submit form: ", error);
   }
-})
+});
 
-editPFMForm.addEventListener("submit", async (e)=>{
+editPFMForm.addEventListener("submit", async (e) => {
   console.log("submit edit pfm button clicked");
 
   e.preventDefault();
@@ -337,11 +384,11 @@ editPFMForm.addEventListener("submit", async (e)=>{
       customer: formData.get("pf_customer"),
       displayOrder: formData.get("pf_displayOrder"),
     },
-  }
+  };
 
   console.log("Raw data output: ", pfmData);
 
-  const data = await fetch("../src/Classes/inventoryActions.php",{
+  const data = await fetch("../src/Classes/inventoryActions.php", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(pfmData),
@@ -353,12 +400,9 @@ editPFMForm.addEventListener("submit", async (e)=>{
     editPFMForm.reset();
     editPFMForm.classList.remove("was-validated");
     editPFMModal.hide();
-
   } catch (error) {
     console.error("Failed to submit form: ", error);
   }
-})
+});
 
-updateInventoryForm.addEventListener("submit", async (e) =>{
-
-})
+updateProductForm.addEventListener("submit", async (e) => {});
