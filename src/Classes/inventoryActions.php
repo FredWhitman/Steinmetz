@@ -109,6 +109,30 @@ if (isset($_GET['editPfms'])) {
     exit();
 }
 
+
+if (isset($_GET['updateProducts'])) {
+
+    header('Content-Type: application/json');
+    if (!isset($_GET['id']) || !isset($_GET['table'])) {
+        echo json_encode(["error" => "Missing required parameters"]);
+        $log->warning("No required paramaters!");
+        exit();
+    }
+
+    $log->info('updateProducts called with this data: ' . $_GET['id'] . ' ' . $_GET['table']);
+    $id = $_GET['id'];
+    $table = $_GET['table'];
+    $record = $db->getRecord($id, $table);
+
+    if (!$record) {
+        echo json_encode(["error" => "Record not found!"]);
+        exit();
+    }
+
+    echo json_encode($record, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+    exit();
+}
+
 //Handles Ajax call to edit inventory items
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 

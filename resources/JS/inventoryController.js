@@ -149,6 +149,7 @@ const setupEditEventListener = (elementId, table) => {
 
       if (id && id.trim() !== "") {
         //update fill function goes here
+        fetchAndFillUpdateForm(id.trim(), table);
       } else {
         console.error("ERROR: `data-id` is missing or incorrrect!");
       }
@@ -183,7 +184,8 @@ const fetchAndFillUpdateForm = async (id, table) => {
     const fieldMappings = {
       products: {
         productID: "h_productID",
-        partName: "partName",
+        partName: "pPartName",
+        partQty: "pStock",
       },
       materials: {},
       pfms: {},

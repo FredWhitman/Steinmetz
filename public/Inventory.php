@@ -205,24 +205,31 @@
                             <input type="hidden" name="p_productID" id="h_productID" />
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="pNumber">Part Name</label><input type="text" tabindex="1" class="form-control form-control-sm" id="pPartName" name="p_partName" readonly></input></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="pPartName">Part Name</label><input type="text" tabindex="1" class="form-control form-control-sm" id="pPartName" name="p_partName" readonly></input></div>
                                 </div>
                             </div>
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="pName">PFM Name</label><input type="text" tabindex="1" class="form-control form-control-sm" id="pName" name="pf_Name" required></input></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="pStock">Current Stock</label><input type="number" tabindex="1" class="form-control form-control-sm" id="pStock" name="p_Stock" readonly></input></div>
                                     <div class="invalid-feedback">Name is required!</div>
                                 </div>
                             </div>
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="minQty">Used for</label><input type="text" tabindex="1" class="form-control form-control-sm" id="pProductID" name="pf_productID" required></div>
-                                    <div class="invalid-feedback">product used for required!</div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="pAmount">Change amount</label><input type="number" tabindex="1" class="form-control form-control-sm" id="pAmount" name="p_Amount" required></div>
+                                    <div class="invalid-feedback">amount required!</div>
                                 </div>
                             </div>
                             <div class="row pb-2">
-                                <div class="input-group sm-3"><label class="input-group-text" for="minLbs">Min. Qty</label><input type="number" class="form-control form-control-sm" id="pMinQty" name="pf_minQty" required></div>
-                                <div class="invalid-feedback">qauntity required!</div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="invQty" id="add" tabindex="3" value="1" required>Add<label class="form-check-label" for="add"></label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="invQty" tabindex="4" id="subtract" value="0">Subtract<label class="form-check-label" for="subtract"></label>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <textarea class="form-control" name="commentText" id="commentText" rows="5" placeholder="Comments"></textarea>
                             </div>
                         </div>
                     </div>

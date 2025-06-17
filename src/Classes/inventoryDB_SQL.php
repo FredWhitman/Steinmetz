@@ -200,6 +200,57 @@ class inventoryDB_SQL extends database
     }
 
     /**
+     * getInventoryRecord function will return a joined inventory and details record
+     * by join product & productInventory and the same for material and pfms
+     *
+     * @param [type] $id
+     * @param [type] $table
+     * @return void
+     */
+    public function getInventoryRecord($id, $table)
+    {
+        $this->log->info('getRecord called with these parameters: ' . $id . ' ' . $table);
+        $sql = '';
+
+        if ($table === 'products') {
+            $this->log->info('product record requested');
+            $sql = '';
+            $stmt = $this->con->prepare($sql);
+            $stmt->execute([':productID' => $id]);
+            $result = $stmt->fetch();
+            if (!$result) {
+                $this->log->warning("NO record found for the $id in table $table. ");
+            }
+
+            $this->log->info('getInventoryRecord returning : ' . $result['productID']);
+            return $result;
+        } else if ($table === 'materials') {
+            $sql = '';
+            try {
+                $stmt = $this->con->prepare($sql);
+                $stmt->execute([':matPartNumber' => $id]);
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                if (!$result) {
+                    $this->log->warning("NO record found for the $id in table $table. ");
+                }
+                $this->log->info('getInventoryRecord returning : ' . $result['matPartNumber']);
+                return $result;
+            } catch (PDOException $e) {
+                $this->log->error("Error getting material record for $id in table $table.");
+            }
+        } else { //pfms
+            $sql = 'SELECT * FROM pfm WHERE pfmID = :pfmID';
+            $stmt = $this->con->prepare($sql);
+            $stmt->execute([':pfmID' => $id]);
+            $result = $stmt->fetch();
+            if (!$result) {
+                $this->log->warning("NO record found for the $id in table $table. ");
+            }
+            $this->log->info('getRecord returning : ' . $result['pfmID']);
+            return $result;
+        }
+    }
+    /**
      * editInventory
      *
      * @param  mixed $data form data sent 
