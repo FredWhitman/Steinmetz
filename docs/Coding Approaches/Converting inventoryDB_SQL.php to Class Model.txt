@@ -1,0 +1,414 @@
+Below is an example of how you can refactor your existing `inventoryDB_SQL.php` into a new, class‐based model called (for example) `InventoryModel.php` that fits into the folder structure we’ve been discussing. In this refactored file, we retain all your current functionality (such as getting full inventory, retrieving individual records, and updating inventory via the `editInventory` method) while renaming the class so it better represents its role.
+
+You can now put this file in a directory (for example, `/models/`) and have your controller depend on it. In our new architecture your entry point (e.g. `inventoryActions.php`) creates an instance of this model and passes it to your OOP controller.
+
+---
+
+### **File: models/InventoryModel.php**
+
+```php
+<?php
+require_once __DIR__ . '/../database.php'; // Adjust the path as needed
+require __DIR__ . '/../../vendor/autoload.php';
+
+use Monolog\Logger;
+use Monolog\ErrorHandler;
+use Monolog\Handler\StreamHandler;
+use Monolog\Handler\FirePHPHandler;
+
+class InventoryModel extends Database
+{
+    private $log;
+    private $con; // Database connection property inherited by your Database class
+
+    public function __construct()
+    {
+        // Instantiate the Database object and get the connection.
+        $database = new Database();
+        $db = $database->dbConnection();
+        $this->con = $db;
+
+        // Set up logging.
+        $this->log = new Logger('inventoryModelErrors');
+        // Note: Adjust the log file path if needed so it falls in your new folder structure.
+        $this->log->pushHandler(new StreamHandler(__DIR__ . '/../logs/inventory_errors.log', Logger::DEBUG));
+        $this->log->pushHandler(new FirePHPHandler());
+
+        // Register the error handler to automatically log PHP errors.
+        ErrorHandler::register($this->log);
+    }
+
+    /**
+     * getInventory
+     *
+     * Retrieves the complete inventory including products, materials, and PFMs.
+     *
+     * @return array Array of inventory data
+     */
+    public function getInventory()
+    {
+        $this->log->info('getInventory called!');
+        try {
+            $sqlProduct = 'SELECT 
+                                products.productID AS productID,
+                                productinventory.partQty AS partQty,
+                                products.minQty AS minQty,
+                                products.displayOrder AS displayOrder
+                           FROM
+                                productinventory
+                           INNER JOIN
+                                products ON (productinventory.productID = products.productID)
+                           ORDER BY displayOrder';
+
+            $stmtProduct = $this->con->prepare($sqlProduct);
+            $stmtProduct->execute();
+            $products = $stmtProduct->fetchAll(PDO::FETCH_ASSOC);
+            if (!$products) {
+                $this->log->error('Nothing was returned for products.');
+            }
+
+            $sqlMaterial = 'SELECT 
+                                materialinventory.matPartNumber,
+                                materialinventory.matLbs,
+                                material.matPartNumber,
+                                material.matName,
+                                material.productID,
+                                material.minLbs,
+                                material.displayOrder
+                            FROM
+                                materialinventory
+                            INNER JOIN
+                                material ON (materialinventory.matPartNumber = material.matPartNumber)
+                            ORDER BY material.displayOrder';
+            $stmtMaterial = $this->con->prepare($sqlMaterial);
+            $stmtMaterial->execute();
+            $materials = $stmtMaterial->fetchAll(PDO::FETCH_ASSOC);
+            if (!$materials) {
+                $this->log->error('Nothing was returned for materials.');
+                throw new ErrorException('Failed to get Material!', 0, E_ERROR);
+            }
+
+            $sqlPFM = 'SELECT 
+                           pfm.pfmID,
+                           pfm.partNumber,
+                           pfm.partName,
+                           pfm.productID,
+                           pfm.minQty,
+                           pfm.customer,
+                           pfm.displayOrder,
+                           pfminventory.partNumber,
+                           pfminventory.Qty
+                       FROM
+                           pfminventory
+                       INNER JOIN
+                           pfm ON (pfminventory.partNumber = pfm.partNumber)
+                       ORDER BY pfm.displayOrder';
+
+            $stmtPFM = $this->con->prepare($sqlPFM);
+            $stmtPFM->execute();
+            $pfms = $stmtPFM->fetchAll(PDO::FETCH_ASSOC);
+            if (!$pfms) {
+                $this->log->error('Nothing was returned for PFMs.');
+                throw new ErrorException('Failed to get PFM', 0, E_ERROR);
+            }
+
+            $this->log->info('Returning combined inventory data.');
+            return [
+                'products'  => $products,
+                'materials' => $materials,
+                'pfms'      => $pfms
+            ];
+        } catch (PDOException $e) {
+            $this->log->error("Error getting inventory: " . $e->getMessage());
+            throw new ErrorException($e->getMessage(), 0, E_ERROR, $e->getFile(), $e->getLine());
+        }
+    }
+
+    /**
+     * getRecord
+     *
+     * Retrieves a single record from products, materials, or pfms for editing.
+     *
+     * @param mixed $id    Record identifier.
+     * @param string $table The table name ('products', 'materials', or 'pfms').
+     * @return array|false  The record data as an associative array or false if not found.
+     */
+    public function getRecord($id, $table)
+    {
+        $this->log->info('getRecord called with parameters: ' . $id . ' ' . $table);
+        if ($table === 'products') {
+            $sql = 'SELECT * FROM products WHERE productID = :productID';
+            $stmt = $this->con->prepare($sql);
+            $stmt->execute([':productID' => $id]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$result) {
+                $this->log->warning("No product record found for ID $id.");
+            }
+            return $result;
+        } else if ($table === 'materials') {
+            $sql = 'SELECT * FROM material WHERE matPartNumber = :matPartNumber';
+            $stmt = $this->con->prepare($sql);
+            $stmt->execute([':matPartNumber' => $id]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$result) {
+                $this->log->warning("No material record found for ID $id.");
+            }
+            return $result;
+        } else { // Assume pfms
+            $sql = 'SELECT * FROM pfm WHERE pfmID = :pfmID';
+            $stmt = $this->con->prepare($sql);
+            $stmt->execute([':pfmID' => $id]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$result) {
+                $this->log->warning("No PFM record found for ID $id.");
+            }
+            return $result;
+        }
+    }
+
+    /**
+     * getInventoryRecord
+     *
+     * Returns a joined record for an update request (typically for products, materials, or pfms).
+     *
+     * @param mixed $id
+     * @param string $table
+     * @return array|false
+     */
+    public function getInventoryRecord($id, $table)
+    {
+        $this->log->info('getInventoryRecord called with: ' . $id . ' ' . $table);
+        if ($table === 'products') {
+            $sql = 'SELECT 
+                        products.productID,
+                        products.partName,
+                        productinventory.partQty
+                    FROM
+                        productinventory
+                    INNER JOIN products
+                        ON (productinventory.productID = products.productID)
+                    WHERE productinventory.productID = :productID';
+            $stmt = $this->con->prepare($sql);
+            $stmt->execute([':productID' => $id]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$result) {
+                $this->log->warning("No product inventory record found for ID $id.");
+            }
+            return $result;
+        } else if ($table === 'materials') {
+            $sql = 'SELECT 
+                        material.matPartNumber,
+                        material.matName,
+                        materialinventory.matLbs
+                    FROM
+                        materialinventory
+                    INNER JOIN material
+                        ON (materialinventory.matPartNumber = material.matPartNumber)
+                    WHERE materialinventory.matPartNumber = :matPartNumber';
+            $stmt = $this->con->prepare($sql);
+            $stmt->execute([':matPartNumber' => $id]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$result) {
+                $this->log->warning("No material inventory record found for ID $id.");
+            }
+            return $result;
+        } else { // Assume pfms.
+            $sql = 'SELECT * FROM pfm WHERE pfmID = :pfmID';
+            $stmt = $this->con->prepare($sql);
+            $stmt->execute([':pfmID' => $id]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$result) {
+                $this->log->warning("No PFM record found for ID $id.");
+            }
+            return $result;
+        }
+    }
+
+    /**
+     * editInventory
+     *
+     * Processes an update request from form data for products, materials, or PFMs.
+     *
+     * @param mixed $data  The data sent from the form.
+     * @return array       Status and message information.
+     */
+    public function editInventory($data)
+    {
+        $this->log->info("editInventory: " . print_r($data, true));
+
+        if ($data['action'] === 'editProduct') {
+            $this->log->info("editProduct has begun!");
+
+            $sql = "UPDATE products 
+                    SET partName = :partName, 
+                        minQty = :minQty, 
+                        boxesPerSkid = :boxesPerSkid, 
+                        partsPerBox = :partsPerBox, 
+                        partWeight = :partWeight, 
+                        displayOrder = :displayOrder, 
+                        customer = :customer, 
+                        productionType = :productionType 
+                    WHERE productID = :productID";
+
+            $stmt = $this->con->prepare($sql);
+            $stmt->bindParam(':productID', $data['products']['productID'], PDO::PARAM_STR);
+            $stmt->bindParam(':partName', $data['products']['partName'], PDO::PARAM_STR);
+            $stmt->bindParam(':minQty', $data['products']['minQty'], PDO::PARAM_INT);
+            $stmt->bindParam(':boxesPerSkid', $data['products']['boxesPerSkid'], PDO::PARAM_INT);
+            $stmt->bindParam(':partsPerBox', $data['products']['partsPerBox'], PDO::PARAM_INT);
+            $stmt->bindParam(':partWeight', $data['products']['partWeight'], PDO::PARAM_STR);
+            $stmt->bindParam(':displayOrder', $data['products']['displayOrder'], PDO::PARAM_INT);
+            $stmt->bindParam(':customer', $data['products']['customer'], PDO::PARAM_STR);
+            $stmt->bindParam(':productionType', $data['products']['productionType'], PDO::PARAM_STR);
+
+            $this->log->info("Executing product update query with values: " . json_encode($data));
+
+            try {
+                $result = $stmt->execute();
+                $affectedRows = $stmt->rowCount();
+                $this->log->info("Product rows affected: " . $affectedRows);
+
+                if (!$result) {
+                    $errorInfo = $stmt->errorInfo();
+                    $this->log->error('SQL Error: ' . implode(" | ", $errorInfo));
+                    return ["success" => false, "message" => "Product update failed.", "error" => $errorInfo];
+                }
+                $this->log->info('Product updated successfully!');
+                return ["success" => true, "message" => "Transaction completed successfully.", "product" => $data['products']['productID']];
+            } catch (PDOException $e) {
+                $this->log->error("ERROR updating product: " . $e->getMessage());
+                return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
+            }
+        } else if ($data["action"] === 'editMaterial') {
+            $this->log->info("editMaterial has begun.");
+
+            $sql = 'UPDATE material 
+                    SET matName = :matName, 
+                        productID = :productID, 
+                        minLbs = :minLbs, 
+                        matCustomer = :matCustomer, 
+                        displayOrder = :displayOrder
+                    WHERE matPartNumber = :matPartNumber';
+            $stmt = $this->con->prepare($sql);
+            $stmt->bindParam(':matPartNumber', $data['materials']['matPartNumber'], PDO::PARAM_STR);
+            $stmt->bindParam(':matName', $data['materials']['matName'], PDO::PARAM_STR);
+            $stmt->bindParam(':productID', $data['materials']['productID'], PDO::PARAM_STR);
+            $stmt->bindParam(':minLbs', $data['materials']['minLbs'], PDO::PARAM_STR);
+            $stmt->bindParam(':matCustomer', $data['materials']['matCustomer'], PDO::PARAM_STR);
+            $stmt->bindParam(':displayOrder', $data['materials']['displayOrder'], PDO::PARAM_INT);
+
+            $this->log->info("Executing material update query with values: " . json_encode($data));
+            try {
+                $result = $stmt->execute();
+                $affectedRows = $stmt->rowCount();
+                $this->log->info("Material rows affected: " . $affectedRows);
+
+                if (!$result) {
+                    $errorInfo = $stmt->errorInfo();
+                    $this->log->error('SQL Error: ' . implode(" | ", $errorInfo));
+                    return ["success" => false, "message" => "Material update failed.", "error" => $errorInfo];
+                }
+                $this->log->info('Material updated successfully!');
+                return ["success" => true, "message" => "Transaction completed successfully.", "material" => $data['materials']['matName']];
+            } catch (PDOException $e) {
+                $this->log->error("ERROR updating material: " . $e->getMessage());
+                return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
+            }
+        } else {  // Assume action is "editPFM"
+            $this->log->info("editPFM has begun.");
+
+            $sql = 'UPDATE pfm 
+                    SET partNumber = :partNumber,
+                        partName = :partName,
+                        productID = :productID,
+                        minQty = :minQty,
+                        customer = :customer,
+                        displayOrder = :displayOrder
+                    WHERE pfmID = :pfmID';
+            $stmt = $this->con->prepare($sql);
+            $stmt->bindParam(':pfmID', $data['pfm']['pfmID'], PDO::PARAM_STR);
+            $stmt->bindParam(':partNumber', $data['pfm']['partNumber'], PDO::PARAM_STR);
+            $stmt->bindParam(':partName', $data['pfm']['partName'], PDO::PARAM_STR);
+            $stmt->bindParam(':productID', $data['pfm']['productID'], PDO::PARAM_STR);
+            $stmt->bindParam(':minQty', $data['pfm']['minQty'], PDO::PARAM_INT);
+            $stmt->bindParam(':customer', $data['pfm']['customer'], PDO::PARAM_STR);
+            $stmt->bindParam(':displayOrder', $data['pfm']['displayOrder'], PDO::PARAM_INT);
+
+            $this->log->info("Executing PFM update query with values: " . json_encode($data));
+
+            try {
+                $result = $stmt->execute();
+                $affectedRows = $stmt->rowCount();
+                $this->log->info("PFM rows affected: " . $affectedRows);
+
+                if (!$result) {
+                    $errorInfo = $stmt->errorInfo();
+                    $this->log->error('SQL Error: ' . implode(" | ", $errorInfo));
+                    return ["success" => false, "message" => "PFM update failed.", "error" => $errorInfo];
+                }
+                $this->log->info('PFM updated successfully!');
+                return ["success" => true, "message" => "Transaction completed successfully.", "pfm" => $data['pfm']['partName']];
+            } catch (PDOException $e) {
+                $this->log->error("ERROR updating PFM: " . $e->getMessage());
+                return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
+            }
+        }
+    }
+
+    /**
+     * updateInvQty
+     *
+     * Updates inventory quantity by subtracting the specified quantity.
+     *
+     * @param mixed $data  Data containing productID and quantity to subtract.
+     * @return array       Status information.
+     */
+    public function updateInvQty($data)
+    {
+        try {
+            $sql = 'UPDATE product SET qty = qty - :qty WHERE productID = :productID';
+            $stmt = $this->con->prepare($sql);
+            $stmt->bindParam(':productID', $data['productID'], PDO::PARAM_STR);
+            $stmt->bindParam(':qty', $data['qty'], PDO::PARAM_INT);
+            $result = $stmt->execute();
+            if (!$result) {
+                $errorInfo = $stmt->errorInfo();
+                return ["success" => false, "message" => "Database failed to update.", "error" => $errorInfo];
+            } else {
+                return ["success" => true, "message" => "Update successful!", "productID" => $data['productID']];
+            }
+        } catch (PDOException $e) {
+            $this->log->error("ERROR updating inventory qty: " . $e->getMessage());
+            return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
+        }
+    }
+}
+```
+
+---
+
+### **Explanation**
+
+1. **Initialization:**  
+   The constructor sets up a database connection using your existing `Database` class. It also configures a Monolog logger (with a file path adjusted to fit our new folder layout) and registers it using `ErrorHandler::register()`.
+
+2. **Inventory Retrieval:**  
+   The `getInventory()` method runs three SQL queries—one for products, one for materials, and one for PFMs. It logs diagnostic messages and returns the combined data as an associative array.  
+   Errors (such as an empty result set) are logged, and in the case of materials and PFMs, an exception is thrown if nothing is returned.
+
+3. **Record Retrieval:**  
+   The `getRecord()` and `getInventoryRecord()` methods choose the correct SQL query based on the provided `$table` parameter. They fetch a single record and log a warning if no record is found.
+
+4. **Editing/Updating:**  
+   The `editInventory()` method handles updates for three different actions (`editProduct`, `editMaterial`, and `editPFM`). Depending on the `action` field in the passed data, it prepares and executes an appropriate UPDATE query. It logs messages before and after executing the query and returns a response indicating success or failure.
+
+5. **Additional Updates:**  
+   The `updateInvQty()` method demonstrates how you might update inventory quantities by subtracting a given value, again logging the results and returning a message.
+
+---
+
+### **Integration**
+
+Once this model is in place, your entry point (e.g., `inventoryActions.php`) can instantiate an `InventoryModel` object (now replacing your old `inventoryDB_SQL.php`), and your controller (in `InventoryController.php`) will depend on it for all database interactions. This separation of concerns makes your code easier to maintain and test while setting the stage for further improvements (for example, moving entirely to RESTful routes).
+
+If you need further customization or run into any issues adapting the code to your environment, feel free to ask!

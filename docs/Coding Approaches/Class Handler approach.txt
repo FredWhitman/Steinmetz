@@ -1,0 +1,47 @@
+✅ Great for:
+Clean encapsulation of dependencies
+Easy to extend, test, and refactor
+Familiar structure if you're migrating to a full MVC framework later
+
+<--- inventoryActions.php --->
+
+require_once 'InventoryController.php';
+
+$controller = new InventoryController($db, $util, $log);
+$data = json_decode(file_get_contents("php://input"), true);
+$action = $data['action'] ?? null;
+
+$handlers = [
+    'editProduct'  => [$controller, 'editProduct'],
+    'editMaterial' => [$controller, 'editMaterial'],
+    'editPFM'      => [$controller, 'editPFM']
+];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($handlers[$action])) {
+    call_user_func($handlers[$action], $data);
+} else {
+    http_response_code(400);
+    echo json_encode(['error' => 'Invalid action']);
+}
+
+<--- InventoryController.php --->
+
+class InventoryController {
+    private $db, $util, $log;
+
+    public function __construct($db, $util, $log) {
+        $this->db = $db;
+        $this->util = $util;
+        $this->log = $log;
+    }
+
+    public function editProduct($data) {
+        // Access $this->db, $this->util, $this->log here
+    }
+
+    public function editMaterial($data) {
+        // Your logic
+    }
+}
+
+

@@ -148,7 +148,6 @@ const setupEditEventListener = (elementId, table) => {
       console.log("Update Extraced Table:", table);
 
       if (id && id.trim() !== "") {
-        //update fill function goes here
         fetchAndFillUpdateForm(id.trim(), table);
       } else {
         console.error("ERROR: `data-id` is missing or incorrrect!");
@@ -165,19 +164,20 @@ setupEditEventListener("pfms", "pfms");
 const fetchAndFillUpdateForm = async (id, table) => {
   console.log("fetching product: ", id, table);
 
-  let url = `../src/classes/inventoryActions.php?edit${
+  let url = `../src/classes/inventoryActions.php?update${
     table.charAt(0).toUpperCase() + table.slice(1)
-  }=1&id=${id}$table=${table}`;
+  }=1&id=${id}&table=${table}`;
+  console.log("fetch URL: ", url);
 
   const response = await fetch(url);
   const rawText = await response.text();
   console.log("RAW server response:", rawText);
   try {
-    const resonseData = JSON.parse(rawText);
-    console.log("Parsed response:", resonseData);
+    const responseData = JSON.parse(rawText);
+    console.log("Parsed response:", responseData);
 
-    if (!resonseData || resonseData.error) {
-      console.error("Error from server:", resonseData.error);
+    if (!responseData || responseData.error) {
+      console.error("Error from server:", responseData.error);
       return;
     }
 
@@ -190,6 +190,16 @@ const fetchAndFillUpdateForm = async (id, table) => {
       materials: {},
       pfms: {},
     };
+
+    Object.keys(fieldMappings[table]).forEach((dbKey) => {
+      let formID = fieldMappings[table][dbKey];
+      let element = document.getElementById(formID);
+      if (element) {
+        element.value = responseData[dbKey] || "";
+      } else {
+        console.warn(`Element with ID '${formID}'  not found!`);
+      }
+    });
   } catch (error) {}
 };
 
@@ -259,6 +269,33 @@ const fetchAndFillForm = async (id, table) => {
     console.error("Failed to parse JSON:", error);
   }
 };
+
+updateProductForm.addEventListener("submit", async (e) => {
+  console.log("update product button has been clicked!");
+
+  //prevent form from submitting data to DB
+  e.defaultPrevented();
+
+  const formData = new FormData(updateProductForm);
+
+  //check to make sure the required input field are not empty.
+  if (!updateProductForm.checkValidity()) {
+    e.preventDefault();
+    e.stopPropagation();
+    updateProductForm.classList.add("was-validated");
+    return false;
+  }
+  const productData = {
+    action: "updateProduct",
+    products: {
+      productID: formData.get("h_productID"),
+      partyQty: formData.get("pStock"),
+      pAmount: formData.get("pAmount"),
+    },
+  };
+
+  console.log("Raw data output: ", productData);
+});
 
 editProductForm.addEventListener("submit", async (e) => {
   console.log("submit edit Product button was clicked!");

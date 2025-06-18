@@ -1,0 +1,42 @@
+RESTful Routing Approach
+This moves you away from "action" values entirely and instead uses HTTP methods and URLs as the "router." Perfect when building a true API.
+
+Example: Using Vanilla PHP as a Router
+inventoryRouter.php
+
+php
+$requestMethod = $_SERVER['REQUEST_METHOD'];
+$requestUri = $_SERVER['REQUEST_URI'];
+
+require_once 'InventoryController.php';
+$controller = new InventoryController($db, $util, $log);
+
+// Example route matching
+if ($requestMethod === 'GET' && preg_match('#^/inventory/\d+$#', $requestUri)) {
+    $id = basename($requestUri);
+    $controller->getInventoryItem($id);
+} elseif ($requestMethod === 'POST' && $requestUri === '/inventory/product') {
+    $data = json_decode(file_get_contents("php://input"), true);
+    $controller->updateProduct($data);
+} elseif ($requestMethod === 'PUT' && preg_match('#^/inventory/material/\d+$#', $requestUri)) {
+    $id = basename($requestUri);
+    $data = json_decode(file_get_contents("php://input"), true);
+    $controller->updateMaterial($id, $data);
+} else {
+    http_response_code(404);
+    echo json_encode(['error' => 'Route not found']);
+}
+
+✅ REST Benefits:
+Clients don’t need to send “action” fields—URLs and methods handle intent
+
+Mirrors real-world services like Stripe, GitHub, etc.
+
+Easy to scale into API gateways, docs, and frontend integration
+
+TL;DR Comparison
+Feature	Function Handlers	Class Controllers	RESTful Routing
+Structure	Procedural	OOP	URL + Method driven
+Scalability	Medium	High	Very High
+Expressiveness	Basic	Modular	Highly semantic
+Framework-ready	✅	✅✅	✅✅✅

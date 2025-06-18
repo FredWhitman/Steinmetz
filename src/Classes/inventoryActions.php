@@ -122,7 +122,7 @@ if (isset($_GET['updateProducts'])) {
     $log->info('updateProducts called with this data: ' . $_GET['id'] . ' ' . $_GET['table']);
     $id = $_GET['id'];
     $table = $_GET['table'];
-    $record = $db->getRecord($id, $table);
+    $record = $db->getInventoryRecord($id, $table);
 
     if (!$record) {
         echo json_encode(["error" => "Record not found!"]);

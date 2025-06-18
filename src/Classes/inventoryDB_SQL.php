@@ -214,7 +214,17 @@ class inventoryDB_SQL extends database
 
         if ($table === 'products') {
             $this->log->info('product record requested');
-            $sql = '';
+
+            $sql = 'SELECT 
+                        `products`.`productID`,
+                        `products`.`partName`,
+                        `productinventory`.`partQty`
+                    FROM
+                        `productinventory`
+                    INNER JOIN `products` 
+                    ON (`productinventory`.`productID` = `products`.`productID`)
+                    WHERE
+                    `productinventory`.`productID` = :productID';
             $stmt = $this->con->prepare($sql);
             $stmt->execute([':productID' => $id]);
             $result = $stmt->fetch();
