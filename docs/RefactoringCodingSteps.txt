@@ -271,7 +271,7 @@ the dispatcher. The dispatcher now checks the request method (GET or POST) and r
 ## 5. **InventoryController.js**
 
 Your JavaScript code may remain largely the same since it’s calling your PHP endpoints with parameterized URLs and JSON 
-ayloads. Just update your file paths to point to `inventoryActions.php` (or a new route if you change it later—for example, 
+payloads. Just update your file paths to point to `inventoryActions.php` (or a new route if you change it later—for example, 
 using RESTful URIs). The client-side code continues to make AJAX calls and fills modals accordingly.
 
 ---
