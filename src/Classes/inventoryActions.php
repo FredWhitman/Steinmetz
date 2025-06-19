@@ -15,19 +15,21 @@ $db = new inventoryDB_SQL;
 $util = new Util;
 
 // Create your Monolog Logger instance with handlers
-$log = new Logger('inventoryActionErrors');
+$log = new Logger('inventoryActions_Errors');
+$info = new Logger('inventoryActions_Info');
 
 // Example: Log all errors to a file
-$log->pushHandler(new StreamHandler(__DIR__ . '/logs/inventory_errors.log', Logger::DEBUG)); // Log everything from DEBUG level
-
+$log->pushHandler(new StreamHandler(__DIR__ . '/logs/inventory_errors.log', Logger::ERROR)); // Log everything from ERROR level
+$info->pushHandler(new StreamHandler(__DIR__ . '/logs/inventory_info.log', Logger::INFO)); // Log everything from ERROR level
 
 // Register the Monolog ErrorHandler
 ErrorHandler::register($log);
+ErrorHandler::register($info);
 
 //gets a current list of parts, material and pfms from database
 if (isset($_GET['getInventory'])) {
     header('Content-Type: application/json');
-    $log->info('Testing inventoryActions.php error & log handling: getInventory was called!');
+    $info->info('Testing inventoryActions.php error & log handling: getInventory was called!');
 
     $inventory = $db->getInventory();
 
@@ -47,7 +49,7 @@ if (isset($_GET['editProducts'])) {
         exit();
     }
 
-    $log->info('editProduct called with this data: ' . $_GET['id'] . ' ' . $_GET['table']);
+    $info->info('editProduct called with this data: ' . $_GET['id'] . ' ' . $_GET['table']);
     $id = $_GET['id'];
     $table = $_GET['table'];
     $record = $db->getRecord($id, $table);
@@ -72,7 +74,7 @@ if (isset($_GET['editMaterials'])) {
         exit();
     }
 
-    $log->info('editMaterial called with this data: ' . $_GET['id'] . ' ' . $_GET['table']);
+    $info->info('editMaterial called with this data: ' . $_GET['id'] . ' ' . $_GET['table']);
     $id = $_GET['id'];
     $table = $_GET['table'];
     $record = $db->getRecord($id, $table);
@@ -95,7 +97,7 @@ if (isset($_GET['editPfms'])) {
         exit();
     }
 
-    $log->info('editPFMs called with this data: ' . $_GET['id'] . ' ' . $_GET['table']);
+    $info->info('editPFMs called with this data: ' . $_GET['id'] . ' ' . $_GET['table']);
     $id = $_GET['id'];
     $table = $_GET['table'];
     $record = $db->getRecord($id, $table);
@@ -119,7 +121,7 @@ if (isset($_GET['updateProducts'])) {
         exit();
     }
 
-    $log->info('updateProducts called with this data: ' . $_GET['id'] . ' ' . $_GET['table']);
+    $info->info('updateProducts called with this data: ' . $_GET['id'] . ' ' . $_GET['table']);
     $id = $_GET['id'];
     $table = $_GET['table'];
     $record = $db->getInventoryRecord($id, $table);
@@ -139,17 +141,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $data = json_decode(file_get_contents("php://input"), true);
 
     //log data sent from form
-    $log->info("Posted data sent to handler " . "\n" . print_r($data, true));
+    $info->info("Posted data sent to handler " . "\n" . print_r($data, true));
 
 
     if (isset($data["action"]) && $data["action"] === "editProduct") {
-        $log->info("editProduct was present in data!");
+        $info->info("editProduct was present in data!");
 
         if (isset($data["products"])) {
 
             $result = $db->editInventory($data);
 
-            $log->info("update status: " . print_r($result, true));
+            $info->info("update status: " . print_r($result, true));
 
             if ($result["success"]) {
                 echo $util->showMessage('success', $result['message'] . " " . "Product ID: {$result['product']} has been updated!");
@@ -164,7 +166,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if (isset($data["materials"])) {
             $result = $db->editInventory($data);
 
-            $log->info("update status: " . print_r($result, true));
+            $info->info("update status: " . print_r($result, true));
 
             if ($result["success"]) {
                 echo $util->showMessage('success', $result['message'] . ' ' . "Material: {$result['material']} has been updated!");
@@ -178,7 +180,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     } else if (isset($data["action"]) && $data["action"] === "editPFM") {
         if (isset($data["pfm"])) {
             $result = $db->editInventory($data);
-            $log->info("update status: " . print_r($result, true));
+            $info->info("update status: " . print_r($result, true));
             if ($result['success']) {
                 echo $util->showMessage('success', $result['message'] . ' ' . "PFM: {$result['pfm']} has been updated!");
             } else {

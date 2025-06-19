@@ -17,6 +17,7 @@ use Monolog\Handler\FirePHPHandler;
 class inventoryDB_SQL extends database
 {
     private $log;
+    private $info;
     // Constructor
     public function __construct()
     {
@@ -24,13 +25,17 @@ class inventoryDB_SQL extends database
         $db = $database->dbConnection();
         $this->con = $db;
 
-        $this->log = new Logger('inventoryDB_SqlError');
-        //send log errors to this fill
-        $this->log->pushHandler(new StreamHandler(__DIR__ . '/logs/inventory_errors.log'), Logger::DEBUG);
-        $this->log->pushHandler(new FirePHPHandler());
+        $this->log = new Logger('inventoryDB_Sql_Error');
+        $this->info = new Logger('inventoryDB_SQL_Info');
 
-        //register the errorHandler
+        //send log errors to this fill
+        $this->log->pushHandler(new StreamHandler(__DIR__ . '/logs/inventory_errors.log'), Logger::ERROR);
+        $this->info->pushHandler(new StreamHandler(__DIR__ . '/logs/inventory_info.log'), Logger::INFO);
+        
+        //register the errorHandlers
         ErrorHandler::register($this->log);
+        ErrorHandler::register($this->info);
+
     }
 
     /**
@@ -42,7 +47,7 @@ class inventoryDB_SQL extends database
      */
     public function getInventory()
     {
-        $this->log->info('getIventory called!');
+        $this->info->info('getIventory called!');
 
         try {
             $sqlProduct = 'SELECT 
@@ -66,7 +71,7 @@ class inventoryDB_SQL extends database
             if (!$products) {
                 $this->log->error('Nothing was returned $inventoryProducts.');
             } else {
-                //$this->log->info('$inventoryProducts row count :' . $iCount);
+                //$this->info->info('$inventoryProducts row count :' . $iCount);
             }
 
             $sqlMaterial = 'SELECT 
@@ -97,7 +102,7 @@ class inventoryDB_SQL extends database
                     '',
                 );
             } else {
-                //$this->log->info('$materials row count :' . $mCount);
+                //$this->info->info('$materials row count :' . $mCount);
             }
 
             $sqlPFM = 'SELECT 
@@ -130,9 +135,9 @@ class inventoryDB_SQL extends database
                     '',
                 );
             } else {
-                //$this->log->info('$inventoryPFM row count :' . $pCount);
+                //$this->info->info('$inventoryPFM row count :' . $pCount);
             }
-            $this->log->info('Returnin table data to controller!');
+            $this->info->info('Returnin table data to controller!');
             return ['products'  => $products, 'materials' => $materials, 'pfms' => $pfm];
         } catch (PDOException $e) {
             $this->log->error("Error getting products: " . $e->getMessage());
@@ -157,11 +162,11 @@ class inventoryDB_SQL extends database
      */
     public function getRecord($id, $table)
     {
-        $this->log->info('getRecord called with these parameters: ' . $id . ' ' . $table);
+        $this->info->info('getRecord called with these parameters: ' . $id . ' ' . $table);
         $sql = '';
 
         if ($table === 'products') {
-            $this->log->info('product record requested');
+            $this->info->info('product record requested');
             $sql = 'SELECT * FROM products WHERE productID = :productID';
             $stmt = $this->con->prepare($sql);
             $stmt->execute([':productID' => $id]);
@@ -170,7 +175,7 @@ class inventoryDB_SQL extends database
                 $this->log->warning("NO record found for the $id in table $table. ");
             }
 
-            $this->log->info('getRecord returning : ' . $result['productID']);
+            $this->info->info('getRecord returning : ' . $result['productID']);
             return $result;
         } else if ($table === 'materials') {
             $sql = 'SELECT * FROM material WHERE matPartNumber = :matPartNumber';
@@ -181,7 +186,7 @@ class inventoryDB_SQL extends database
                 if (!$result) {
                     $this->log->warning("NO record found for the $id in table $table. ");
                 }
-                $this->log->info('getRecord returning : ' . $result['matPartNumber']);
+                $this->info->info('getRecord returning : ' . $result['matPartNumber']);
                 return $result;
             } catch (PDOException $e) {
                 $this->log->error("Error getting material record for $id in table $table.");
@@ -194,7 +199,7 @@ class inventoryDB_SQL extends database
             if (!$result) {
                 $this->log->warning("NO record found for the $id in table $table. ");
             }
-            $this->log->info('getRecord returning : ' . $result['pfmID']);
+            $this->info->info('getRecord returning : ' . $result['pfmID']);
             return $result;
         }
     }
@@ -209,11 +214,11 @@ class inventoryDB_SQL extends database
      */
     public function getInventoryRecord($id, $table)
     {
-        $this->log->info('getRecord called with these parameters: ' . $id . ' ' . $table);
+        $this->info->info('getRecord called with these parameters: ' . $id . ' ' . $table);
         $sql = '';
 
         if ($table === 'products') {
-            $this->log->info('product record requested');
+            $this->info->info('product record requested');
 
             $sql = 'SELECT 
                         `products`.`productID`,
@@ -232,7 +237,7 @@ class inventoryDB_SQL extends database
                 $this->log->warning("NO record found for the $id in table $table. ");
             }
 
-            $this->log->info('getInventoryRecord returning : ' . $result['productID']);
+            $this->info->info('getInventoryRecord returning : ' . $result['productID']);
             return $result;
         } else if ($table === 'materials') {
             $sql = '';
@@ -243,7 +248,7 @@ class inventoryDB_SQL extends database
                 if (!$result) {
                     $this->log->warning("NO record found for the $id in table $table. ");
                 }
-                $this->log->info('getInventoryRecord returning : ' . $result['matPartNumber']);
+                $this->info->info('getInventoryRecord returning : ' . $result['matPartNumber']);
                 return $result;
             } catch (PDOException $e) {
                 $this->log->error("Error getting material record for $id in table $table.");
@@ -256,7 +261,7 @@ class inventoryDB_SQL extends database
             if (!$result) {
                 $this->log->warning("NO record found for the $id in table $table. ");
             }
-            $this->log->info('getRecord returning : ' . $result['pfmID']);
+            $this->info->info('getRecord returning : ' . $result['pfmID']);
             return $result;
         }
     }
@@ -268,13 +273,13 @@ class inventoryDB_SQL extends database
      */
     public function editInventory($data)
     {
-        $this->log->info("editInventory : " . print_r($data, true));
+        $this->info->info("editInventory : " . print_r($data, true));
         if ($data['action'] === 'editProduct') {
-            $this->log->info("edit product has begun!");
+            $this->info->info("edit product has begun!");
 
-            //$this->log->info("data sent to editInventory function: ", $data);
-            //$this->log->info('editInventory called and transaction begun.');
-            //$this->log->info("Received partName value: " . $data['products']['partName']);
+            //$this->info->info("data sent to editInventory function: ", $data);
+            //$this->info->info('editInventory called and transaction begun.');
+            //$this->info->info("Received partName value: " . $data['products']['partName']);
             $sql = "UPDATE products 
                         SET partName = :partName, 
                             minQty = :minQty, 
@@ -297,28 +302,28 @@ class inventoryDB_SQL extends database
             $stmt->bindParam(':customer', $data['products']['customer'], PDO::PARAM_STR);
             $stmt->bindParam(':productionType', $data['products']['productionType'], PDO::PARAM_STR);
 
-            $this->log->info("Executing update query with values: " . json_encode($data));
+            $this->info->info("Executing update query with values: " . json_encode($data));
 
             try {
                 $result = $stmt->execute();
 
                 //check to make sure rows were actually affected
                 $affectedRows = $stmt->rowCount();
-                $this->log->info("Rows affected: " . $affectedRows);
+                $this->info->info("Rows affected: " . $affectedRows);
 
                 if (!$result) {
                     $errorInfo = $stmt->errorInfo();
                     $this->log->error('SQL Error: ' . implode(" | ", $errorInfo));
                     return ["success" => false, "message" => "Product update failed.", "error" => $errorInfo];
                 }
-                $this->log->info('Product Updated!');
+                $this->info->info('Product Updated!');
                 return ["success" => true, "message" => "Transaction completed successfully.", "product" => $data['products']['productID']];
             } catch (PDOException $e) {
                 $this->log->error("ERROR product update failed: " . $e->getMessage());
                 return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
             }
         } else if ($data["action"] === 'editMaterial') {
-            $this->log->info('edit material has begun.');
+            $this->info->info('edit material has begun.');
             $sql = 'UPDATE material 
                         SET 
                             matName = :matName, 
@@ -335,25 +340,25 @@ class inventoryDB_SQL extends database
             $stmt->bindParam(':matCustomer', $data['materials']['matCustomer'], PDO::PARAM_STR);
             $stmt->bindParam(':displayOrder', $data['materials']['displayOrder'], PDO::PARAM_INT);
 
-            $this->log->info("Executing update query with values: " . json_encode($data));
+            $this->info->info("Executing update query with values: " . json_encode($data));
             try {
                 $result = $stmt->execute();
                 //check to make sure rows were actually affected
                 $affectedRows = $stmt->rowCount();
-                $this->log->info("Rows affected: " . $affectedRows);
+                $this->info->info("Rows affected: " . $affectedRows);
                 if (!$result) {
                     $errorInfo = $stmt->errorInfo();
                     $this->log->error('SQL Error: ' . implode(" | ", $errorInfo));
                     return ["success" => false, "message" => "Material update failed.", "error" => $errorInfo];
                 }
-                $this->log->info('Material Updated!');
+                $this->info->info('Material Updated!');
                 return ["success" => true, "message" => "Transaction completed successfully.", "material" => $data['materials']['matName']];
             } catch (PDOException $e) {
                 $this->log->error("ERROR updateInventory: " . $e->getMessage());
                 return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
             }
         } else {
-            $this->log->info('edit PFM has begun.');
+            $this->info->info('edit PFM has begun.');
             $sql = 'UPDATE pfm 
                     SET 
                         partNumber = :partNumber,
@@ -373,17 +378,17 @@ class inventoryDB_SQL extends database
             $stmt->bindParam(':customer', $data['pfm']['customer'], PDO::PARAM_STR);
             $stmt->bindParam(':displayOrder', $data['pfm']['displayOrder'], PDO::PARAM_INT);
 
-            $this->log->info('Executing update query with values ' . json_encode($data));
+            $this->info->info('Executing update query with values ' . json_encode($data));
             try {
                 $result = $stmt->execute();
                 $affectedRows = $stmt->rowCount();
-                $this->log->info('PFM Rows affected: ' . $affectedRows);
+                $this->info->info('PFM Rows affected: ' . $affectedRows);
                 if (!$result) {
                     $errorInfo = $stmt->errorInfo();
                     $this->log->error('SQL error: ' . implode(" | ", $errorInfo));
                     return ["success" => false, "message" => 'PFM update failed.', "error" => $errorInfo];
                 }
-                $this->log->info("PFM updated!");
+                $this->info->info("PFM updated!");
                 return ['success' => true, "message" => 'Transaction completed successfully.', 'pfm' => $data['pfm']['partName']];
             } catch (PDOException $e) {
                 $this->log->error("ERROR update pfm failed!" . $e->getMessage());

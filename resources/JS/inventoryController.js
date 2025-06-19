@@ -42,8 +42,9 @@ window.fetchProductsMaterialPFM = async function () {
       }
     );
     const jsonData = await response.json();
-    console.log("Parsed inventory data: ", jsonData);
-    console.log("Fetch duration: ", performance.now() - start);
+    //console.log("Parsed inventory data: ", jsonData);
+    logToServer("Parsed inventory data: ", jsonData);
+    //console.log("Fetch duration: ", performance.now() - start);
     //jsonData contains three arrays:
     //jsonData.products, jsonData.materials, jsonData.pfms
 
@@ -57,7 +58,7 @@ window.fetchProductsMaterialPFM = async function () {
     document.getElementById("materials").innerHTML = materialsHTML;
     document.getElementById("pfms").innerHTML = pfmsHTML;
 
-    console.log("Render duration: ", performance.now() - start);
+    //console.log("Render duration: ", performance.now() - start);
 
     setTimeout(() => {
       hideLoader();
@@ -441,7 +442,16 @@ editPFMForm.addEventListener("submit", async (e) => {
     editPFMModal.hide();
   } catch (error) {
     console.error("Failed to submit form: ", error);
+    logToServer("Failed to submit form: ", 'ERROR', error);
   }
 });
+
+function logToServer(message, level = 'info', context = {}) {
+  fetch('../src/CLasses/log-client-event.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, level, context })
+  }).catch(err => console.error('Failed to log:', err));
+}
 
 updateProductForm.addEventListener("submit", async (e) => {});
