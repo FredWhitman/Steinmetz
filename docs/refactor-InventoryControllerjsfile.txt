@@ -1,4 +1,6 @@
-Below is one way to break out your large controller file into two modules: one that manages your UI (forms, tables, event listeners, and modal filling) and another that handles all your API calls (GET and POST requests). This separation fits nicely with our new PHP routing/dispatcher/model setup. You can then load these modules from your main HTML (or via a bundler) so they work together.
+Below is one way to break out your large controller file into two modules: one that manages your UI (forms, tables, event listeners, 
+and modal filling) and another that handles all your API calls (GET and POST requests). This separation fits nicely with our new PHP 
+routing/dispatcher/model setup. You can then load these modules from your main HTML (or via a bundler) so they work together.
 
 ---
 
@@ -125,7 +127,8 @@ export function renderTables({ products, materials, pfms }) {
 
 ### 2. **API Client (apiClient.js)**
 
-This module handles all fetch requests to your PHP entry point, which is now set up with our routing/dispatcher. It provides functions for fetching inventory data or submitting forms.
+This module handles all fetch requests to your PHP entry point, which is now set up with our 
+routing/dispatcher. It provides functions for fetching inventory data or submitting forms.
 
 ```js
 // apiClient.js
@@ -266,7 +269,8 @@ export async function postData(productData) {
 
 ### 3. **Putting It All Together in Your Main Script**
 
-You can create a small main file (or include both modules in your HTML) to initialize everything and wire up the event listeners. For example, in your HTML you might add:
+You can create a small main file (or include both modules in your HTML) to initialize everything and wire up 
+the event listeners. For example, in your HTML you might add:
 
 ```html
 <script type="module" src="js/uiManager.js"></script>
@@ -328,9 +332,12 @@ You can create a small main file (or include both modules in your HTML) to initi
 ### **Summary**
 
 1. **uiManager.js** handles all DOM tasks—rendering tables and hooking up event listeners that trigger modal population.  
-2. **apiClient.js** takes care of sending GET/POST requests to your PHP entry point (which is now routed via our controller, dispatcher, and model).  
-3. Finally, a small main script (or your HTML module entry point) imports both modules, initializes the UI by fetching data, and connects form submissions to POST operations.
+2. **apiClient.js** takes care of sending GET/POST requests to your PHP entry point (which is now routed via our controller, 
+dispatcher, and model).  
+3. Finally, a small main script (or your HTML module entry point) imports both modules, initializes the UI by fetching data, 
+and connects form submissions to POST operations.
 
-This modular approach keeps your code clean and maintainable and fits neatly into your upgraded PHP side using a routing/dispatcher and model/controller pattern.
+This modular approach keeps your code clean and maintainable and fits neatly into your upgraded PHP side using a routing/dispatcher 
+and model/controller pattern.
 
 Feel free to adjust the file paths and modals/DOM IDs to match your exact setup!

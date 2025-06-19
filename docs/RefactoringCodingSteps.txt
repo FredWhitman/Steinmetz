@@ -4,7 +4,8 @@ Let's put it all together. In your current setup you have three files:
 - **inventoryActions.php:** A procedural file that handles all inventory actions  
 - **inventoryDB_SQL.php:** Your database access layer
 
-We’re going to transform your PHP side into an object‐oriented structure with a dispatcher pattern. This structure splits the code into separate responsibilities. For example, we’ll have:
+We’re going to transform your PHP side into an object‐oriented structure with a dispatcher pattern. This structure splits the code 
+into separate responsibilities. For example, we’ll have:
 
 ```
 /inventory/
@@ -26,7 +27,8 @@ Below are examples for each piece along with explanations.
 
 ## 1. **InventoryController.php** (in `/controllers/`)
 
-This class will encapsulate all your business logic for inventory actions. Every method corresponds to a task (editing a product, editing a material, etc.). The controller will receive needed dependencies via the constructor (database model, logging, utility functions).
+This class will encapsulate all your business logic for inventory actions. Every method corresponds to a task (editing a product, 
+editing a material, etc.). The controller will receive needed dependencies via the constructor (database model, logging, utility functions).
 
 ```php
 <?php
@@ -224,13 +226,17 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
 ```
 
 *Explanation:*  
-This file creates a mapping (a dispatcher array) that tells the system which controller method to call based on the `"action"` field in your JSON payload for POST. Here, a similar check is applied for GET requests based on parameters (like `getInventory` or `editProducts`). Notice that the dispatcher is the single point of entry—it “dispatches” the request to the proper controller method.
+This file creates a mapping (a dispatcher array) that tells the system which controller method to call based on the 
+`"action"` field in your JSON payload for POST. Here, a similar check is applied for GET requests based on parameters 
+(like `getInventory` or `editProducts`). Notice that the dispatcher is the single point of entry—it “dispatches” the 
+request to the proper controller method.
 
 ---
 
 ## 4. **inventoryActions.php** (Entry Point)
 
-This file is the entry point for all inventory-related requests. It takes care of initializing common utilities, then includes the dispatcher.
+This file is the entry point for all inventory-related requests. It takes care of initializing common utilities, then 
+includes the dispatcher.
 
 ```php
 <?php
@@ -257,19 +263,23 @@ require_once __DIR__ . '/routes/dispatcher.php';
 ```
 
 *Explanation:*  
-In this entry point you initialize the dependencies (your model, utility class, and logger) and then simply include the dispatcher. The dispatcher now checks the request method (GET or POST) and routes it to the correct controller method.
+In this entry point you initialize the dependencies (your model, utility class, and logger) and then simply include 
+the dispatcher. The dispatcher now checks the request method (GET or POST) and routes it to the correct controller method.
 
 ---
 
 ## 5. **InventoryController.js**
 
-Your JavaScript code may remain largely the same since it’s calling your PHP endpoints with parameterized URLs and JSON payloads. Just update your file paths to point to `inventoryActions.php` (or a new route if you change it later—for example, using RESTful URIs). The client-side code continues to make AJAX calls and fills modals accordingly.
+Your JavaScript code may remain largely the same since it’s calling your PHP endpoints with parameterized URLs and JSON 
+ayloads. Just update your file paths to point to `inventoryActions.php` (or a new route if you change it later—for example, 
+using RESTful URIs). The client-side code continues to make AJAX calls and fills modals accordingly.
 
 ---
 
 ## Looking Ahead: RESTful Routes
 
-With this structure in place, converting to RESTful endpoints is a small step. Instead of using a single “action” parameter for POSTs, you could define routes like:
+With this structure in place, converting to RESTful endpoints is a small step. Instead of using a single “action” parameter 
+for POSTs, you could define routes like:
 
 - **GET /inventory** to get the full inventory  
 - **GET /inventory/{id}** to fetch one product/material/pfm  
@@ -289,14 +299,16 @@ $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) u
 });
 ```
 
-This RESTful approach would have you extract the HTTP method and URI, dispatch them via FastRoute, and then call the appropriate controller method. The idea is the same—routing the request to the correct function—but with more semantic URLs and HTTP verbs. You can easily evolve your current dispatcher into that style when you’re ready.
+This RESTful approach would have you extract the HTTP method and URI, dispatch them via FastRoute, and then call the appropriate 
+controller method. The idea is the same—routing the request to the correct function—but with more semantic URLs and HTTP verbs. 
+You can easily evolve your current dispatcher into that style when you’re ready.
 
 ---
 
 ## Summary
 
-- We have reorganized your procedural PHP into an **OOP controller** (`InventoryController.php`) that uses a **dispatcher pattern** (in `dispatcher.php`) to route request data to the proper action.
+- We have reorganized your procedural PHP into an **OOP controller** (`InventoryController.php`) that uses a **dispatcher pattern** 
+(in `dispatcher.php`) to route request data to the proper action.
 - Your **inventoryActions.php** file now acts as an entry point that initializes your dependencies and then defers all routing.
 - This design makes it easier to scale, maintain, and eventually evolve to a RESTful API if needed.
 
-Feel free to ask further questions or request additional details on any piece. Happy coding and enjoy your new, modular structure!
