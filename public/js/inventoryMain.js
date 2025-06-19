@@ -2,6 +2,7 @@ import {
   renderTables,
   setupEditEventListener,
 } from "/js/inventoryUiManager.js";
+
 import { fetchProductsMaterialPFM, postData } from "/js/inventoryApiClient.js";
 
 // Initialize the page: fetch data and render the tables.
@@ -21,6 +22,7 @@ const editProductForm = document.getElementById("edit-product-form");
 const editProductModal = new bootstrap.Modal(
   document.getElementById("editProductModal")
 );
+
 editProductForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const formData = new FormData(editProductForm);
