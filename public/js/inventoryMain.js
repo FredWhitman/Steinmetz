@@ -89,7 +89,7 @@ editMaterialForm.addEventListener("submit", async (e) => {
 
   console.log("Raw data output: ", materialData);
 
-  const data = await fetch("../src/Classes/inventoryActions.php", {
+  const data = await fetch("/api/dispatcher.php", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(materialData),
@@ -135,7 +135,7 @@ editPFMForm.addEventListener("submit", async (e) => {
 
   console.log("Raw data output: ", pfmData);
 
-  const data = await fetch("../src/Classes/inventoryActions.php", {
+  const data = await fetch("/api/dispatcher.php", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(pfmData),

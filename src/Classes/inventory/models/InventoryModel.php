@@ -1,6 +1,6 @@
 <?php
 // File: src/Classes/inventory/models/InventoryModel.php
-namespace Inventory\Model;
+namespace Inventory\Models;
 
 require_once  __DIR__ . '/../../database.php';
 

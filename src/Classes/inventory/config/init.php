@@ -8,8 +8,10 @@ require_once __DIR__ . '/../controllers/InventoryController.php';
 require_once __DIR__ . '/LogFactory.php';
 
 use Inventory\Config\LogFactory;
-use Inventory\Model\InventoryModel;
+use Inventory\Models\InventoryModel;
 use Inventory\Controllers\InventoryController;
+
+echo 'Looking for file: ' . realpath(__DIR__ . '/../models/InventoryModel.php');
 
 
 $logger = LogFactory::getLogger('InventoryApp');

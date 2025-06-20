@@ -1,0 +1,28 @@
+\Public
+	\api
+		dispatcher.php
+	\css
+		myCss.css
+	\js
+		inventoryApiClient.js
+		inventoryMain.js
+		inventoryUiManager.js
+	\lib //this folder holds bootstrap and jquery
+\src
+	\Classes
+		\inventory
+			\config
+				init.php
+				LogFactory.php
+			\controller
+				InventoryController.php
+			\logs
+			\models
+				InventoryModel.php
+			\routes
+				dispatcher.php
+			\utils
+				inventoryActions.php
+	inventory.php  //landing page for all things inventory related
+	production.php  //landing page for all things production related
+	index.php
