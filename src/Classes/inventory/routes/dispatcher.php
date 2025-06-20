@@ -1,10 +1,10 @@
 <?php
 // File: routes/dispatcher.php
-
+require_once __DIR__ . '/../config/init.php';
 require_once __DIR__ . '/../controllers/InventoryController.php';
 
 // Assuming $db, $util, and $log have been initialized in inventoryActions.php
-$controller = new InventoryController($db, $util, $log);
+//$controller = new InventoryController($db, $util, $log);
 
 // Dispatcher for POST actions – based on the "action" variable in the JSON payload.
 if ($_SERVER["REQUEST_METHOD"] === "POST") {

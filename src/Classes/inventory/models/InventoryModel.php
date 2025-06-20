@@ -1,7 +1,7 @@
 <?php
 // File: models/InventoryModel.php
-require_once 'database.php';
-require __DIR__ . '/../../vendor/autoload.php';
+require_once  __DIR__ . '/../../database.php';
+require __DIR__ . '/../../../../vendor/autoload.php';
 
 use Monolog\Logger;
 use Monolog\ErrorHandler;
@@ -23,6 +23,14 @@ class InventoryModel
         ErrorHandler::register($this->log);
     }
 
+    public function getConnection() {
+        return $this->con;
+    }
+
+    public function getLogger() {
+        return $this->log;
+    }
+
     /**
      * getInventory returns the three tables of inventory data
      *
@@ -30,7 +38,7 @@ class InventoryModel
      */
     public function getInventory()
     {
-        $this->log->info('getIventory called!');
+        $this->log->info('Controller calling InventoryModel getInventory()');
 
         try {
             $sqlProduct = 'SELECT 
@@ -54,7 +62,7 @@ class InventoryModel
             if (!$products) {
                 $this->log->error('Nothing was returned $inventoryProducts.');
             } else {
-                //$this->log->info('$inventoryProducts row count :' . $iCount);
+                $this->log->info('$inventoryProducts row count :' . $iCount);
             }
 
             $sqlMaterial = 'SELECT 
@@ -85,7 +93,7 @@ class InventoryModel
                     '',
                 );
             } else {
-                //$this->log->info('$materials row count :' . $mCount);
+                $this->log->info('$materials row count :' . $mCount);
             }
 
             $sqlPFM = 'SELECT 
@@ -118,9 +126,10 @@ class InventoryModel
                     '',
                 );
             }
-
-            $this->log->info('Returnin table data to controller!');
+            $this->log->info("pfm results: \n" , $pfm);
+            $this->log->info('Returning table data to controller!');
             return ['products'  => $products, 'materials' => $materials, 'pfms' => $pfm];
+
         } catch (PDOException $e) {
             $this->log->error("Error getting products: " . $e->getMessage());
             //Convert this to an uncaught exception to let ErrorHandler process it

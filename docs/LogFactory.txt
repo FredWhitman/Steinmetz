@@ -1,0 +1,124 @@
+Let's set up a `LogFactory` class that creates (and reuses) a single logger instance for your application. 
+The idea is to centralize all of your logger configuration in one place so that every part of your code that 
+needs logging calls the factory rather than building its own logger. This way, you ensure consistency in 
+configuration (handlers, log levels, formatting, etc.) and avoid the headache of multiple logger instances 
+getting out of sync.
+
+Below is a sample implementation:
+
+---
+
+```php
+<?php
+// File: src/Classes/inventory/config/LogFactory.php
+
+namespace Inventory\Config;
+
+use Monolog\Logger;
+use Monolog\ErrorHandler;
+use Monolog\Handler\StreamHandler;
+
+class LogFactory
+{
+    // This static property will hold our single logger instance.
+    private static $logger = null;
+
+    /**
+     * Returns a configured logger instance.
+     * If one does not exist yet, it creates it.
+     *
+     * @param string $name The name/identifier of the logger.
+     * @return Logger
+     */
+    public static function getLogger($name = 'Application')
+    {
+        // If we haven't created a logger yet, do so.
+        if (self::$logger === null) {
+            self::$logger = new Logger($name);
+
+            // Configure handlers.
+            // Adjust the paths as needed relative to this file.
+            self::$logger->pushHandler(new StreamHandler(__DIR__ . '/../../logs/inventory_errors.log', Logger::ERROR));
+            self::$logger->pushHandler(new StreamHandler(__DIR__ . '/../../logs/inventory_Info.log', Logger::INFO));
+
+            // Register the logger as the error handler for PHP errors.
+            ErrorHandler::register(self::$logger);
+        }
+
+        // Optionally, you can update the logger's name if needed.
+        // But note that doing so may affect already-set handlers.
+        return self::$logger;
+    }
+}
+```
+
+---
+
+### How It Works
+
+1. **Singleton Pattern with a Static Variable:**  
+   The `$logger` property is declared as `private static`. This means that the first time `LogFactory::getLogger()` 
+   is called, a new logger is constructed and stored in `self::$logger`. Subsequent calls simply return the same logger 
+   instance. This is a common “singleton” approach that avoids creating multiple instances.
+
+2. **Configuring Your Logger:**  
+   Inside `getLogger()`, once the logger instance is created, we configure it by:
+   - **Pushing Handlers:**  
+     We add two `StreamHandler` instances. One is for errors (set to capture log events at the `ERROR` level) and 
+     another for informational logs (at `INFO` level). The file paths are relative to the current file, so you must 
+     adjust them according to your folder structure.
+   - **ErrorHandler Registration:**  
+     Using `ErrorHandler::register()` ties PHP’s error handling (warnings, notices, etc.) to the logger. This means 
+     that PHP errors can be automatically routed into your log file using Monolog’s facilities.
+
+3. **Reusing the Logger:**  
+   Any part of your application (be it your model, controller, or any other service) can now call:
+   
+   ```php
+   use Inventory\Config\LogFactory;
+   $logger = LogFactory::getLogger('InventoryModel');
+   $logger->info("This is a test message.");
+   ```
+   
+   This ensures that all log entries are gathered in one place with consistent configuration. There is no need to 
+   create custom logger instances in different parts of your code, providing better maintainability.
+
+4. **Changing Logger Names:**  
+   The optional `$name` parameter lets you specify a name identifier for the logger if desired (useful when 
+   using multiple channels in an advanced setup). However, if you call the factory multiple times after the logger 
+   is already created, the name passed in subsequent calls will be ignored unless you choose to reset or reinitialize 
+   the logger deliberately.
+
+---
+
+### Integrating the LogFactory
+
+You can modify your initialization file (for example, your `init.php`) like this:
+
+```php
+<?php
+// File: src/Classes/inventory/config/init.php
+
+require_once __DIR__ . '/../../../../vendor/autoload.php';
+require_once __DIR__ . '/../models/InventoryModel.php';
+require_once __DIR__ . '/../utils/Util.php';
+require_once __DIR__ . '/LogFactory.php';
+
+use Inventory\Config\LogFactory;
+
+// Initialize our shared logger.
+$logger = LogFactory::getLogger('InventoryApp');
+
+// Now initialize your model and controller using the shared logger.
+$model = new InventoryModel($logger); // Alternatively, let the model fetch its own logger, but ensure it uses the factory.
+$util = new Util();
+$controller = new InventoryController($model, $util, $logger);
+```
+
+By doing this, you ensure that all parts of your system—whether in a controller or your model—are writing to 
+the same log files with a unified configuration.
+
+---
+
+This pattern not only streamlines log management but also makes it easier to change your logging configuration 
+in one central place if you ever need to add more handlers (for instance, sending logs to a remote logging service) or adjust log levels. Let me know if you have any further questions or want to expand on this with more advanced features!

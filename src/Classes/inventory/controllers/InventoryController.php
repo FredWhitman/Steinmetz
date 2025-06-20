@@ -1,5 +1,6 @@
 <?php
 // File: controllers/InventoryController.php
+require_once __DIR__ . '/../models/InventoryModel.php';
 
 class InventoryController
 {
@@ -12,11 +13,13 @@ class InventoryController
         $this->model = $model;
         $this->util  = $util;
         $this->log   = $log;
+        $this->log->info("Controller logger test", ['file' => __FILE__]);
     }
 
     // GET: Retrieve inventory list
     public function getInventory()
     {
+        ob_clean();
         header('Content-Type: application/json');
         $this->log->info("getInventory called");
         $inventory = $this->model->getInventory();
