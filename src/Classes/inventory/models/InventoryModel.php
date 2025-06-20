@@ -1,33 +1,47 @@
 <?php
-// File: models/InventoryModel.php
-require_once  __DIR__ . '/../../database.php';
-require __DIR__ . '/../../../../vendor/autoload.php';
+// File: src/Classes/inventory/models/InventoryModel.php
+namespace Inventory\Model;
 
-use Monolog\Logger;
-use Monolog\ErrorHandler;
-use Monolog\Handler\StreamHandler;
+require_once  __DIR__ . '/../../database.php';
+
+use Psr\Log\LoggerInterface;
+use PDOException;
+use ErrorException;
 
 class InventoryModel
 {
     private $con;
     private $log;
 
-    public function __construct()
+    /**
+     * constructor for database and logger
+     *
+     * @param \PDO $dbConnection
+     * @param LoggerInterface $log
+     */
+    public function __construct(\PDO $dbConnection, LoggerInterface $log)
     {
-        $database = new database();
-        $this->con = $database->dbConnection();
-        $this->log = new logger('InventoryModel');
-
-        $this->log->pushHandler(new StreamHandler(__DIR__ . '/../logs/inventory_errors.log', Logger::ERROR));
-        $this->log->pushHandler(new StreamHandler(__DIR__ . '/../logs/inventory_Info.log', Logger::INFO));
-        ErrorHandler::register($this->log);
+        $this->con = $dbConnection;
+        $this->log = $log;
     }
 
-    public function getConnection() {
+    /**
+     * getConnection  this returns the DB connection
+     *
+     * @return void
+     */
+    public function getConnection()
+    {
         return $this->con;
     }
 
-    public function getLogger() {
+    /**
+     * getLogger returns the logger
+     *
+     * @return void
+     */
+    public function getLogger()
+    {
         return $this->log;
     }
 
@@ -56,7 +70,7 @@ class InventoryModel
 
             $stmtProduct->execute();
 
-            $products = $stmtProduct->fetchALL(PDO::FETCH_ASSOC);
+            $products = $stmtProduct->fetchALL(\PDO::FETCH_ASSOC);
             $iCount = count($products);
 
             if (!$products) {
@@ -80,7 +94,7 @@ class InventoryModel
                             `material`.`displayOrder`';
             $stmtMaterial = $this->con->prepare($sqlMaterial);
             $stmtMaterial->execute();
-            $materials = $stmtMaterial->fetchALL(PDO::FETCH_ASSOC);
+            $materials = $stmtMaterial->fetchALL(\PDO::FETCH_ASSOC);
             $mCount = count($materials);
 
             //throw exception if $material is empty
@@ -114,7 +128,7 @@ class InventoryModel
 
             $stmtPFM = $this->con->prepare($sqlPFM);
             $stmtPFM->execute();
-            $pfm = $stmtPFM->fetchAll(PDO::FETCH_ASSOC);
+            $pfm = $stmtPFM->fetchAll(\PDO::FETCH_ASSOC);
             $pCount = count($pfm);
 
             if (!$pfm) {
@@ -126,11 +140,10 @@ class InventoryModel
                     '',
                 );
             }
-            $this->log->info("pfm results: \n" , $pfm);
+            $this->log->info("pfm results: \n", $pfm);
             $this->log->info('Returning table data to controller!');
             return ['products'  => $products, 'materials' => $materials, 'pfms' => $pfm];
-
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             $this->log->error("Error getting products: " . $e->getMessage());
             //Convert this to an uncaught exception to let ErrorHandler process it
             throw new ErrorException(
@@ -173,7 +186,7 @@ class InventoryModel
             try {
                 $stmt = $this->con->prepare($sql);
                 $stmt->execute([':matPartNumber' => $id]);
-                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                $result = $stmt->fetch(\PDO::FETCH_ASSOC);
                 if (!$result) {
                     $this->log->warning("NO record found for the $id in table $table. ");
                 }
@@ -225,15 +238,15 @@ class InventoryModel
                         WHERE productID = :productID";
 
             $stmt = $this->con->prepare($sql);
-            $stmt->bindParam(':productID', $data['products']['productID'], PDO::PARAM_STR);
-            $stmt->bindParam(':partName', $data['products']['partName'], PDO::PARAM_STR);
-            $stmt->bindParam(':minQty', $data['products']['minQty'], PDO::PARAM_INT);
-            $stmt->bindParam(':boxesPerSkid', $data['products']['boxesPerSkid'], PDO::PARAM_INT);
-            $stmt->bindParam(':partsPerBox', $data['products']['partsPerBox'], PDO::PARAM_INT);
-            $stmt->bindParam(':partWeight', $data['products']['partWeight'], PDO::PARAM_STR);
-            $stmt->bindParam(':displayOrder', $data['products']['displayOrder'], PDO::PARAM_INT);
-            $stmt->bindParam(':customer', $data['products']['customer'], PDO::PARAM_STR);
-            $stmt->bindParam(':productionType', $data['products']['productionType'], PDO::PARAM_STR);
+            $stmt->bindParam(':productID', $data['products']['productID'], \PDO::PARAM_STR);
+            $stmt->bindParam(':partName', $data['products']['partName'], \PDO::PARAM_STR);
+            $stmt->bindParam(':minQty', $data['products']['minQty'], \PDO::PARAM_INT);
+            $stmt->bindParam(':boxesPerSkid', $data['products']['boxesPerSkid'], \PDO::PARAM_INT);
+            $stmt->bindParam(':partsPerBox', $data['products']['partsPerBox'], \PDO::PARAM_INT);
+            $stmt->bindParam(':partWeight', $data['products']['partWeight'], \PDO::PARAM_STR);
+            $stmt->bindParam(':displayOrder', $data['products']['displayOrder'], \PDO::PARAM_INT);
+            $stmt->bindParam(':customer', $data['products']['customer'], \PDO::PARAM_STR);
+            $stmt->bindParam(':productionType', $data['products']['productionType'], \PDO::PARAM_STR);
 
             $this->log->info("Executing update query with values: " . json_encode($data));
 
@@ -251,7 +264,7 @@ class InventoryModel
                 }
                 $this->log->info('Product Updated!');
                 return ["success" => true, "message" => "Transaction completed successfully.", "product" => $data['products']['productID']];
-            } catch (PDOException $e) {
+            } catch (\PDOException $e) {
                 $this->log->error("ERROR product update failed: " . $e->getMessage());
                 return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
             }
@@ -266,12 +279,12 @@ class InventoryModel
                             displayOrder = :displayOrder
                         WHERE matPartNumber = :matPartNumber';
             $stmt = $this->con->prepare($sql);
-            $stmt->bindParam(':matPartNumber', $data['materials']['matPartNumber'], PDO::PARAM_STR);
-            $stmt->bindParam(':matName', $data['materials']['matName'], PDO::PARAM_STR);
-            $stmt->bindParam(':productID', $data['materials']['productID'], PDO::PARAM_STR);
-            $stmt->bindParam(':minLbs', $data['materials']['minLbs'], PDO::PARAM_STR);
-            $stmt->bindParam(':matCustomer', $data['materials']['matCustomer'], PDO::PARAM_STR);
-            $stmt->bindParam(':displayOrder', $data['materials']['displayOrder'], PDO::PARAM_INT);
+            $stmt->bindParam(':matPartNumber', $data['materials']['matPartNumber'], \PDO::PARAM_STR);
+            $stmt->bindParam(':matName', $data['materials']['matName'], \PDO::PARAM_STR);
+            $stmt->bindParam(':productID', $data['materials']['productID'], \PDO::PARAM_STR);
+            $stmt->bindParam(':minLbs', $data['materials']['minLbs'], \PDO::PARAM_STR);
+            $stmt->bindParam(':matCustomer', $data['materials']['matCustomer'], \PDO::PARAM_STR);
+            $stmt->bindParam(':displayOrder', $data['materials']['displayOrder'], \PDO::PARAM_INT);
 
             $this->log->info("Executing update query with values: " . json_encode($data));
             try {
@@ -286,7 +299,7 @@ class InventoryModel
                 }
                 $this->log->info('Material Updated!');
                 return ["success" => true, "message" => "Transaction completed successfully.", "material" => $data['materials']['matName']];
-            } catch (PDOException $e) {
+            } catch (\PDOException $e) {
                 $this->log->error("ERROR updateInventory: " . $e->getMessage());
                 return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
             }
@@ -303,13 +316,13 @@ class InventoryModel
                     WHERE pfmID = :pfmID';
 
             $stmt = $this->con->prepare($sql);
-            $stmt->bindParam(':pfmID', $data['pfm']['pfmID'], PDO::PARAM_STR);
-            $stmt->bindParam(':partNumber', $data['pfm']['partNumber'], PDO::PARAM_STR);
-            $stmt->bindParam(':partName', $data['pfm']['partName'], PDO::PARAM_STR);
-            $stmt->bindParam(':productID', $data['pfm']['productID'], PDO::PARAM_STR);
-            $stmt->bindParam(':minQty', $data['pfm']['minQty'], PDO::PARAM_INT);
-            $stmt->bindParam(':customer', $data['pfm']['customer'], PDO::PARAM_STR);
-            $stmt->bindParam(':displayOrder', $data['pfm']['displayOrder'], PDO::PARAM_INT);
+            $stmt->bindParam(':pfmID', $data['pfm']['pfmID'], \PDO::PARAM_STR);
+            $stmt->bindParam(':partNumber', $data['pfm']['partNumber'], \PDO::PARAM_STR);
+            $stmt->bindParam(':partName', $data['pfm']['partName'], \PDO::PARAM_STR);
+            $stmt->bindParam(':productID', $data['pfm']['productID'], \PDO::PARAM_STR);
+            $stmt->bindParam(':minQty', $data['pfm']['minQty'], \PDO::PARAM_INT);
+            $stmt->bindParam(':customer', $data['pfm']['customer'], \PDO::PARAM_STR);
+            $stmt->bindParam(':displayOrder', $data['pfm']['displayOrder'], \PDO::PARAM_INT);
 
             $this->log->info('Executing update query with values ' . json_encode($data));
             try {
@@ -323,7 +336,7 @@ class InventoryModel
                 }
                 $this->log->info("PFM updated!");
                 return ['success' => true, "message" => 'Transaction completed successfully.', 'pfm' => $data['pfm']['partName']];
-            } catch (PDOException $e) {
+            } catch (\PDOException $e) {
                 $this->log->error("ERROR update pfm failed!" . $e->getMessage());
                 return ['success' => false, 'message' => "an error occured", "error" => $e->getMessage()];
             }
@@ -370,13 +383,13 @@ class InventoryModel
             try {
                 $stmt = $this->con->prepare($sql);
                 $stmt->execute([':matPartNumber' => $id]);
-                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                $result = $stmt->fetch(\PDO::FETCH_ASSOC);
                 if (!$result) {
                     $this->log->warning("NO record found for the $id in table $table. ");
                 }
                 $this->log->info('getInventoryRecord returning : ' . $result['matPartNumber']);
                 return $result;
-            } catch (PDOException $e) {
+            } catch (\PDOException $e) {
                 $this->log->error("Error getting material record for $id in table $table.");
             }
         } else { //pfms
@@ -404,7 +417,7 @@ class InventoryModel
             $sql = 'UPDATE product SET qty = qty - :qty WHERE productID = :productID';
 
             $stmt = $this->con->prepare($sql);
-            $stmt->bindParam(':productID', $data['productID'], PDO::PARAM_STR);
+            $stmt->bindParam(':productID', $data['productID'], \PDO::PARAM_STR);
             $result = $stmt->execute();;
             if (!$result) {
                 $errorInfo = $stmt->errorInfo();
@@ -412,7 +425,7 @@ class InventoryModel
             } else {
                 return ["success" => true, "message" => "Update successful!", "productID: " . $data['productID']];
             }
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             $this->log->error("ERROR updating inventory: " . $e->getMessage());
             return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
         }

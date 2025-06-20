@@ -95,7 +95,7 @@ export function setupEditEventListener(elementId, table) {
       const id = row ? row.getAttribute("data-id") : null;
       if (id && id.trim()) {
         // Dispatch to the API client to fill form
-        import("./apiClient.js").then(({ fetchAndFillForm }) => {
+        import("./inventoryApiClient.js").then(({ fetchAndFillForm }) => {
           fetchAndFillForm(id.trim(), table);
         });
       }
@@ -105,7 +105,7 @@ export function setupEditEventListener(elementId, table) {
       const row = e.target.closest("tr");
       const id = row ? row.getAttribute("data-id") : null;
       if (id && id.trim()) {
-        import("./apiClient.js").then(({ fetchAndFillUpdateForm }) => {
+        import("./inventoryApiClient.js").then(({ fetchAndFillUpdateForm }) => {
           fetchAndFillUpdateForm(id.trim(), table);
         });
       }

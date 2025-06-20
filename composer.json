@@ -1,23 +1,23 @@
 {
-    "name": "fred/steinmetz",
-    "description": "Steinmetz production and inventory  management",
-    "type": "project",
-    "require": {
-        "php":"^8.2",
-        "twbs/bootstrap-icons": "^1.13.1",
-        "monolog/monolog": "^3.9"
-    },
-    "license": "proprietary",
-    "autoload": {
-        "psr-4": {
-            "Fred\\Steinmetz\\": "src/"
-        }
-    },
-    "authors": [
-        {
-            "name": "yes"
-        }
-    ],
-    "minimum-stability": "stable"
-
+  "name": "fred/steinmetz",
+  "description": "Steinmetz production and inventory  management",
+  "type": "project",
+  "require": {
+    "php": "^8.2",
+    "twbs/bootstrap-icons": "^1.13.1",
+    "monolog/monolog": "^3.9"
+  },
+  "license": "proprietary",
+  "autoload": {
+    "psr-4": {
+      "Fred\\Steinmetz\\": "src/",
+      "Inventory\\": "src/Classes/inventory/"
+    }
+  },
+  "authors": [
+    {
+      "name": "yes"
+    }
+  ],
+  "minimum-stability": "stable"
 }

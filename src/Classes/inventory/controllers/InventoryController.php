@@ -1,4 +1,7 @@
 <?php
+
+namespace Inventory\Controllers;
+
 // File: controllers/InventoryController.php
 require_once __DIR__ . '/../models/InventoryModel.php';
 

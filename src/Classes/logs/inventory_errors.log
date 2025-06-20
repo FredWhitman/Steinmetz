@@ -1,0 +1,1 @@
+[2025-06-20T16:11:49.199266+02:00] InventoryApp.ERROR: Uncaught Exception Error: "Call to a member function info() on null" at C:\xampp\htdocs\Steinmetz\src\Classes\inventory\routes\dispatcher.php line 12 {"exception":"[object] (Error(code: 0): Call to a member function info() on null at C:\\xampp\\htdocs\\Steinmetz\\src\\Classes\\inventory\\routes\\dispatcher.php:12)"} []
