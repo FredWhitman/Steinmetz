@@ -15,6 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         'editProduct'  => [$controller, 'editProduct'],
         'editMaterial' => [$controller, 'editMaterial'],
         'editPFM'      => [$controller, 'editPFM'],
+
         // Add additional POST action routes as needed.  
     ];
 
@@ -35,7 +36,9 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
         $controller->getInventory();
     } elseif (isset($_GET['editProducts']) || isset($_GET['editMaterials']) || isset($_GET['editPfms'])) {
         $controller->getRecord();
-    } else {
+    } elseif(isset($_GET['updateProducts']) || isset($_GET['updateMaterials']) || isset($_GET['updatePfms'])) {
+        $controller->getInventoryRecord();
+    }else{
         http_response_code(400);
         echo json_encode(['error' => 'Invalid GET request']);
     }

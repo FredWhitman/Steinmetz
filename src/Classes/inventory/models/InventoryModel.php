@@ -353,13 +353,13 @@ class InventoryModel
      */
     public function getInventoryRecord($id, $table)
     {
-        $this->log->info('getRecord called with these parameters: ' . $id . ' ' . $table);
-        $sql = '';
+        $this->log->info('getInventoryRecord called with these parameters: ' . $id . ' ' . $table);
 
-        if ($table === 'products') {
-            $this->log->info('product record requested');
-
-            $sql = 'SELECT 
+        try {
+            switch ($table){
+                case 'products':
+                    $this->log->info('product record requested');
+                     $sql = 'SELECT 
                         `products`.`productID`,
                         `products`.`partName`,
                         `productinventory`.`partQty`
@@ -369,39 +369,63 @@ class InventoryModel
                     ON (`productinventory`.`productID` = `products`.`productID`)
                     WHERE
                     `productinventory`.`productID` = :productID';
-            $stmt = $this->con->prepare($sql);
-            $stmt->execute([':productID' => $id]);
-            $result = $stmt->fetch();
-            if (!$result) {
-                $this->log->warning("NO record found for the $id in table $table. ");
+
+                    $stmt = $this->con->prepare($sql);
+                    $stmt->execute([':productID' => $id]);
+
+                    break;
+                case "materials": 
+                    $sql = 'SELECT 
+                                `materialinventory`.`matPartNumber`,
+                                `materialinventory`.`matLbs`,
+                                `material`.`matPartNumber`,
+                                `material`.`matName`
+                            FROM
+                                `materialinventory`
+                            INNER JOIN `material` 
+                            ON 
+                                (`materialinventory`.`matPartNumber` = `material`.`matPartNumber`)
+                            WHERE
+                                `materialinventory`.`matPartNumber` = :matPartNumber';
+                    
+                    $stmt = $this->con->prepare($sql);
+                    $stmt->execute([':matPartNumber' => $id]);
+                    break;
+                case 'pfms':
+                    $sql = 'SELECT 
+                                `pfm`.`pfmID`,
+                                `pfm`.`partNumber`,
+                                `pfminventory`.`PartNumber`,
+                                `pfm`.`partName`,
+                                `pfminventory`.`Qty`
+                            FROM
+                                `pfminventory`
+                            INNER JOIN `pfm` ON (`pfminventory`.`PartNumber` = `pfm`.`partNumber`)
+                            WHERE
+                                `pfm`.`pfmID` = :pfmID';
+
+                    $stmt = $this->con->prepare($sql);
+                    $stmt->execute([':pfmID' => $id]);
+                    break;
+                default:
+                    $this->log->warning("Invalid table type requested: {$table}");
+                    return null;       
             }
 
-            $this->log->info('getInventoryRecord returning : ' . $result['productID']);
-            return $result;
-        } else if ($table === 'materials') {
-            $sql = '';
-            try {
-                $stmt = $this->con->prepare($sql);
-                $stmt->execute([':matPartNumber' => $id]);
-                $result = $stmt->fetch(\PDO::FETCH_ASSOC);
-                if (!$result) {
-                    $this->log->warning("NO record found for the $id in table $table. ");
-                }
-                $this->log->info('getInventoryRecord returning : ' . $result['matPartNumber']);
-                return $result;
-            } catch (\PDOException $e) {
-                $this->log->error("Error getting material record for $id in table $table.");
-            }
-        } else { //pfms
-            $sql = 'SELECT * FROM pfm WHERE pfmID = :pfmID';
-            $stmt = $this->con->prepare($sql);
-            $stmt->execute([':pfmID' => $id]);
-            $result = $stmt->fetch();
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
             if (!$result) {
-                $this->log->warning("NO record found for the $id in table $table. ");
+                $this->log->warning("NO record found for the {$id} in table {$table}. ");
+                return null;
             }
-            $this->log->info('getRecord returning : ' . $result['pfmID']);
-            return $result;
+
+            $this->log->info("result : \n" . print_r($result, true));
+
+            return $result;    
+
+        } catch (\PDOException $e) {
+            $this->log->error("DB Error fetching record for {$id} in table {$table}.");
+            return null;
         }
     }
 

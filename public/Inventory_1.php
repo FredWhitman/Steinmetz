@@ -243,6 +243,108 @@
     </div>
     <!-- Update product inventory end -->
 
+    <!-- Update material iventory start-->
+    <div class="modal fade" id="updateMaterialModal" tabindex="-1" aria-labelledby="updateMaterialModal">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Update product inventory</h1>
+                </div>
+                <form id="update-material-form" class="needs-validation p-2" novalidate>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <input type="hidden" name="u_matPartNumber" id="h_matPartNumber" />
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="uMatName">Material Name</label><input type="text" tabindex="1" class="form-control form-control-sm" id="umMatName" name="um_matName" readonly></input></div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="pStock">Current Stock</label><input type="number" tabindex="1" class="form-control form-control-sm" id="umMatLbs" name="um_Stock" readonly></input></div>
+                                    <div class="invalid-feedback">Name is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="pAmount">Change amount</label><input type="number" tabindex="1" class="form-control form-control-sm" id="umAmount" name="um_Amount" required></div>
+                                    <div class="invalid-feedback">amount required!</div>
+                                </div>
+                            </div>
+                            <div class="row row-cols-2 pb-2">
+                                <div class="col">
+                                    <input class="form-check-input" type="radio" name="invQty" id="add" tabindex="3" value="+" required>Add<label class="form-check-label" for="add"></label>
+                                </div>
+                                <div class="col">
+                                    <input class="form-check-input" type="radio" name="invQty" tabindex="4" id="subtract" value="-">Subtract<label class="form-check-label" for="subtract"></label>
+                                </div> 
+                            </div>
+                            <div class="row pb-2">
+                                <textarea class="form-control" name="commentText" id="commentText" rows="5" placeholder="Comments"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button type="submit" value="Update" class="btn btn-success" id="update-material-btn">Update Material Weight</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Update material inventory end -->
+
+<!-- Update material iventory start-->
+    <div class="modal fade" id="updatePfmModal" tabindex="-1" aria-labelledby="updatePfmModal">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Update PFM inventory</h1>
+                </div>
+                <form id="update-pfm-form" class="needs-validation p-2" novalidate>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <input type="hidden" name="u_pfmID" id="h_pfmID" />
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="uPfName">PFM Name</label><input type="text" tabindex="1" class="form-control form-control-sm" id="uPfmName" name="u_pfmName" readonly></input></div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="uPfmStock">Current Stock</label><input type="number" tabindex="1" class="form-control form-control-sm" id="uPfmStock" name="u_PfmStock" readonly></input></div>
+                                    <div class="invalid-feedback">Name is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="pAmount">Change amount</label><input type="number" tabindex="1" class="form-control form-control-sm" id="upfAmount" name="upf_Amount" required></div>
+                                    <div class="invalid-feedback">amount required!</div>
+                                </div>
+                            </div>
+                            <div class="row row-cols-2 pb-2">
+                                <div class="col">
+                                    <input class="form-check-input" type="radio" name="invQty" id="add" tabindex="3" value="+" required>Add<label class="form-check-label" for="add"></label>
+                                </div>
+                                <div class="col">
+                                    <input class="form-check-input" type="radio" name="invQty" tabindex="4" id="subtract" value="-">Subtract<label class="form-check-label" for="subtract"></label>
+                                </div> 
+                            </div>
+                            <div class="row pb-2">
+                                <textarea class="form-control" name="commentText" id="commentText" rows="5" placeholder="Comments"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button type="submit" value="Update" class="btn btn-success" id="update-pfm-btn">Update PFM Qty</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Update pfm inventory end -->
 
     <!-- Table to hold the last 4 weeks of production  -->
     <div class="container-fluid">

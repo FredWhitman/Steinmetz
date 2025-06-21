@@ -105,7 +105,18 @@ export async function fetchAndFillUpdateForm(id, table) {
         partName: "pPartName",
         partQty: "pStock",
       },
-      // Add material and pfm mappings if needed.
+      materials:{
+        matPartNumber: "h_matPartNumber",
+        matName: "umMatName",
+        matLbs: "umMatLbs",
+      },
+      pfms: {
+        pfmID: "h_pfmID",
+        partName: "uPfmName",
+        Qty: "uPfmStock",
+      }
+
+      // Add pfm mappings if needed.
     };
     Object.keys(fieldMappings[table]).forEach((dbKey) => {
       const formID = fieldMappings[table][dbKey];

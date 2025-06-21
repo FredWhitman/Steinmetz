@@ -18,6 +18,14 @@ const updateProductForm = document.getElementById("update-product-form");
 const updateProductModal = new bootstrap.Modal(
   document.getElementById("updateProductModal")
 );
+const updateMaterialForm = document.getElementById("update-material-form");
+const updateMaterialModal = new bootstrap.Modal(
+  document.getElementById("updateMaterialModal")
+);
+const updatePFMForm = document.getElementById("update-pfm-form");
+const updatePFMModal = new bootstrap.Modal(
+  document.getElementById("updatePfmModal")
+);
 const showAlert = document.getElementById("showAlert"); // Adjust according to your markup
 
 // Loader functions
@@ -60,7 +68,7 @@ export function buildMaterialsTable(materials) {
                <td><span ${colorStyle}>${row.matLbs}</span></td>
                <td>
                  <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 editLink" title="edit material" data-bs-toggle="modal" data-bs-target="#editMaterialModal"><i class="bi bi-pencil"></i></a>
-                 <a href="#" class="btn btn-success btn-sm rounded-pill py-0 updateLink" title="update material lbs" data-bs-toggle="modal" data-bs-target="#updateInventoryModal"><i class="bi bi-file-earmark-check"></i></a>
+                 <a href="#" class="btn btn-success btn-sm rounded-pill py-0 updateLink" title="update material lbs" data-bs-toggle="modal" data-bs-target="#updateMaterialModal"><i class="bi bi-file-earmark-check"></i></a>
                </td>
              </tr>`;
   });
@@ -77,7 +85,7 @@ export function buildPfmsTable(pfms) {
                <td><span ${colorStyle}>${row.Qty}</span></td>
                <td>
                  <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 editLink" title="edit pfm" data-bs-toggle="modal" data-bs-target="#editPFMModal"><i class="bi bi-pencil"></i></a>
-                 <a href="#" class="btn btn-success btn-sm rounded-pill py-0 updateLink" title="update pfm qty" data-bs-toggle="modal" data-bs-target="#updatePFMModal"><i class="bi bi-file-earmark-check"></i></a>
+                 <a href="#" class="btn btn-success btn-sm rounded-pill py-0 updateLink" title="update pfm qty" data-bs-toggle="modal" data-bs-target="#updatePfmModal"><i class="bi bi-file-earmark-check"></i></a>
                </td>
              </tr>`;
   });

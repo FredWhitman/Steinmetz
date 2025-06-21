@@ -51,6 +51,44 @@ class InventoryController
         exit();
     }
 
+    //GET: retrieve single record of joined tables for update (e.g. updateProducts, updateMaterials, updatePfms)
+    public function getInventoryRecord(){
+        header('Content-Type: application/json');
+        $id = $_GET['id'] ?? null;
+        $table = $_GET['table'] ?? null;
+
+        if(!$id || !$table){
+            http_response_code(400);
+            echo json_encode(["error" => "Missing required paramaters"]);
+            $this->log->warning("Missing parameters for getInventoryRecord");
+            exit();
+        }
+        
+        $this->log->info("getInventoryRecord called with: {$id}, {$table}");
+
+        switch ($table){
+            case 'products':
+                $record = $this->model->getInventoryRecord($id,$table);
+                break;
+            case 'materials':
+                $record = $this->model->getInventoryRecord($id,$table);
+                break;
+            case 'pfms':
+                $record = $this->model->getInventoryRecord($id,$table);
+                break;
+            default:
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid table type']);
+        }
+        
+        if(!$record){
+            echo json_encode(["error" => "Record not found!"]);
+            exit();
+        }
+        echo json_encode($record , JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+        exit();
+    }
+
     // POST: Edit product
     public function editProduct($data)
     {

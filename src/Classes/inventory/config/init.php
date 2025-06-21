@@ -11,9 +11,6 @@ use Inventory\Config\LogFactory;
 use Inventory\Models\InventoryModel;
 use Inventory\Controllers\InventoryController;
 
-echo 'Looking for file: ' . realpath(__DIR__ . '/../models/InventoryModel.php');
-
-
 $logger = LogFactory::getLogger('InventoryApp');
 
 //create db connection
