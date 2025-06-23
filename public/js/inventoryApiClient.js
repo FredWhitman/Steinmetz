@@ -93,6 +93,8 @@ export async function fetchAndFillUpdateForm(id, table) {
   try {
     const response = await fetch(url);
     const rawText = await response.text();
+    console.log("Raw server response: ", rawText);
+
     const responseData = JSON.parse(rawText);
     if (!responseData || responseData.error) {
       console.error("Error from server:", responseData?.error);
@@ -118,11 +120,16 @@ export async function fetchAndFillUpdateForm(id, table) {
 
       // Add pfm mappings if needed.
     };
+    const record = responseData[table] || responseData; // fallback if data is flat
+
     Object.keys(fieldMappings[table]).forEach((dbKey) => {
       const formID = fieldMappings[table][dbKey];
       const element = document.getElementById(formID);
       if (element) {
-        element.value = responseData[dbKey] || "";
+        element.value = record[dbKey] ?? ""; // safe fallback
+        console.log(`${formID} populated with:`, element.value);
+        console.log("Using table:", table);
+        console.log("Resolved record keys:", Object.keys(record));
       } else {
         console.warn(`Element with ID '${formID}' not found in update form!`);
       }

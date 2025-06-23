@@ -10,17 +10,17 @@ require_once __DIR__ . '/LogFactory.php';
 use Inventory\Config\LogFactory;
 use Inventory\Models\InventoryModel;
 use Inventory\Controllers\InventoryController;
+use Inventory\utils\Util;
 
 $logger = LogFactory::getLogger('InventoryApp');
 
 //create db connection
 $database = new database();
 $db = $database->dbConnection();
-
-//initialize InventoryModel (creates DB and logger)
-$model = new InventoryModel($db, $logger);
-
 //create util
 $util = new Util();
+
+//initialize InventoryModel (creates DB and logger)
+$model = new InventoryModel($db, $logger, $util);
 
 $controller = new InventoryController($model, $util, $logger);

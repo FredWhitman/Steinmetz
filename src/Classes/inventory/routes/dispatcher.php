@@ -9,13 +9,15 @@ require_once __DIR__ . '/../controllers/InventoryController.php';
 // Dispatcher for POST actions – based on the "action" variable in the JSON payload.
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $data = json_decode(file_get_contents("php://input"), true);
-    $logger->info("POST Data Received:\n" . print_r($data, true));
+    $logger->info("POST Data Received by dispatcher:\n" . print_r($data, true));
 
     $routes = [
         'editProduct'  => [$controller, 'editProduct'],
         'editMaterial' => [$controller, 'editMaterial'],
         'editPFM'      => [$controller, 'editPFM'],
-
+        'updateProduct' => [$controller, 'updateProduct'],
+        'updateMaterial' => [$controller, 'updateMaterial'],
+        'updatePfm' => [$controller, 'updatePfm']
         // Add additional POST action routes as needed.  
     ];
 

@@ -3,15 +3,18 @@
 namespace Inventory\Models;
 
 require_once  __DIR__ . '/../../database.php';
+require_once __DIR__ . '/../utils/Util.php';
 
 use Psr\Log\LoggerInterface;
 use PDOException;
 use ErrorException;
+use Inventory\utils\Util;
 
 class InventoryModel
 {
     private $con;
     private $log;
+    private $util;
 
     /**
      * constructor for database and logger
@@ -19,10 +22,12 @@ class InventoryModel
      * @param \PDO $dbConnection
      * @param LoggerInterface $log
      */
-    public function __construct(\PDO $dbConnection, LoggerInterface $log)
+    public function __construct(\PDO $dbConnection, LoggerInterface $log, Util $util)
     {
         $this->con = $dbConnection;
         $this->log = $log;
+        $this->util = $util;
+        
     }
 
     /**
@@ -437,21 +442,169 @@ class InventoryModel
      */
     public function updateInvQty($data)
     {
-        try {
-            $sql = 'UPDATE product SET qty = qty - :qty WHERE productID = :productID';
+        $this->log->info("POST Data Received by model:\n" . print_r($data, true));
+        if(!$data){
+            return ["success" => false, "message" => "updateInvQty failed to receive formData!"];
+            exit();
+        }else{
+            $action = $data['action'];
+            $this->log->info("updateInvQty received an {$action} request");
+            $inventoryType = substr($data['action'],6);
+        }
 
-            $stmt = $this->con->prepare($sql);
-            $stmt->bindParam(':productID', $data['productID'], \PDO::PARAM_STR);
-            $result = $stmt->execute();;
-            if (!$result) {
+        try {
+            $this->con->beginTransaction();
+
+            //creating transArray to fill with transData for insert after the update
+            $transData = array(
+                "action" => $data['action'],
+                "inventoryID" => "",
+                "inventoryType" => $inventoryType,
+                "prodLogID" => "0" ,
+                "oldStockCount" => "",
+                "transAmount" => "",
+                "transType" => "admin edit",  
+                "transComment" => $data['comments']
+            );
+            switch ($action){
+                case "updateProduct":
+                    //updating transData
+                    $transData['inventoryID'] = $data['productID'];
+                    $transData['oldStockCount'] = $data['partQty'];
+                    $transData['transAmount'] = $data['changeAmount'];
+
+
+                    $stockQty = $data['partQty'];
+                    $amount = $data['changeAmount'];
+                    $newStockQty = $this->util->getNewInvQty($stockQty, $data['operator'], $amount);
+                    
+                    $sql = 'UPDATE productInventory SET partQty = :qty WHERE productID = :productID';
+                    $stmt = $this->con->prepare($sql);
+                    $stmt->execute([':productID' => $data['productID'],
+                                     ':qty' => $newStockQty]);
+                    $this->log->info("{$data['action']} successfully attempted to add {$newStockQty} ");
+                    break;
+                case "updateMaterial":
+                    //updating transData
+                    $transData['inventoryID'] = $data['matPartNumber'];
+                    $transData['oldStockCount'] = $data['matLbs'];
+                    $transData['transAmount'] = $data['changeAmount'];
+
+                    $stockLbs = $data['matLbs'];
+                    $amount = $data['changeAmount'];
+                    $newStockQty = $this->util->getNewInvQty($stockLbs, $data['operator'], $amount);
+                    $this->log->info("New material: {$data['matPartNumber']} inventory qty: {$newStockQty}");
+                    $sql = 'UPDATE 
+                                materialInventory 
+                            SET 
+                                matLbs = :matLbs
+                            WHERE matPartNumber = :matPartNumber';
+
+                    $stmt = $this->con->prepare($sql);
+                    $stmt->execute([
+                        ':matPartNumber' => $data['matPartNumber'],
+                        ':matLbs' => $newStockQty]);
+
+                    break;
+                case "updatePfm":
+                    //updating transData
+                    $transData['inventoryID'] = $data['PartNumber'];
+                    $transData['oldStockCount'] = $data['Qty'];
+                    $transData['transAmount'] = $data['changeAmount'];
+
+                    $stockQty = $data['Qty'];
+                    $amount = $data['changeAmount'];
+                    $newStockQty = $this->util->getNewInvQty($stockQty,$data['operator'], $amount);
+
+                    $sql = 'UPDATE 
+                                pfmInventory
+                            SET
+                                Qty = :qty
+                            WHERE
+                                PartNumber = :partNumber';
+                    $stmt = $this->con->prepare($sql);
+                    $stmt->execute([
+                        ':qty' => $newStockQty,
+                        ':partNumber' => $data['PartNumber']
+                    ]);
+
+                    break;
+                default:
+                    $this->con->rollBack();
+                    $this->log->warning("Invalid table type requested: {$data['action']}");
+                    return ["success" => false, "message" => "Invalid type requested: {$data['action']}"];       
+            }
+        
+            $affected = $stmt->rowCount();
+            
+            if (!$affected === 0) {
+                $this->con->rollBack();
                 $errorInfo = $stmt->errorInfo();
+                $this->log->warning("no rows updated for {$data['action']}.");
                 return ["success" => false, "message" => "Database failed to update.", "error" => $errorInfo];
             } else {
-                return ["success" => true, "message" => "Update successful!", "productID: " . $data['productID']];
+
+                $insertResult = $this->insertTrans($transData);
+
+                if(!$insertResult){
+                    $this->con->rollBack();
+                    $this->log->warning("Transaction insert into inventorytrans failed: {$data['action']}");
+                    return ['success' => false, "message" => "Failed to insert transaction for {$data['action']}"];       
+                }
+                $this->con->commit();
+                return ["success" => true, "message" => "{$data['action']} successful!"];
             }
         } catch (\PDOException $e) {
+            $this->con->rollBack();
             $this->log->error("ERROR updating inventory: " . $e->getMessage());
             return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
+        }
+    }
+
+       
+    /**
+     * insertTrans 
+     *
+     * @param  mixed $data  this array must contain an action element for routing to the correct case
+     * @return void
+     */
+    public function insertTrans($data){
+            //transtype ENUM('production log','admin edit','qa rejects','shipped')
+            //inventoryType ENUM('product','material'pfm)
+            $this->log->info("insertTrans called for : {$data['action']}");
+        $sql = 'INSERT INTO inventorytrans
+                    (inventoryID,
+                    inventoryType,
+                    prodLogID,
+                    oldStockCount,
+                    transAmount,
+                    transType,  
+                    transComment)
+                VALUES (
+                    :inventoryID,
+                    :inventoryType,
+                    :prodLogID,
+                    :oldStockCount,
+                    :transAmount,
+                    :transType,
+                    :transComment)';
+
+        $stmt = $this->con->prepare($sql);
+        $result = $stmt->execute([
+                       ':inventoryID' => $data['inventoryID'],
+                        ':inventoryType' => $data['inventoryType'],
+                        ':prodLogID' => $data['prodLogID'],
+                        ':oldStockCount' => $data['oldStockCount'],
+                        ':transAmount' => $data['transAmount'],
+                        ':transType' => $data['transType'],
+                        ':transComment' => $data['transComment']
+                    ]);
+        
+        if (!$result) {
+            $errorInfo = $stmt->errorInfo();
+            return ["success" => false, "message" => "Database failed to insert a record into inventorytrans.", "error" => $errorInfo];
+        } else {
+            return ["success" => true, "message" => "{$data['action']} successful!"];
         }
     }
 }

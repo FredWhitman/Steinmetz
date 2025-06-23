@@ -31,6 +31,13 @@ const editPFMModal = new bootstrap.Modal(
   document.getElementById("editPFMModal")
 );
 
+const updateProductForm = document.getElementById("update-product-form");
+const updateProductModal = new bootstrap.Modal(document.getElementById("updateProductModal"));
+
+const updateMaterialForm = document.getElementById("update-material-form");
+const updateMaterialModal = new bootstrap.Modal(document.getElementById("updateMaterialModal"));
+
+
 editProductForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const formData = new FormData(editProductForm);
@@ -152,3 +159,93 @@ editPFMForm.addEventListener("submit", async (e) => {
     logToServer("Failed to submit form: ", "ERROR", error);
   }
 });
+
+updateProductForm.addEventListener("submit", async (e) => {
+  console.log("submit update button clicked");
+
+  e.preventDefault();
+  const formData = new FormData(updateProductForm);
+
+  if(!updateProductForm.checkValidity()){
+    e.preventDefault();
+    e.stopPropagation();
+    updateProductForm.classList.add("was-validated");
+    return false;
+  }
+
+  const productData = {
+    action: "updateProduct",
+    productID: formData.get("p_productID"),
+    partName: formData.get("p_partName"),
+    partQty: formData.get("p_Stock"),
+    changeAmount: formData.get("p_Amount"),
+    comments: formData.get("p_commentText"),
+    operator: formData.get("invQty")
+  }
+
+  console.log("Raw data output: ",productData);
+  const data = await  fetch("/api/dispatcher.php",{
+    method: "POST",
+    headers: { "Conent-Type": "application/json" },
+    body: JSON.stringify(productData),
+  });
+
+  try {
+    const response = await data.text();
+    showAlert.innerHTML = response;
+    updateProductForm.reset();
+    updateProductForm.classList.remove("was-validated");
+    updateProductModal.hide();
+  } catch (error) {
+    console.error("Failed to submit form: ", error);
+  }
+})
+
+updateMaterialForm.addEventListener("submit", async (e) => {
+  console.log("submit material update button clicked");
+
+  e.preventDefault();
+
+  const hiddenInput = updateMaterialForm.querySelector('[name="u_matPartNumber"]');
+  console.log("Hidden input from form scope:", hiddenInput);
+  console.log("Hidden input value at submit:", hiddenInput?.value);
+
+  const formData = new FormData(updateMaterialForm);
+
+  if(!updateMaterialForm.checkValidity()){
+    e.preventDefault();
+    e.stopPropagation();
+    updateMaterialForm.classList.add("was-validated");
+    return false;
+  }
+  console.log("Actual DOM value:", document.getElementById("h_matPartNumber").value);
+  const materialData = {
+    action: "updateMaterial",
+    matPartNumber: document.getElementById("h_matPartNumber").value,
+    matLbs: formData.get("um_MatLbs"),
+    changeAmount: formData.get("um_Amount"),
+    comments: formData.get("um_CommentText"),
+    operator: formData.get("mInvQty")
+  }
+
+  console.log("matPartNumber:", formData.get("u_matPartNumber"));
+  console.log("matLbs:", formData.get("um_MatLbs"));
+  
+  console.log("RAW data outpput: ", materialData);
+  const data = await fetch("/api/dispatcher.php",{
+    method: "POST",
+    headers: { "Conent-Type": "application/json" },
+    body: JSON.stringify(materialData),
+  });
+
+  try {
+    const response = await data.text();
+    showAlert.innerHTML = response;
+    updateMaterialForm.reset();
+    updateMaterialForm.classList.remove("was-validated");
+    updateMaterialModal.hide();
+  } catch (error) {
+    console.error("Failed to submit update Material qty.");
+  }
+})
+

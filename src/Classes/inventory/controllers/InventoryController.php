@@ -139,6 +139,37 @@ class InventoryController
             echo $this->util->showMessage('danger', $result['message'] . ' ' . $result['error']);
         }
     }
+    
+    public function updateProduct($data){
+        $this->log->info("POST Data Received by controller:\n" . print_r($data, true));
+        if(!isset($data['action'])){
+            http_response_code(400);
+            echo "Missing UpdateProduct Data!";
+            return;
+        }
 
+        $result = $this->model->updateInvQty($data);
+        if(!$result['success']){
+            echo $this->util->showMessage('danger', $result['message'] . " updateInvqty: {$data['action']} failed to be updated!");
+        }else{
+            echo $this->util->showMessage('success', $result['message'] . " updateInvQty: {$data['action']} was successful");
+        }
+    }
+
+    public function updateMaterial($data){
+        $this->log->info("POST Data Received by controller:\n" . print_r($data, true));
+        if(!isset($data['action'])){
+            http_response_code(400);
+            echo "Missing UpdateProduct Data!";
+            return;
+        }
+
+        $result = $this->model->updateInvQty($data);
+        if(!$result['success']){
+            echo $this->util->showMessage('danger', $result['message'] . " updateInvqty: {$data['action']} failed to be updated!");
+        }else{
+            echo $this->util->showMessage('success', $result['message'] . " updateInvQty: {$data['action']} was successful");
+        }
+    }
     // Additional methods (e.g., updateProduct or deleteItem) go here...
 }

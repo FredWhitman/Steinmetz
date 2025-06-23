@@ -1,4 +1,8 @@
 <?php
+namespace Inventory\utils;
+
+use BcMath\Number;
+
 class Util
 {
     //Method for input value sanitization
@@ -21,4 +25,21 @@ class Util
                     aria-label="Close"></button>
                 </div>';
     }
+
+    public function getNewInvQty($stock, $operator, $changeAmount){
+        $stock = (float) $stock;
+        $changeAmount = (float) $changeAmount;
+
+        switch ($operator) {
+        case '+':
+            return round($stock + $changeAmount, 3);
+        case '-':
+            return round($stock - $changeAmount, 3);
+        default:
+            throw new \InvalidArgumentException("Unsupported operator: {$operator}");
+    }
+
+        return $newStockQty;
+    }
+
 }

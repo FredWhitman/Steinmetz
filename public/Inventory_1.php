@@ -222,14 +222,14 @@
                             </div>
                             <div class="row pb-2">
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="invQty" id="add" tabindex="3" value="1" required>Add<label class="form-check-label" for="add"></label>
+                                    <input class="form-check-input" type="radio" name="invQty" id="add" tabindex="3" value="+" required>Add<label class="form-check-label" for="add"></label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="invQty" tabindex="4" id="subtract" value="0">Subtract<label class="form-check-label" for="subtract"></label>
+                                    <input class="form-check-input" type="radio" name="invQty" tabindex="4" id="subtract" value="-">Subtract<label class="form-check-label" for="subtract"></label>
                                 </div>
                             </div>
                             <div class="row pb-2">
-                                <textarea class="form-control" name="commentText" id="commentText" rows="5" placeholder="Comments"></textarea>
+                                <textarea class="form-control" name="p_commentText" id="commentText" rows="5" placeholder="Comments"></textarea>
                             </div>
                         </div>
                     </div>
@@ -248,7 +248,7 @@
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5">Update product inventory</h1>
+                    <h1 class="modal-title fs-5">Update material inventory</h1>
                 </div>
                 <form id="update-material-form" class="needs-validation p-2" novalidate>
                     <div class="modal-body">
@@ -256,31 +256,30 @@
                             <input type="hidden" name="u_matPartNumber" id="h_matPartNumber" />
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="uMatName">Material Name</label><input type="text" tabindex="1" class="form-control form-control-sm" id="umMatName" name="um_matName" readonly></input></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="uMatName">Material Name</label><input type="text" tabindex="1" class="form-control form-control-sm" id="umMatName" name="um_MatName" readonly></input></div>
                                 </div>
                             </div>
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="pStock">Current Stock</label><input type="number" tabindex="1" class="form-control form-control-sm" id="umMatLbs" name="um_Stock" readonly></input></div>
-                                    <div class="invalid-feedback">Name is required!</div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="umStock">Current Stock</label><input type="number" step =".001" tabindex="1" class="form-control form-control-sm" id="umMatLbs" name="um_MatLbs" readonly></input></div>
                                 </div>
                             </div>
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="pAmount">Change amount</label><input type="number" tabindex="1" class="form-control form-control-sm" id="umAmount" name="um_Amount" required></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="umAmount">Change amount</label><input type="number" step="0.001" tabindex="1" class="form-control form-control-sm" id="umAmount" name="um_Amount" required></div>
                                     <div class="invalid-feedback">amount required!</div>
                                 </div>
                             </div>
                             <div class="row row-cols-2 pb-2">
                                 <div class="col">
-                                    <input class="form-check-input" type="radio" name="invQty" id="add" tabindex="3" value="+" required>Add<label class="form-check-label" for="add"></label>
+                                    <input class="form-check-input" type="radio" name="mInvQty" id="add" tabindex="3" value="+" required>Add<label class="form-check-label" for="add"></label>
                                 </div>
                                 <div class="col">
-                                    <input class="form-check-input" type="radio" name="invQty" tabindex="4" id="subtract" value="-">Subtract<label class="form-check-label" for="subtract"></label>
+                                    <input class="form-check-input" type="radio" name="mInvQty" tabindex="4" id="subtract" value="-">Subtract<label class="form-check-label" for="subtract"></label>
                                 </div> 
                             </div>
                             <div class="row pb-2">
-                                <textarea class="form-control" name="commentText" id="commentText" rows="5" placeholder="Comments"></textarea>
+                                <textarea class="form-control" name="um_CommentText" id="MCommentText" rows="5" placeholder="Comments"></textarea>
                             </div>
                         </div>
                     </div>
@@ -295,7 +294,7 @@
     </div>
     <!-- Update material inventory end -->
 
-<!-- Update material iventory start-->
+<!-- Update pfm iventory start-->
     <div class="modal fade" id="updatePfmModal" tabindex="-1" aria-labelledby="updatePfmModal">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
@@ -308,7 +307,7 @@
                             <input type="hidden" name="u_pfmID" id="h_pfmID" />
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="uPfName">PFM Name</label><input type="text" tabindex="1" class="form-control form-control-sm" id="uPfmName" name="u_pfmName" readonly></input></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="uPfName">PFM Name</label><input type="text" tabindex="1" class="form-control form-control-sm" id="uPfmName" name="upf_pfmName" readonly></input></div>
                                 </div>
                             </div>
                             <div class="row pb-2">
@@ -332,7 +331,7 @@
                                 </div> 
                             </div>
                             <div class="row pb-2">
-                                <textarea class="form-control" name="commentText" id="commentText" rows="5" placeholder="Comments"></textarea>
+                                <textarea class="form-control" name="pfm_CommentText" id="pfmCommentText" rows="5" placeholder="Comments"></textarea>
                             </div>
                         </div>
                     </div>
