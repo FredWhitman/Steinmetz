@@ -305,6 +305,7 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <input type="hidden" name="u_pfmID" id="h_pfmID" />
+                            <input type="hidden" name="u_partNumber" id="h_partNumber" />
                             <div class="row pb-2">
                                 <div class="col">
                                     <div class="input-group sm-3"><label class="input-group-text" for="uPfName">PFM Name</label><input type="text" tabindex="1" class="form-control form-control-sm" id="uPfmName" name="upf_pfmName" readonly></input></div>
@@ -324,10 +325,10 @@
                             </div>
                             <div class="row row-cols-2 pb-2">
                                 <div class="col">
-                                    <input class="form-check-input" type="radio" name="invQty" id="add" tabindex="3" value="+" required>Add<label class="form-check-label" for="add"></label>
+                                    <input class="form-check-input" type="radio" name="pfInvQty" id="add" tabindex="3" value="+" required>Add<label class="form-check-label" for="add"></label>
                                 </div>
                                 <div class="col">
-                                    <input class="form-check-input" type="radio" name="invQty" tabindex="4" id="subtract" value="-">Subtract<label class="form-check-label" for="subtract"></label>
+                                    <input class="form-check-input" type="radio" name="pfInvQty" tabindex="4" id="subtract" value="-">Subtract<label class="form-check-label" for="subtract"></label>
                                 </div> 
                             </div>
                             <div class="row pb-2">

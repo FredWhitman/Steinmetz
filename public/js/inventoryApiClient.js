@@ -114,6 +114,7 @@ export async function fetchAndFillUpdateForm(id, table) {
       },
       pfms: {
         pfmID: "h_pfmID",
+        partNumber: "h_partNumber",
         partName: "uPfmName",
         Qty: "uPfmStock",
       }

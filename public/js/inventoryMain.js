@@ -37,6 +37,9 @@ const updateProductModal = new bootstrap.Modal(document.getElementById("updatePr
 const updateMaterialForm = document.getElementById("update-material-form");
 const updateMaterialModal = new bootstrap.Modal(document.getElementById("updateMaterialModal"));
 
+const updatePfmForm = document.getElementById("update-pfm-form");
+const updatePfmModal = new bootstrap.Modal(document.getElementById("updatePfmModal"));
+
 
 editProductForm.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -61,7 +64,12 @@ editProductForm.addEventListener("submit", async (e) => {
     document.getElementById("showAlert").innerHTML = responseText;
     editProductForm.reset();
     editProductModal.hide();
-    // Optionally, refresh your tables after a successful update.
+
+    const updatedInventory = await fetchProductsMaterialPFM();
+    import("./inventoryUiManager.js").then(({ renderTables }) =>{
+      renderTables(updatedInventory);
+    });
+    
   } catch (error) {
     console.error("Failed to submit editProduct form:", error);
   }
@@ -108,6 +116,14 @@ editMaterialForm.addEventListener("submit", async (e) => {
     editMaterialForm.reset();
     editMaterialForm.classList.remove("was-validated");
     editMaterialModal.hide();
+
+    //Wait for updated data to be fetched
+    const updatedInventory = await fetchProductsMaterialPFM();
+    //Optionally re-render table or refresh the dom here
+    import("./inventoryUiManager.js").then(({ renderTables }) =>{
+      renderTables(updatedInventory);
+    });
+
   } catch (error) {
     console.error("Failed to submit form: ", error);
   }
@@ -154,6 +170,13 @@ editPFMForm.addEventListener("submit", async (e) => {
     editPFMForm.reset();
     editPFMForm.classList.remove("was-validated");
     editPFMModal.hide();
+    
+    //Wait for updated data to be fetched
+    const updatedInventory = await fetchProductsMaterialPFM();
+    //Optionally re-render table or refresh the dom here
+    import("./inventoryUiManager.js").then(({ renderTables }) =>{
+      renderTables(updatedInventory);
+    });
   } catch (error) {
     console.error("Failed to submit form: ", error);
     logToServer("Failed to submit form: ", "ERROR", error);
@@ -193,12 +216,24 @@ updateProductForm.addEventListener("submit", async (e) => {
   try {
     const response = await data.text();
     showAlert.innerHTML = response;
+
     updateProductForm.reset();
     updateProductForm.classList.remove("was-validated");
     updateProductModal.hide();
+    
+    //Wait for updated data to be fetched
+    const updatedInventory = await fetchProductsMaterialPFM();
+    //Optionally re-render table or refresh the dom here
+    import("./inventoryUiManager.js").then(({ renderTables }) =>{
+      renderTables(updatedInventory);
+    });
+
+    
+
   } catch (error) {
     console.error("Failed to submit form: ", error);
   }
+    
 })
 
 updateMaterialForm.addEventListener("submit", async (e) => {
@@ -244,8 +279,64 @@ updateMaterialForm.addEventListener("submit", async (e) => {
     updateMaterialForm.reset();
     updateMaterialForm.classList.remove("was-validated");
     updateMaterialModal.hide();
+     
+     //Wait for updated data to be fetched
+    const updatedInventory = await fetchProductsMaterialPFM();
+    //Optionally re-render table or refresh the dom here
+    import("./inventoryUiManager.js").then(({ renderTables }) =>{
+      renderTables(updatedInventory);
+    });
+
   } catch (error) {
     console.error("Failed to submit update Material qty.");
   }
 })
 
+updatePfmForm.addEventListener("submit", async (e) => {
+  console.log("submit pfm update button click");
+  e.preventDefault();
+
+  const formData = new FormData(updatePfmForm);
+
+  if(!updatePfmForm.checkValidity()){
+    e.preventDefault();
+    e.stopPropagation();
+    updatePfmForm.classList.add("was-validated");
+    return false;
+  }
+
+  const pfmData ={
+    action: "updatePfm",
+    pfmID: document.getElementById("h_pfmID").value,
+    partNumber: document.getElementById("h_partNumber").value,
+    Qty: formData.get("u_PfmStock"),
+    changeAmount: formData.get("upf_Amount"),
+    comments: formData.get("pfm_CommentText"),
+    operator: formData.get("pfInvQty")
+  }
+
+  const data = await fetch("/api/dispatcher.php",{
+    method: "POST",
+    headers: { "Conent-Type": "application/json" },
+    body: JSON.stringify(pfmData),
+  });
+
+  try {
+    const response = await data.text();
+    showAlert.innerHTML = response;
+
+    updatePfmForm.reset();
+    updatePfmForm.classList.remove("was-validated");
+    updatePfmModal.hide();
+    
+    //Wait for updated data to be fetched
+    const updatedInventory = await fetchProductsMaterialPFM();
+    //Optionally re-render table or refresh the dom here
+    import("./inventoryUiManager.js").then(({ renderTables }) =>{
+      renderTables(updatedInventory);
+    });
+
+  } catch (error) {
+    console.error("submit pfm update pfm qty.");
+  }
+})

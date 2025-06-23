@@ -160,12 +160,28 @@ class InventoryController
         $this->log->info("POST Data Received by controller:\n" . print_r($data, true));
         if(!isset($data['action'])){
             http_response_code(400);
-            echo "Missing UpdateProduct Data!";
+            echo "Missing UpdateMaterial Data!";
             return;
         }
 
         $result = $this->model->updateInvQty($data);
         if(!$result['success']){
+            echo $this->util->showMessage('danger', $result['message'] . " updateInvqty: {$data['action']} failed to be updated!");
+        }else{
+            echo $this->util->showMessage('success', $result['message'] . " updateInvQty: {$data['action']} was successful");
+        }
+    }
+
+    public function updatePfm($data){
+        $this->log->info("POST Data Received by controller:\n" . print_r($data, true));
+        if(!isset($data['action'])){
+            http_response_code(400);
+            echo "Missing UpdatePfm Data!";
+            return;
+        }
+
+        $result = $this->model->updateInvQty($data);
+        if (!$result['success']) {
             echo $this->util->showMessage('danger', $result['message'] . " updateInvqty: {$data['action']} failed to be updated!");
         }else{
             echo $this->util->showMessage('success', $result['message'] . " updateInvQty: {$data['action']} was successful");

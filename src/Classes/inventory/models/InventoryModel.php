@@ -508,7 +508,7 @@ class InventoryModel
                     break;
                 case "updatePfm":
                     //updating transData
-                    $transData['inventoryID'] = $data['PartNumber'];
+                    $transData['inventoryID'] = $data['partNumber'];
                     $transData['oldStockCount'] = $data['Qty'];
                     $transData['transAmount'] = $data['changeAmount'];
 
@@ -525,7 +525,7 @@ class InventoryModel
                     $stmt = $this->con->prepare($sql);
                     $stmt->execute([
                         ':qty' => $newStockQty,
-                        ':partNumber' => $data['PartNumber']
+                        ':partNumber' => $data['partNumber']
                     ]);
 
                     break;
