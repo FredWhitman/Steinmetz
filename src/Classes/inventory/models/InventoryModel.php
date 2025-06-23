@@ -27,7 +27,6 @@ class InventoryModel
         $this->con = $dbConnection;
         $this->log = $log;
         $this->util = $util;
-        
     }
 
     /**
@@ -174,46 +173,64 @@ class InventoryModel
         $this->log->info('getRecord called with these parameters: ' . $id . ' ' . $table);
         $sql = '';
 
-        if ($table === 'products') {
-            $this->log->info('product record requested');
-            $sql = 'SELECT * FROM products WHERE productID = :productID';
-            $stmt = $this->con->prepare($sql);
-            $stmt->execute([':productID' => $id]);
-            $result = $stmt->fetch();
-            if (!$result) {
-                $this->log->error("NO record found for the $id in table $table. ");
-            }
+        switch ($table) {
+            case 'products':
+                $this->log->info('product record requested');
+                try {
+                    $sql = 'SELECT * 
+                        FROM products 
+                        WHERE productID = :productID';
 
-            $this->log->info('getRecord returning : ' . $result['productID']);
-            return $result;
-        } else if ($table === 'materials') {
-            $sql = 'SELECT * FROM material WHERE matPartNumber = :matPartNumber';
-            try {
-                $stmt = $this->con->prepare($sql);
-                $stmt->execute([':matPartNumber' => $id]);
-                $result = $stmt->fetch(\PDO::FETCH_ASSOC);
-                if (!$result) {
-                    $this->log->warning("NO record found for the $id in table $table. ");
+                    $stmt = $this->con->prepare($sql);
+                    $stmt->execute([':productID' => $id]);
+                    $result = $stmt->fetch();
+
+                    if (!$result) {
+                        $this->log->error("NO record found for the $id in table $table. ");
+                        break;
+                    }
+                } catch (\PDOException $e) {
+                    $this->log->error("Error getting product record for $id in table $table.");
                 }
-                $this->log->info('getRecord returning : ' . $result['matPartNumber']);
-                return $result;
-            } catch (PDOException $e) {
-                $this->log->error("Error getting material record for $id in table $table.");
-            }
-        } else { //pfms
-            $sql = 'SELECT * FROM pfm WHERE pfmID = :pfmID';
-            $stmt = $this->con->prepare($sql);
-            $stmt->execute([':pfmID' => $id]);
-            $result = $stmt->fetch();
-            if (!$result) {
-                $this->log->warning("NO record found for the $id in table $table. ");
-            }
-            $this->log->info('getRecord returning : ' . $result['pfmID']);
-            return $result;
+                break;
+            case 'materials':
+                $sql = 'SELECT * FROM material WHERE matPartNumber = :matPartNumber';
+
+                try {
+                    $stmt = $this->con->prepare($sql);
+                    $stmt->execute([':matPartNumber' => $id]);
+                    $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+                    if (!$result) {
+                        $this->log->warning("NO record found for the $id in table $table. ");
+                        break;
+                    }
+                    $this->log->info('getRecord returning : ' . $result['matPartNumber']);
+                } catch (PDOException $e) {
+                    $this->log->error("Error getting material record for $id in table $table.");
+                }
+                break;
+            case 'pfms':
+                try {
+                    $sql = 'SELECT * FROM pfm WHERE pfmID = :pfmID';
+                    $stmt = $this->con->prepare($sql);
+                    $stmt->execute([':pfmID' => $id]);
+                    $result = $stmt->fetch();
+                    if (!$result) {
+                        $this->log->warning("NO record found for the $id in table $table. ");
+                        break;
+                    }
+                    $this->log->info('getRecord returning : ' . $result['pfmID']);
+                } catch (\PDOException $e) {
+                    $this->log->error("ERROR getting {$table} record: " . $e->getMessage());
+                    return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
+                }
+
+            default:
+                $this->log->warning("Invalid table type requested: {$table}");
+                return ["success" => false, "message" => "Invalid type requested: {$table}"];
+                break;
         }
-        // Query the specific record by id and table.
-        // Return record or false.
-        return []; // Example dummy data.
+        return $result;
     }
 
     /**
@@ -361,10 +378,10 @@ class InventoryModel
         $this->log->info('getInventoryRecord called with these parameters: ' . $id . ' ' . $table);
 
         try {
-            switch ($table){
+            switch ($table) {
                 case 'products':
                     $this->log->info('product record requested');
-                     $sql = 'SELECT 
+                    $sql = 'SELECT 
                         `products`.`productID`,
                         `products`.`partName`,
                         `productinventory`.`partQty`
@@ -379,7 +396,7 @@ class InventoryModel
                     $stmt->execute([':productID' => $id]);
 
                     break;
-                case "materials": 
+                case "materials":
                     $sql = 'SELECT 
                                 `materialinventory`.`matPartNumber`,
                                 `materialinventory`.`matLbs`,
@@ -392,7 +409,7 @@ class InventoryModel
                                 (`materialinventory`.`matPartNumber` = `material`.`matPartNumber`)
                             WHERE
                                 `materialinventory`.`matPartNumber` = :matPartNumber';
-                    
+
                     $stmt = $this->con->prepare($sql);
                     $stmt->execute([':matPartNumber' => $id]);
                     break;
@@ -414,7 +431,7 @@ class InventoryModel
                     break;
                 default:
                     $this->log->warning("Invalid table type requested: {$table}");
-                    return null;       
+                    return null;
             }
 
             $result = $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -426,8 +443,7 @@ class InventoryModel
 
             $this->log->info("result : \n" . print_r($result, true));
 
-            return $result;    
-
+            return $result;
         } catch (\PDOException $e) {
             $this->log->error("DB Error fetching record for {$id} in table {$table}.");
             return null;
@@ -443,13 +459,13 @@ class InventoryModel
     public function updateInvQty($data)
     {
         $this->log->info("POST Data Received by model:\n" . print_r($data, true));
-        if(!$data){
+        if (!$data) {
             return ["success" => false, "message" => "updateInvQty failed to receive formData!"];
             exit();
-        }else{
+        } else {
             $action = $data['action'];
             $this->log->info("updateInvQty received an {$action} request");
-            $inventoryType = substr($data['action'],6);
+            $inventoryType = substr($data['action'], 6);
         }
 
         try {
@@ -460,13 +476,13 @@ class InventoryModel
                 "action" => $data['action'],
                 "inventoryID" => "",
                 "inventoryType" => $inventoryType,
-                "prodLogID" => "0" ,
+                "prodLogID" => "0",
                 "oldStockCount" => "",
                 "transAmount" => "",
-                "transType" => "admin edit",  
+                "transType" => "admin edit",
                 "transComment" => $data['comments']
             );
-            switch ($action){
+            switch ($action) {
                 case "updateProduct":
                     //updating transData
                     $transData['inventoryID'] = $data['productID'];
@@ -477,11 +493,13 @@ class InventoryModel
                     $stockQty = $data['partQty'];
                     $amount = $data['changeAmount'];
                     $newStockQty = $this->util->getNewInvQty($stockQty, $data['operator'], $amount);
-                    
+
                     $sql = 'UPDATE productInventory SET partQty = :qty WHERE productID = :productID';
                     $stmt = $this->con->prepare($sql);
-                    $stmt->execute([':productID' => $data['productID'],
-                                     ':qty' => $newStockQty]);
+                    $stmt->execute([
+                        ':productID' => $data['productID'],
+                        ':qty' => $newStockQty
+                    ]);
                     $this->log->info("{$data['action']} successfully attempted to add {$newStockQty} ");
                     break;
                 case "updateMaterial":
@@ -503,7 +521,8 @@ class InventoryModel
                     $stmt = $this->con->prepare($sql);
                     $stmt->execute([
                         ':matPartNumber' => $data['matPartNumber'],
-                        ':matLbs' => $newStockQty]);
+                        ':matLbs' => $newStockQty
+                    ]);
 
                     break;
                 case "updatePfm":
@@ -514,7 +533,7 @@ class InventoryModel
 
                     $stockQty = $data['Qty'];
                     $amount = $data['changeAmount'];
-                    $newStockQty = $this->util->getNewInvQty($stockQty,$data['operator'], $amount);
+                    $newStockQty = $this->util->getNewInvQty($stockQty, $data['operator'], $amount);
 
                     $sql = 'UPDATE 
                                 pfmInventory
@@ -532,11 +551,11 @@ class InventoryModel
                 default:
                     $this->con->rollBack();
                     $this->log->warning("Invalid table type requested: {$data['action']}");
-                    return ["success" => false, "message" => "Invalid type requested: {$data['action']}"];       
+                    return ["success" => false, "message" => "Invalid type requested: {$data['action']}"];
             }
-        
+
             $affected = $stmt->rowCount();
-            
+
             if (!$affected === 0) {
                 $this->con->rollBack();
                 $errorInfo = $stmt->errorInfo();
@@ -546,10 +565,10 @@ class InventoryModel
 
                 $insertResult = $this->insertTrans($transData);
 
-                if(!$insertResult){
+                if (!$insertResult) {
                     $this->con->rollBack();
                     $this->log->warning("Transaction insert into inventorytrans failed: {$data['action']}");
-                    return ['success' => false, "message" => "Failed to insert transaction for {$data['action']}"];       
+                    return ['success' => false, "message" => "Failed to insert transaction for {$data['action']}"];
                 }
                 $this->con->commit();
                 return ["success" => true, "message" => "{$data['action']} successful!"];
@@ -561,17 +580,18 @@ class InventoryModel
         }
     }
 
-       
+
     /**
      * insertTrans 
      *
      * @param  mixed $data  this array must contain an action element for routing to the correct case
      * @return void
      */
-    public function insertTrans($data){
-            //transtype ENUM('production log','admin edit','qa rejects','shipped')
-            //inventoryType ENUM('product','material'pfm)
-            $this->log->info("insertTrans called for : {$data['action']}");
+    public function insertTrans($data)
+    {
+        //transtype ENUM('production log','admin edit','qa rejects','shipped')
+        //inventoryType ENUM('product','material'pfm)
+        $this->log->info("insertTrans called for : {$data['action']}");
         $sql = 'INSERT INTO inventorytrans
                     (inventoryID,
                     inventoryType,
@@ -591,15 +611,15 @@ class InventoryModel
 
         $stmt = $this->con->prepare($sql);
         $result = $stmt->execute([
-                       ':inventoryID' => $data['inventoryID'],
-                        ':inventoryType' => $data['inventoryType'],
-                        ':prodLogID' => $data['prodLogID'],
-                        ':oldStockCount' => $data['oldStockCount'],
-                        ':transAmount' => $data['transAmount'],
-                        ':transType' => $data['transType'],
-                        ':transComment' => $data['transComment']
-                    ]);
-        
+            ':inventoryID' => $data['inventoryID'],
+            ':inventoryType' => $data['inventoryType'],
+            ':prodLogID' => $data['prodLogID'],
+            ':oldStockCount' => $data['oldStockCount'],
+            ':transAmount' => $data['transAmount'],
+            ':transType' => $data['transType'],
+            ':transComment' => $data['transComment']
+        ]);
+
         if (!$result) {
             $errorInfo = $stmt->errorInfo();
             return ["success" => false, "message" => "Database failed to insert a record into inventorytrans.", "error" => $errorInfo];
