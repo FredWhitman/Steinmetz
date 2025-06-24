@@ -1,16 +1,18 @@
 <?php
-// File: routes/prodDispatcher.php
-require_once __DIR__ . '/../config/init.php';
-require_once __DIR__ . '/../controllers/ProductionController.php';
 
-//Dispatcher for GET requests
+$controller = require_once __DIR__ . '/../config/prodInit.php';
 
-if ($_SERVER["REQUEST_METHOD" === "GET"]) {
-    if(isset($_GET['read4wks'])){
+if ($_SERVER["REQUEST_METHOD"] === "GET") {
+    if (isset($_GET['read4wks'])) {
         $controller->read4wks();
-    }else{
-        http_response_code(400);
-         echo json_encode(['error' => 'Invalid GET request']);
+        exit();
     }
-    exit();
+
+    if (isset($_GET['viewProdLogs']) && isset($_GET['id'])) {
+        $controller->viewProdLogs($_GET['id']);
+        exit();
+    }
+
+    http_response_code(400);
+    echo json_encode(['error' => 'Invalid GET request']);
 }

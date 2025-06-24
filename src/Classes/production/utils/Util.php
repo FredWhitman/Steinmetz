@@ -1,4 +1,5 @@
 <?php
+
 namespace Production\utils;
 
 class Util
@@ -23,6 +24,4 @@ class Util
                     aria-label="Close"></button>
                 </div>';
     }
-
-   
 }

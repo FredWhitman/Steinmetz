@@ -8,7 +8,7 @@ require_once __DIR__ . '/../utils/Util.php';
 use Psr\Log\LoggerInterface;
 use PDOException;
 use ErrorException;
-use Inventory\utils\Util;
+use Production\utils\Util;
 
 class ProductionModel
 {
@@ -25,6 +25,7 @@ class ProductionModel
      */
     public function __construct(\PDO $dbConnection, LoggerInterface $log, Util $util)
     {
+        error_log("✅ ProductionModel constructor reached");
         $this->con = $dbConnection;
         $this->log = $log;
         $this->util = $util;
@@ -540,7 +541,7 @@ class ProductionModel
                 ':tempLogID' => [$tempLogID, \PDO::PARAM_INT],
                 ':prodLogID' => [$prodLogID, \PDO::PARAM_INT],
             ];
-            
+
             foreach ($UpdateProdLog_Params as $key => [$value, $type]) {
                 $stmtUpdateProdLog->bindParam($key, $value, $type);
             }
@@ -596,7 +597,7 @@ class ProductionModel
 
                 if (!$result) throw new \Exception('Failed to update production run log.');
             }
-            
+
             //Update product Inventory
             $partsToAdd = $prodData['pressCounter'] - $prodData['startUpRejects'];
 
@@ -686,7 +687,7 @@ class ProductionModel
 
         return $qty;
     }
- 
+
     /**
      * getProductionLog function
      * Returns logID, qaRejects , productID and prodDate so that QA Rejects can be added to a production logs

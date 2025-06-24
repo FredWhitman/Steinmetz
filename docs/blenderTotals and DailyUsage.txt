@@ -1,0 +1,71 @@
+Brilliant—glad the form-filling is locked in! Now let’s tackle those dynamic 
+calculations. You want to:
+
+1. **Pull the previous production log** for context
+2. Use it to calculate:
+   - **`blenderTotals`**
+   - **`dailyUsage`**
+   - Percentages or performance metrics
+3. Update the current modal form fields accordingly
+
+---
+
+### ✅ Here’s a solid game plan:
+
+#### Step 1: Fetch previous log by date or ID  
+Inside `fetchAndFillForm()`, after filling the current log:
+
+```js
+const prevLogUrl = `${BASE_URL}?getPreviousLog=1&id=${id}&table=${table}`;
+const prevResponse = await fetch(prevLogUrl);
+const prevLog = await prevResponse.json();
+console.log("📘 Previous log:", prevLog);
+```
+
+You’ll need backend support for `getPreviousLog=1`, of course.
+
+#### Step 2: Perform your calculations  
+Once you have `responseData` (current log) and `prevLog`, do something like:
+
+```js
+const blenderTotal = parseFloat(responseData.purgeLbs) + parseFloat(prevLog.purgeLbs); // example
+const dailyUsage = (responseData.pressCounter - prevLog.pressCounter);
+const percentChange = dailyUsage !== 0
+  ? ((responseData.qaRejects / dailyUsage) * 100).toFixed(2)
+  : 0;
+```
+
+> Adjust the formulas to match your actual business logic.
+
+#### Step 3: Display those in the modal  
+Update modal fields or inner text:
+
+```js
+document.getElementById("blenderTotals").value = blenderTotal || "";
+document.getElementById("dailyUsage").value = dailyUsage || "";
+document.getElementById("percentRejects").value = percentChange + "%";
+```
+
+Or use `.innerText` if you're displaying the data statically.
+
+---
+
+### 🧱 For backend support:
+
+Add a new method to your `ProductionModel.php`:
+
+```php
+public function getPreviousLog($currentID) {
+    $stmt = $this->db->prepare("SELECT * FROM production_logs WHERE logID < ? ORDER BY logID DESC 
+        LIMIT 1");
+    $stmt->execute([$currentID]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+```
+
+Then route it in your `prodDispatcher.php` and expose it via a controller method like `getPreviousProdLog()`.
+
+---
+
+Once you wire that in, your modal will become smart—calculating on the fly and showing how today compares to 
+yesterday. Want me to help you write the controller method or wire up the new dispatcher logic next?

@@ -1,1 +1,0 @@
-[2025-06-23T03:05:36.952348+02:00] InventoryApp.ERROR: ERROR updating inventory: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'inventoryID' cannot be null [] []

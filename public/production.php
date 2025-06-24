@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,8 +15,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 </head>
+
 <body>
-<!--Navbar -->
+    <!--Navbar -->
     <?php require_once '../includes/steinmetzNavbar.php'; ?>
     <!--------------------------------------------------------------------------------------------------------------->
     <!-- New production log modal start-->
@@ -703,7 +705,7 @@
                     <div class="table-container-scroll">
                         <!-- <div class="table-responsive"> -->
                         <!-- Table to display our db user list -->
-                        <table id="last4wks" class="table table-striped table-bordered text-center">
+                        <table id="read4wks" class="table table-striped table-bordered text-center">
                             <thead class="sticky-header">
                                 <tr>
                                     <th>Part Number</th>
@@ -713,10 +715,10 @@
                                     <th>QA Rejects</th>
                                     <th>Purge</th>
                                     <th>Status</th>
-                                    <th>Action</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="weeks">
+                            <tbody id="last4wks">
 
                             </tbody>
                         </table>
@@ -730,12 +732,7 @@
     <!-- Bootstrap js -->
     <script type="text/javascript" src="/lib/js/bootstrap.bundle.min.js"></script>
     <!-- My custom js -->
-    <script type="text/javascript" src="../resources/js/main.js"></script>
- 
-    <script type="text/javascript" src="../resources/js/prodLogSubmit.js"></script>
-    <script type="text/javascript" src="../resources/js/qaRejects.js"></script>
-    <script type="text/javascript" src="../resources/js/purge.js"></script>
-    <script type="text/javascript" src="../resources/js/lotChange.js"></script>
+    <script type="module" src="/js/productionMain.js"></script>
 </body>
 
 </html>

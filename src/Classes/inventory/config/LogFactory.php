@@ -27,8 +27,8 @@ class LogFactory
 
             // Configure handlers.
             // Adjust the paths as needed relative to this file.
-            self::$logger->pushHandler(new StreamHandler(__DIR__ . '/../../logs/inventory_errors.log', Logger::ERROR));
-            self::$logger->pushHandler(new StreamHandler(__DIR__ . '/../../logs/inventory_Info.log', Logger::INFO));
+            self::$logger->pushHandler(new StreamHandler(__DIR__ . '/../logs/inventory_errors.log', Logger::ERROR));
+            self::$logger->pushHandler(new StreamHandler(__DIR__ . '/../logs/inventory_Info.log', Logger::INFO));
 
             // Register the logger as the error handler for PHP errors.
             ErrorHandler::register(self::$logger);

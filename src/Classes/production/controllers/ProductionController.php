@@ -1,7 +1,9 @@
 <?php
+
 namespace Production\Controllers;
 
 // File: controllers/ProductionController.php
+
 require_once __DIR__ . '/../models/ProductionModel.php';
 
 class ProductionController
@@ -18,12 +20,31 @@ class ProductionController
         $this->log->info("Controller logger test", ['file' => __FILE__]);
     }
 
-    public function read4wks(){
+    public function read4wks()
+    {
         ob_clean();
-        header('Conent-Type: application/json');
-        $this->log->info('read4wks called to fill table');
-        $production = $this->model->read4wks();
+        header('Content-Type: application/json');
+        try {
+            $this->log->info('read4wks called to fill table');
+            $production = $this->model->read4wks();
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to fetch production logs', 'details' => $e->getMessage()]);
+        }
+
         echo json_encode($production);
-        exit();
+    }
+
+    public function viewProdLogs($id)
+    {
+        header('Content-Type: application/json');
+
+        try {
+            $log = $this->model->readOne($id);
+            echo json_encode($log);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to fetch production', 'details' => $e->getMessage()]);
+        }
     }
 }
