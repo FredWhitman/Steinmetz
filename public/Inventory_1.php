@@ -380,7 +380,7 @@
                                 <tr>
                                     <th>Part Number</th>
                                     <th>Qty</th>
-                                    <th>Action</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="products">
@@ -400,7 +400,7 @@
                                 <tr>
                                     <th>Material Number</th>
                                     <th>Lbs</th>
-                                    <th>Action</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="materials">
@@ -419,7 +419,7 @@
                                 <tr>
                                     <th>Part Number</th>
                                     <th>Qty</th>
-                                    <th>Action</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="pfms">

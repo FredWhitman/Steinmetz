@@ -1,27 +1,21 @@
-<?
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Steinmetz Production</title>
+    <title>Quality</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="../resources/vendors/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/lib/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom styles for this template -->
-    <link href="../resources/vendors/css/dashboard.css" rel="stylesheet">
-    <link href="../resources/css/myCSS.css" rel="stylesheet">
+    <link href="/lib/css/dashboard.css" rel="stylesheet">
+    <link href="/css/myCSS.css" rel="stylesheet">
     <link rel="stylesheet" href="https://www.devwares.com/docs/contrast/javascript/sections/timepicker/">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 </head>
-<!--  -->
-
 <body>
-    <!--Navbar -->
+<!--Navbar -->
     <?php require_once '../includes/steinmetzNavbar.php'; ?>
     <!--------------------------------------------------------------------------------------------------------------->
     <!-- New production log modal start-->
@@ -773,12 +767,11 @@
         </div>
     </div>
 
-
     <!-- Bootstrap js -->
-    <script type="text/javascript" src="../resources/vendors/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="/lib/js/bootstrap.bundle.min.js"></script>
     <!-- My custom js -->
     <script type="text/javascript" src="../resources/js/main.js"></script>
-    <!-- <script type="text/javascript" src="../resources/js/productionLog.js"></script>  -->
+ 
     <script type="text/javascript" src="../resources/js/prodLogSubmit.js"></script>
     <script type="text/javascript" src="../resources/js/qaRejects.js"></script>
     <script type="text/javascript" src="../resources/js/purge.js"></script>

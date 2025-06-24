@@ -39,15 +39,10 @@
                     </ul> -->
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" data-bs-auto-close="outside" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Lot Changes</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="" class="dropdown-item">Add Lot Change</a></li>
-                        <li><a href="#" class="dropdown-item">Edit Lot CHange</a></li>
-                        <li><a href="viewLotChanges.php" class="dropdown-item">View Lot Change</a></li>
-                    </ul>
+                    <a class="nav-link" data-bs-auto-close="outside" a href="\quality.php" role="button">Quality</a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link" a href=".\Production.php" role="button">Production</a>
+                    <a class="nav-link" a href="\production.php" role="button">Production</a>
                 </li>
             </ul>
         </div>
