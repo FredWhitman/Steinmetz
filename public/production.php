@@ -578,47 +578,7 @@
     </div>
     <!-- View production log modal end -->
     <!--------------------------------------------------------------------------------------------------------------->
-    <!-- Add QA Rejects to production log start-->
-    <div class="modal fade" id="addQARejectsModal" tabindex="-1" aria-labelledby="addQARejectsModal">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="addQARejectsModal">QA Rejects</h1>
-                </div>
-                <div class="modal-body">
-                    <form id="add-qaReject-form" class="needs-validation p-2" novalidate>
-                        <div class="mb-3">
-                            <div class="row pb-2">
-                                <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="qaPartName">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="qaPartName" name="qaPart" required></select></div>
-                                    <div class="invalid-feedback">Part name is required!</div>
-                                </div>
-                            </div>
-                            <div class="row pb-2">
-                                <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="qaLogDate">Production Date</label><input class="form-control" type="date" tabindex="2" id="logDate" name="qaLogDate" required></div>
-                                    <div class="invalid-feedback">Production date is required!</div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="input-group sm-3"><label class="input-group-text" for="qaRejects">Reject Quantity</label><input type="number" tabindex="1" class="form-control form-control-sm" id="qaRejects" name="rejects" required></div>
-                                <div class="invalid-feedback">Number of rejects is required!</div>
-                            </div>
-                        </div>
-                        <div>
-                            <label for="message-text" class="col-form-label">Comments</label>
-                            <textarea class="form-control" type="text" id="comment-text" name="qaComments"></textarea>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" value="Add Rejects" class="btn btn-success" id="add-qaReject-btn">Add Rejects</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Add QA Rejects to production log end-->
+
     <!--------------------------------------------------------------------------------------------------------------->
     <!-- Add purge to production log start -->
     <div class="modal fade" id="addPurgeModal" tabindex="-1">
