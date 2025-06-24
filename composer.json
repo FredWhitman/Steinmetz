@@ -11,7 +11,8 @@
   "autoload": {
     "psr-4": {
       "Fred\\Steinmetz\\": "src/",
-      "Inventory\\": "src/Classes/inventory/"
+      "Inventory\\": "src/Classes/inventory/",
+      "Production\\": "src/Classes/production/"
     }
   },
   "authors": [

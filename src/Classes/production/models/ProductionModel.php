@@ -249,6 +249,51 @@ class ProductionModel
     }
 
     /**
+     * addPurge
+     *
+     * @param  mixed $productID
+     * @param  mixed $prodDate
+     * @param  mixed $purge
+     * @return void
+     */
+    public function addPurge($productID, $prodDate, $purge)
+    {
+        try {
+            $this->con->beginTransaction();
+            $row = $this->getProductionlog($productID, $prodDate);
+
+            if (!$row) {
+                error_log("Error:  nothing was returned for previous log!");
+                $this->con->rollback(); //revert changes
+                return false;
+            }
+
+            $prodLogID = $row['logID'];
+
+            //Update productionLogs table
+
+            $sqlUpdate = 'UPDATE productionlogs SET purgelbs =  purgelbs + :purge WHERE logID = :prodLogID';
+            $stmtUpdate = $this->con->prepare($sqlUpdate);
+            $stmtUpdate->bindParam(":purge", $purge, \PDO::PARAM_STR);
+            $stmtUpdate->bindParam(":prodLogID", $prodLogID, \PDO::PARAM_INT);
+            $stmtUpdate->execute();
+
+            if ($stmtUpdate->rowCount() === 0) {
+                error_log("Transaction Failed: productionlogs purge update.");
+                $this->con->rollback();
+                return false;
+            } else {
+                //Commit transaction
+                $this->con->commit();
+                error_log("Transaction successful: productionlogs purge updated.");
+                return true;
+            }
+        } catch (PDOException $e) {
+            error_log('Error adding purge to production log: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * insertProdLog
      *
      * @param  mixed $prodData form data array
@@ -273,7 +318,6 @@ class ProductionModel
                 "transType" => "production log",
                 "transComment" => $prodData['comments'],
             );
-
 
             switch ($prodData['runStatus']) {
                 case '0':
@@ -397,7 +441,7 @@ class ProductionModel
             if (!$prodLogID) throw new \Exception("Failed to get last production log for production run!");
 
             $materialData["prodLogID"] = $prodLogID;
-            error_log('prodLogID from $materialData["prodLogID"]: ' . $materialData["prodLogID"]);
+            $this->log->info('prodLogID from $materialData["prodLogID"]: ' . $materialData["prodLogID"]);
             /////////////////////INSERT PRODUCTIONLOG INSERT END//////////////////////////////////
 
             /////////////////////////////////////////////////////////////////////////////////////  
@@ -496,39 +540,66 @@ class ProductionModel
                 ':tempLogID' => [$tempLogID, \PDO::PARAM_INT],
                 ':prodLogID' => [$prodLogID, \PDO::PARAM_INT],
             ];
+            
+            foreach ($UpdateProdLog_Params as $key => [$value, $type]) {
+                $stmtUpdateProdLog->bindParam($key, $value, $type);
+            }
 
             $stmtUpdateProdLog->execute();
 
             // check to see if this is the end of the production run and fetch material data for the run
             // and update prodrunlog with totals, end date and completed
             if ($prodData['runStatus'] === 'end') {
-                error_log('End of prodcution run detected aquiring run production totals');
+                $this->log->info('End of prodcution run detected aquiring run production totals');
                 //Insert values into prodrunLog
                 $totals = $this->getMaterialTotals($prodRunID);
 
                 if (!$totals) throw new \Exception('Failed to get production run totals from getMaterialTotals');
-                error_log("\$Totals - Data collected: " . print_r($totals, true));
-                error_log("Material totals collected preparing the update!");
-                $sqlProdRunLogUpdate = "UPDATE prodrunlog SET endDate = :endDate, mat1Lbs = :mat1Lbs, mat2Lbs = :mat2Lbs, mat3Lbs = :mat3Lbs, mat4Lbs = :mat4Lbs, partsProduced = :produced, startUpRejects= :startUpRejects, qaRejects=:qaRejects,purgelbs = :purge, runComplete = :runComplete WHERE logID = :prodRunID";
+                $this->log->info("\$Totals - Data collected: " . print_r($totals, true));
+                $this->log->info("Material totals collected preparing the update!");
+
+                $sqlProdRunLogUpdate = "UPDATE prodrunlog 
+                                        SET 
+                                            endDate = :endDate, 
+                                            mat1Lbs = :mat1Lbs, 
+                                            mat2Lbs = :mat2Lbs, 
+                                            mat3Lbs = :mat3Lbs, 
+                                            mat4Lbs = :mat4Lbs, 
+                                            partsProduced = :produced, 
+                                            startUpRejects= :startUpRejects, 
+                                            qaRejects=:qaRejects,
+                                            purgelbs = :purge, 
+                                            runComplete = :runComplete 
+                                        WHERE logID = :prodRunID";
+
                 $stmtProdlogUpdate = $this->con->prepare($sqlProdRunLogUpdate);
-                $result = $stmtProdlogUpdate->execute([
-                    ':endDate' => $totals['prodDate'],
-                    ':mat1Lbs' => $totals['total_matUsed1'],
-                    ':mat2Lbs' => $totals['total_matUsed2'],
-                    ':mat3Lbs' => $totals['total_matUsed3'],
-                    ':mat4Lbs' => $totals['total_matUsed4'],
-                    ':produced' => $totals['total_produced'],
-                    ':startUpRejects' => $totals['total_startUpRejects'],
-                    ':qaRejects' => $totals['total_qaRejects'],
-                    ':purge' => $totals['total_total_purgeLbs'],
-                    ':prodRunID' => $prodRunID,
-                    ':runComplete' => 'yes'
-                ]);
+
+                $prodRun_Params = [
+                    ':endDate' => [$totals['prodDate'], \PDO::PARAM_STR],
+                    ':mat1Lbs' => [$totals['total_matUsed1'], \PDO::PARAM_STR],
+                    ':mat2Lbs' => [$totals['total_matUsed2'], \PDO::PARAM_STR],
+                    ':mat3Lbs' => [$totals['total_matUsed3'], \PDO::PARAM_STR],
+                    ':mat4Lbs' => [$totals['total_matUsed4'], \PDO::PARAM_STR],
+                    ':produced' => [$totals['total_produced'], \PDO::PARAM_STR],
+                    ':startUpRejects' => [$totals['total_startUpRejects'], \PDO::PARAM_STR],
+                    ':qaRejects' => [$totals['total_qaRejects'], \PDO::PARAM_STR],
+                    ':purge' => [$totals['total_total_purgeLbs'], \PDO::PARAM_STR],
+                    ':prodRunID' => [$prodRunID, \PDO::PARAM_STR],
+                    ':runComplete' => ['yes', \PDO::PARAM_STR],
+                ];
+
+                foreach ($prodRun_Params as $key => [$value, $typ]) {
+                    $stmtProdlogUpdate->bindParam($key, $value, $type);
+                }
+
+                $result = $stmtProdlogUpdate->execute();
+
                 if (!$result) throw new \Exception('Failed to update production run log.');
             }
-
+            
             //Update product Inventory
             $partsToAdd = $prodData['pressCounter'] - $prodData['startUpRejects'];
+
             $sqlInventoryUpdate =  'UPDATE productInventory 
                                     SET 
                                         partQty = partQty + :partsToAdd 
@@ -615,9 +686,7 @@ class ProductionModel
 
         return $qty;
     }
-
-
-    //
+ 
     /**
      * getProductionLog function
      * Returns logID, qaRejects , productID and prodDate so that QA Rejects can be added to a production logs
@@ -644,7 +713,13 @@ class ProductionModel
         }
     }
 
-    //returns  productionlog ID based on the production Run ID 
+    //returns  productionlog ID based on the production Run ID     
+    /**
+     * getPrevProdLog
+     *
+     * @param  mixed $prodRunID
+     * @return void
+     */
     private function getPrevProdLog($prodRunID)
     {
         try {
@@ -662,7 +737,13 @@ class ProductionModel
         }
     }
 
-    //This will return the logID of the production run no completed based on the part number.
+    //This will return the logID of the production run no completed based on the part number.    
+    /**
+     * getProdRunID
+     *
+     * @param  mixed $productID
+     * @return void
+     */
     private function getProdRunID($productID)
     {
         try {
@@ -753,10 +834,10 @@ class ProductionModel
             $result = $stmtGetTotals->fetch(\PDO::FETCH_ASSOC);
 
             if (!$result) throw new \Exception("Error: productionDB_SQL->getMaterialTotals for prodRunID logID: " . $prodRunID);
-            error_log("Retrieved production totals for end of run and passed to insert function.");
+            $this->log->info("Retrieved production totals for end of run and passed to insert function.");
             return $result;
         } catch (PDOException $e) {
-            error_log("ERROR: Failed to get production totals for end of run: " . $e->getMessage());
+            $this->log->error("ERROR: Failed to get production totals for end of run: " . $e->getMessage());
         }
     }
 

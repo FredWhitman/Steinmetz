@@ -12,7 +12,7 @@ use Inventory\Models\InventoryModel;
 use Inventory\Controllers\InventoryController;
 use Inventory\utils\Util;
 
-$logger = LogFactory::getLogger('InventoryApp');
+$logger = LogFactory::getLogger('Inventory');
 
 //create db connection
 $database = new database();
