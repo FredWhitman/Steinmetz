@@ -63,3 +63,34 @@ export function setupViewEventListener(elementId, table) {
 export function renderTables(prodLogs) {
   document.getElementById("last4wks").innerHTML = buildProdLogsTable(prodLogs);
 }
+
+export function calculateDailyUsage(currentHoppers, previousValues) {
+  console.log("🔄 Calculating daily usage...");
+
+  const usageElements = ["dHop1", "dHop2", "dHop3", "dHop4"].map(id =>
+    document.getElementById(id)
+  );
+  const percentageElements = ["dHop1p", "dHop2p", "dHop3p", "dHop4p"].map(id =>
+    document.getElementById(id)
+  );
+  const dTotal = document.getElementById("dTotal");
+  const dTotalp = document.getElementById("dTotalp");
+
+  let usageTotals = currentHoppers.map((hop, i) => {
+    const current = parseFloat(hop.value) || 0;
+    const previous = parseFloat(previousValues[i]) || 0;
+    const delta = current - previous;
+    usageElements[i].value = delta.toFixed(3);
+    return delta;
+  });
+
+  const total = usageTotals.reduce((sum, val) => sum + val, 0);
+  dTotal.value = total.toFixed(3);
+
+  let percentages = usageTotals.map(val =>
+    total ? parseFloat(((val / total) * 100).toFixed(2)) : 0
+  );
+
+  percentages.forEach((pct, i) => (percentageElements[i].value = pct));
+  dTotalp.value = percentages.reduce((sum, val) => sum + val, 0).toFixed(2);
+}

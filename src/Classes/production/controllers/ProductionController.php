@@ -41,10 +41,16 @@ class ProductionController
 
         try {
             $log = $this->model->readOne($id);
-            echo json_encode($log);
+            $this->log->info("prevLog ID: " . $log['PreviousProductionID']);
+            $previousLog = $this->model->readPrevious($id);
+            
+            $response = $log;
+            $repsonse['previousLog'] = $previousLog;
+
+            echo json_encode($response);
         } catch (\Exception $e) {
             http_response_code(500);
             echo json_encode(['error' => 'Failed to fetch production', 'details' => $e->getMessage()]);
-        }
+        };
     }
 }

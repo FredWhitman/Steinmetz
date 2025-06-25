@@ -1,6 +1,6 @@
 //productionApiClient.js
 
-import { showLoader, hideLoader } from "./productionUiManager.js";
+import { showLoader, hideLoader, calculateDailyUsage } from "./productionUiManager.js";
 
 const BASE_URL = "/api/prodDispatcher.php";
 
@@ -80,6 +80,18 @@ export async function fetchAndFillForm(id, table) {
       },
     };
 
+    if(table === "prodLogs"){
+      import("./productionUiManager.js").then(({ calculateDailyUsage }) => {
+        const hoppers = [
+          document.getElementById("vhop1Lbs"),
+          document.getElementById("vhop2Lbs"),
+          document.getElementById("vhop3Lbs"),
+          document.getElementById("vhop4Lbs"),
+        ];
+
+        
+      });
+    }
     Object.keys(fieldMappings[table]).forEach((dbKey) => {
       const formID = fieldMappings[table][dbKey];
       const element = document.getElementById(formID);
