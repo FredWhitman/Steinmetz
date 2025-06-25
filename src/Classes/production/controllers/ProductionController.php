@@ -41,9 +41,11 @@ class ProductionController
 
         try {
             $log = $this->model->readOne($id);
-            $this->log->info("prevLog ID: " . $log['PreviousProductionID']);
-            $previousLog = $this->model->readPrevious($id);
-            
+            $prevProdLogID = $log['prevProdLogID'];
+
+            $this->log->info("prevLog ID: " . $log['prevProdLogID']);
+            $previousLog = $this->model->readPrevious($prevProdLogID);
+
             $response = $log;
             $repsonse['previousLog'] = $previousLog;
 

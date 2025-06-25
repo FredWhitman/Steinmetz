@@ -374,10 +374,10 @@
                                                         <input class="form-control text-center" type="number" step="0.001" name="vop1" id="vhop1Lbs" tabindex="6" readonly>
                                                     </div>
                                                     <div class="col-3">
-                                                        <input class="form-control text-center" type="number" name="vhop1LbsDaily" id="vdHop1" readonly>
+                                                        <input class="form-control text-center" type="text" name="vhop1LbsDaily" id="vdHop1" readonly>
                                                     </div>
                                                     <div class="col-2">
-                                                        <input class="form-control text-center" type="number" name="vhop1Percent" id="vdHop1p" readonly>
+                                                        <input class="form-control text-center" type="text" name="vhop1Percent" id="vdHop1p" readonly>
                                                     </div>
                                                 </div>
                                                 <!-- Hopper 2 row -->
@@ -391,10 +391,10 @@
                                                         <input class="form-control text-center" type="number" step="0.001" name="vhop2" id="vhop2Lbs" tabindex="7" readopnly>
                                                     </div>
                                                     <div class="col-3">
-                                                        <input class="form-control text-center" type="number" name="vhop2LbsDaily" id="vdHop2" readonly>
+                                                        <input class="form-control text-center" type="text" name="vhop2LbsDaily" id="vdHop2" readonly>
                                                     </div>
                                                     <div class="col-2">
-                                                        <input class="form-control text-center" type="number" name="vhop2Percent" id="vdHop2p" readonly>
+                                                        <input class="form-control text-center" type="text" name="vhop2Percent" id="vdHop2p" readonly>
                                                     </div>
                                                 </div>
                                                 <!-- Hopper 3 row -->
@@ -425,11 +425,11 @@
                                                     </div>
                                                     <div class="col-3">
                                                         <div class="input-group sm-1">
-                                                            <input class="form-control text-center" type="number" name="vhop4LbsDaily" id="vdHop4" readonly>
+                                                            <input class="form-control text-center" type="text" name="vhop4LbsDaily" id="vdHop4" readonly>
                                                         </div>
                                                     </div>
                                                     <div class="col-2">
-                                                        <div class="input-group sm-1"><input class="form-control text-center" type="number" name="vhop4Percent" id="vdHop4p" readonly></div>
+                                                        <div class="input-group sm-1"><input class="form-control text-center" type="text" name="vhop4Percent" id="vdHop4p" readonly></div>
                                                     </div>
                                                 </div>
                                                 <!-- Totals row -->
@@ -439,7 +439,7 @@
                                                         <h6 class="text-end">Totals</h6>
                                                     </div>
                                                     <div class="col-3">
-                                                        <input class="form-control text-center" type="number" step="0.001" name="vtotalsBlender" id="vBlenderTotals" readonly>
+                                                        <input class="form-control text-center" type="text" name="vtotalsBlender" id="vBlenderTotals" readonly>
                                                     </div>
                                                     <div class="col-3">
                                                         <input readonly class="form-control text-center" type="text" name="vtotalDaily" id="vdTotal" readonly>

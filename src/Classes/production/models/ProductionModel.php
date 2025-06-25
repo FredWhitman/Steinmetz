@@ -107,6 +107,8 @@ class ProductionModel
             $stmt->execute(['id' => $id]);
 
             $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+            $this->log->info("result of ReadPrevious() function: " . print_r($result, true));
+
             return $result;
         } catch (PDOException $e) {
             echo $e->getMessage();
