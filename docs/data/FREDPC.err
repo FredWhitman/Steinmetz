@@ -1,7 +1,0 @@
-2025-05-19 10:47:22 0 [Note] Starting MariaDB 10.4.32-MariaDB source revision c4143f909528e3fab0677a28631d10389354c491 as process 88564
-2025-05-19 10:47:22 0 [ERROR] InnoDB: The innodb_system data file 'ibdata1' must be writable
-2025-05-19 10:47:22 0 [ERROR] InnoDB: The innodb_system data file 'ibdata1' must be writable
-2025-05-19 10:47:22 0 [ERROR] Plugin 'InnoDB' registration as a STORAGE ENGINE failed.
-2025-05-19 10:47:22 0 [Note] Plugin 'FEEDBACK' is disabled.
-2025-05-19 10:47:22 0 [ERROR] Unknown/unsupported storage engine: InnoDB
-2025-05-19 10:47:22 0 [ERROR] Aborting
