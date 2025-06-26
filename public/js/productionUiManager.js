@@ -41,17 +41,6 @@ const fieldMappings = {
   },
 };
 
-// Loader functions
-export function showLoader() {
-  const loader = document.getElementById("loader");
-  if (loader) loader.classList.remove("d-none");
-}
-
-export function hideLoader() {
-  const loader = document.getElementById("loader");
-  if (loader) loader.classList.add("d-none");
-}
-
 // Build HTML for the tables
 export function buildProdLogsTable(prodLogs) {
   let html = "";
@@ -198,7 +187,9 @@ export async function fetchAndFillForm(id, table) {
   console.log("📨 FetchFillForm URL:", url);
 
   // Let the browser paint the loader before fetching
-  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+  await new Promise((r) =>
+    requestAnimationFrame(() => requestAnimationFrame(r))
+  );
 
   try {
     const currentLog = await fetchAndParseJSON(url);
@@ -217,35 +208,20 @@ export async function fetchAndFillForm(id, table) {
       fillPercentageFields(metrics.percentages);
 
       const ele = document.getElementById("vdTotalp");
-      if(ele) ele.value = metrics.totals.percentTotal;
+      if (ele) ele.value = metrics.totals.percentTotal;
 
       const dailyTotalUsage = metrics.totals.dailyMatTotal;
-        
-      document.getElementById("vdTotal").value =  dailyTotalUsage.toFixed(3);
-      
 
+      document.getElementById("vdTotal").value = dailyTotalUsage.toFixed(3);
     }
   } catch (error) {
     console.error("🔥 fetchAndFillForm failed:", error);
-  }finally{
+  } finally {
     hideLoader();
   }
 }
-
-/* Manage DOM interactions and updates:
-  populateProductSelect(products)
-  populateMaterialSelects(materials)
-  fillDailyUsageFields(calculatedUsage)
-  fillPercentageFields(percentages)
-  resetAddModalForm()
-  showValidationErrors()
-  showAlertMessage(msg, containerID)
-  showLoader() / hideLoader() 
-  
-  
-  
-
-  // src/js/productionUiManager.js
+//
+// END OF ViewProdLogModal CODE
 
 // —————————————————————————————
 // Loader & Alert Utilities
@@ -278,10 +254,16 @@ export function clearAlert(containerID = "alertContainer") {
 // —————————————————————————————
 // Select Population
 // —————————————————————————————
-function populateSelect(selectEl, items, { valueKey, labelKey, includeEmpty = true }) {
+function populateSelect(
+  selectEl,
+  items,
+  { valueKey, labelKey, includeEmpty = true }
+) {
   if (!selectEl) return;
-  selectEl.innerHTML = includeEmpty ? `<option value="">– Select –</option>` : "";
-  items.forEach(item => {
+  selectEl.innerHTML = includeEmpty
+    ? `<option value="">– Select –</option>`
+    : "";
+  items.forEach((item) => {
     const opt = document.createElement("option");
     opt.value = item[valueKey];
     opt.textContent = item[labelKey];
@@ -291,13 +273,19 @@ function populateSelect(selectEl, items, { valueKey, labelKey, includeEmpty = tr
 
 export function populateProductSelect(products) {
   const sel = document.getElementById("partName");
-  populateSelect(sel, products, { valueKey: "productID", labelKey: "productName" });
+  populateSelect(sel, products, {
+    valueKey: "productID",
+    labelKey: "partName",
+  });
 }
 
 export function populateMaterialSelects(materials) {
-  [1,2,3,4].forEach(i => {
+  [1, 2, 3, 4].forEach((i) => {
     const sel = document.getElementById(`Mat${i}Name`);
-    populateSelect(sel, materials, { valueKey: "materialID", labelKey: "materialName" });
+    populateSelect(sel, materials, {
+      valueKey: "matPartNumber",
+      labelKey: "matName",
+    });
   });
 }
 
@@ -312,7 +300,15 @@ export function resetAddModalForm() {
   clearAlert("alertContainer");
 
   // Clear all readonly calculation fields
-  ["dHop1","dHop2","dHop3","dHop4","dTotal","dTotalp","BlenderTotals"].forEach(id => {
+  [
+    "dHop1",
+    "dHop2",
+    "dHop3",
+    "dHop4",
+    "dTotal",
+    "dTotalp",
+    "BlenderTotals",
+  ].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.value = "";
   });
@@ -321,25 +317,25 @@ export function resetAddModalForm() {
 // —————————————————————————————
 // Field Filling Helpers
 // —————————————————————————————
-export function fillFormFields(log, fieldMap) {
+export function populateUsageAndPercents(log, fieldMap) {
   Object.entries(fieldMap).forEach(([key, selector]) => {
     const el = document.querySelector(selector);
     if (el) el.value = log[key] ?? "";
   });
 }
 
-export function fillDailyUsageFields(usage) {
+export function fillDailyUsage(usage) {
   // usage: [val1, val2, val3?, val4?]
   usage.forEach((v, idx) => {
-    const el = document.getElementById(`dHop${idx+1}`);
+    const el = document.getElementById(`dHop${idx + 1}`);
     if (el) el.value = v.toFixed(3);
   });
 }
 
-export function fillPercentageFields(percentages) {
+export function fillPercentage(percentages) {
   // percentages: [p1, p2, p3?, p4?]
   percentages.forEach((p, idx) => {
-    const el = document.getElementById(`dHop${idx+1}p`);
+    const el = document.getElementById(`dHop${idx + 1}p`);
     if (el) el.value = p.toFixed(2);
   });
 }
@@ -348,8 +344,10 @@ export function fillPercentageFields(percentages) {
 // Totals Calculation (optional helper)
 // —————————————————————————————
 export function updateBlenderTotal() {
-  const hops = [1,2,3,4].map(i => parseFloat(document.getElementById(`hop${i}Lbs`).value) || 0);
-  const total = hops.reduce((a,b) => a+b, 0);
+  const hops = [1, 2, 3, 4].map(
+    (i) => parseFloat(document.getElementById(`hop${i}Lbs`).value) || 0
+  );
+  const total = hops.reduce((a, b) => a + b, 0);
   const el = document.getElementById("BlenderTotals");
   if (el) el.value = total.toFixed(3);
 }
@@ -365,7 +363,7 @@ export function initAddModalUI({ onRadioChange, onHopperBlur }) {
   modalEl.addEventListener("show.bs.modal", resetAddModalForm);
 
   // Hook radio changes
-  document.querySelectorAll('input[name="prodRun"]').forEach(radio => {
+  document.querySelectorAll('input[name="prodRun"]').forEach((radio) => {
     radio.addEventListener("change", onRadioChange);
   });
 
@@ -373,10 +371,3 @@ export function initAddModalUI({ onRadioChange, onHopperBlur }) {
   const hop4 = document.getElementById("hop4Lbs");
   if (hop4 && onHopperBlur) hop4.addEventListener("blur", onHopperBlur);
 }
-
-  
-  
-  
-  
-  
-  */

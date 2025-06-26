@@ -4,15 +4,29 @@ import {
   renderTables,
   setupViewEventListener,
   fetchAndFillForm,
+  showLoader,
+  hideLoader,
+  showAlertMessage,
+  clearAlert,
+  populateProductSelect,
+  populateMaterialSelects,
+  resetAddModalForm,
+  updateBlenderTotal,
+  fillDailyUsage,
+  fillPercentage,
+  initAddModalUI,
 } from "./productionUiManager.js";
 
-import { fetchProdLogs } from "./productionApiClient.js";
-
-/* calculateDailyUsage(
-  [hop1, hop2, hop3, hop4],
-  [prevHop1, prevHop2, prevHop3, prevHop4]
-);
- */
+import {
+  fetchProdLogs,
+  fetchProductList,
+  fetchMaterialList,
+  checkIfRunExists,
+  checkIfLogExists,
+  fetchPreviousMatLogs,
+  postProductionLog,
+  finalizeProductionRun,
+} from "./productionApiClient.js";
 
 async function init() {
   //load & render the landing-page table
@@ -36,41 +50,7 @@ async function onRowClick(id) {
 
 init();
 
-/* 
-Hook up event listeners and control flow:
-  initializeAddModal()
-  on modal show → call loadProductAndMaterialOptions()
-  Form onsubmit handler → validate + send to productionApiClient
-  Handle radio changes and call calculation logic 
-  
-  
-  // src/js/productionMain.js
-
-import {
-  fetchProductList,
-  fetchMaterialList,
-  checkIfRunExists,
-  checkIfLogExists,
-  fetchPreviousMatLogs,
-  postProductionLog,
-  finalizeProductionRun
-} from "./productionApiClient.js";
-
-import {
-  showLoader,
-  hideLoader,
-  showAlertMessage,
-  clearAlert,
-  populateProductSelect,
-  populateMaterialSelects,
-  resetAddModalForm,
-  updateBlenderTotal,
-  fillDailyUsageFields,
-  fillPercentageFields,
-  initAddModalUI
-} from "./productionUiManager.js";
-
-let runMode = null;  // "1"=start, "0"=in-progress, "2"=end
+let runMode = null; // "1"=start, "0"=in-progress, "2"=end
 
 // 1) When the modal opens, load options
 async function onModalShow() {
@@ -79,8 +59,19 @@ async function onModalShow() {
   try {
     const [products, materials] = await Promise.all([
       fetchProductList(),
-      fetchMaterialList()
+      fetchMaterialList(),
     ]);
+
+    if (!Array.isArray(products) || !Array.isArray(materials)) {
+      showAlertMessage("⚠️ Product or material list failed to load properly.");
+      console.error("products", products);
+      console.error("materials", materials);
+      return;
+    }
+
+    console.log("🧪 products:", products);
+    console.log("🧪 materials:", materials);
+
     populateProductSelect(products);
     populateMaterialSelects(materials);
   } catch (err) {
@@ -97,40 +88,81 @@ function onRadioChange(e) {
   clearAlert();
 
   const productID = document.getElementById("partName").value;
-  const logDate   = document.getElementById("logDate").value;
+  const logDate = document.getElementById("logDate").value;
+
   if (!productID || !logDate) return;
 
-  // Prevent duplicate "Start" runs
   if (runMode === "1") {
-    checkIfRunExists(productID, logDate)
-      .then(data => {
-        if (data.exists) {
+    // START mode: block if run OR log exists
+    Promise.all([
+      checkIfRunExists(productID),
+      checkIfLogExists(productID, logDate),
+    ])
+      .then(([runData, logData]) => {
+        if (runData.exists) {
           showAlertMessage(
-            "A production run for this product is already active. Please end it first."
+            "A production run for this product is already active. Please end it before starting a new one."
+          );
+        } else if (logData.exists) {
+          showAlertMessage(
+            "A log already exists for this product and date. You cannot start a duplicate log."
           );
         }
+        // Else: good to proceed
       })
-      .catch(err => console.error(err));
+      .catch(console.error);
   }
-  // Prevent missing "In Progress" logs
-  else if (runMode === "0") {
-    checkIfLogExists(productID, logDate)
-      .then(data => {
-        if (!data.exists) {
+
+  console.log("▶ runMode (inside promise):", runMode);
+
+  if (runMode === "0" || runMode === "2") {
+    // IN PROGRESS or END: require a production run
+    checkIfRunExists(productID)
+      .then((runData) => {
+        /* console.log(
+          "🧪 runData.exists =",
+          runData.exists,
+          typeof runData.exists
+        ); */
+
+        if (!runData.exists) {
           showAlertMessage(
-            "No existing in-progress log found. Please start the run first."
+            "No uncompleted production run found. Please start the run first."
           );
+        } else {
+          // IN PROGRESS: optionally check if log already exists
+          checkIfLogExists(productID, logDate)
+            .then((logData) => {
+              /* console.log(
+                "📋 logData.exists =",
+                logData.exists,
+                typeof logData.exists
+              ); */
+              if (logData.exists) {
+                /* console.log("run exists:", runData.exists);
+                console.log("checking if log exists for:", productID, logDate) */ showAlertMessage(
+                  "A log already exists for this product and date."
+                );
+
+                // Else: run is active, and no log yet — all clear
+              }
+            })
+            .catch(console.error);
         }
       })
-      .catch(err => console.error(err));
+      .catch(console.error);
   }
 }
 
 // Helper: compute usage deltas & percentages
 function computeUsageAndPercents(current, previous) {
-  const usage = current.map((c, i) => parseFloat((c - (previous[i]||0)).toFixed(3)));
+  const usage = current.map((c, i) =>
+    parseFloat((c - (previous[i] || 0)).toFixed(3))
+  );
   const total = usage.reduce((sum, v) => sum + v, 0);
-  const percents = usage.map(u => total ? parseFloat(((u/total)*100).toFixed(2)) : 0);
+  const percents = usage.map((u) =>
+    total ? parseFloat(((u / total) * 100).toFixed(2)) : 0
+  );
   return { usage, percents };
 }
 
@@ -140,14 +172,14 @@ async function onHopperBlur() {
   updateBlenderTotal();
 
   // gather current hopper values
-  const current = [1,2,3,4].map(i => 
-    parseFloat(document.getElementById(`hop${i}Lbs`).value) || 0
+  const current = [1, 2, 3, 4].map(
+    (i) => parseFloat(document.getElementById(`hop${i}Lbs`).value) || 0
   );
   let usage, percents;
 
   if (runMode === "1") {
     // Start: previous all zeros
-    ({ usage, percents } = computeUsageAndPercents(current, [0,0,0,0]));
+    ({ usage, percents } = computeUsageAndPercents(current, [0, 0, 0, 0]));
   } else if (runMode === "0" || runMode === "2") {
     showLoader();
     try {
@@ -155,10 +187,10 @@ async function onHopperBlur() {
       const actionType = runMode === "0" ? "getLastLog" : "endRun";
       const prevData = await fetchPreviousMatLogs(productID, actionType);
       const previous = [
-        parseFloat(prevData.matUsed1)||0,
-        parseFloat(prevData.matUsed2)||0,
-        parseFloat(prevData.matUsed3)||0,
-        parseFloat(prevData.matUsed4)||0
+        parseFloat(prevData.matUsed1) || 0,
+        parseFloat(prevData.matUsed2) || 0,
+        parseFloat(prevData.matUsed3) || 0,
+        parseFloat(prevData.matUsed4) || 0,
       ];
       ({ usage, percents } = computeUsageAndPercents(current, previous));
     } catch (err) {
@@ -173,14 +205,14 @@ async function onHopperBlur() {
     return;
   }
 
-  fillDailyUsageFields(usage);
-  fillPercentageFields(percents);
+  fillDailyUsage(usage);
+  fillPercentage(percents);
 }
 
 // 4) Form submit → validate, POST, finalize (if needed), and refresh
 function wireFormSubmission() {
   const form = document.getElementById("add-productionLog-form");
-  form.addEventListener("submit", async e => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     clearAlert();
 
@@ -193,42 +225,47 @@ function wireFormSubmission() {
     const data = new FormData(form);
     // Build payload exactly how your PHP expects it:
     const payload = {
-      productID:    data.get("partName"),
-      prodDate:     data.get("logDate"),
-      runStatus:    runMode,
-      prevProdLogID: "0",    // PHP can overwrite if needed
-      runLogID:     "0",
-      matLogID:     "0",
-      tempLogID:    "0",
+      productID: data.get("partName"),
+      prodDate: data.get("logDate"),
+      runStatus: runMode,
+      prevProdLogID: "0", // PHP can overwrite if needed
+      runLogID: "0",
+      matLogID: "0",
+      tempLogID: "0",
       pressCounter: data.get("pressCounter"),
       startUpRejects: data.get("startUpRejects"),
-      qaRejects:    data.get("qaRejects")  || "0",
-      purgeLbs:     data.get("purgeLbs")   || "0",
-      comments:     data.get("commentText"),
+      qaRejects: data.get("qaRejects") || "0",
+      purgeLbs: data.get("purgeLbs") || "0",
+      comments: data.get("commentText"),
 
       // material usage
       materials: [
         { id: data.get("Mat1Name"), used: data.get("hop1Lbs") },
         { id: data.get("Mat2Name"), used: data.get("hop2Lbs") },
         { id: data.get("Mat3Name"), used: data.get("hop3Lbs") },
-        { id: data.get("Mat4Name"), used: data.get("hop4Lbs") }
+        { id: data.get("Mat4Name"), used: data.get("hop4Lbs") },
       ],
 
       // temps
       temperatures: {
         bigDryerTemp: data.get("bigDryerTemp"),
-        bigDryerDew:  data.get("bigDryerDew"),
+        bigDryerDew: data.get("bigDryerDew"),
         pressDryerTemp: data.get("pressDryerTemp"),
-        pressDryerDew:  data.get("pressDryerDew"),
-        t1: data.get("t1"), t2: data.get("t2"),
-        t3: data.get("t3"), t4: data.get("t4"),
-        m1: data.get("m1"), m2: data.get("m2"),
-        m3: data.get("m3"), m4: data.get("m4"),
-        m5: data.get("m5"), m6: data.get("m6"),
+        pressDryerDew: data.get("pressDryerDew"),
+        t1: data.get("t1"),
+        t2: data.get("t2"),
+        t3: data.get("t3"),
+        t4: data.get("t4"),
+        m1: data.get("m1"),
+        m2: data.get("m2"),
+        m3: data.get("m3"),
+        m4: data.get("m4"),
+        m5: data.get("m5"),
+        m6: data.get("m6"),
         m7: data.get("m7"),
         chiller: data.get("chiller"),
-        tcuTemp: data.get("tcuTemp")
-      }
+        tcuTemp: data.get("tcuTemp"),
+      },
     };
 
     try {
@@ -256,7 +293,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize UI bindings
   initAddModalUI({
     onRadioChange,
-    onHopperBlur
+    onHopperBlur,
   });
 
   // Load data when modal shows
@@ -266,6 +303,3 @@ document.addEventListener("DOMContentLoaded", () => {
   // Bind form submit
   wireFormSubmission();
 });
-
-  */
-

@@ -3,16 +3,33 @@
 $controller = require_once __DIR__ . '/../config/prodInit.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "GET") {
-    if (isset($_GET['read4wks'])) {
-        $controller->read4wks();
-        exit();
-    }
 
-    if (isset($_GET['viewProdLogs']) && isset($_GET['id'])) {
-        $controller->viewProdLogs($_GET['id']);
-        exit();
+    switch (true) {
+        case isset($_GET['read4wks']):
+            $controller->read4wks();
+            break;
+        case isset($_GET['viewProdLogs'], $_GET['id']):
+            $controller->viewProdLogs($_GET['id']);
+            break;
+        case isset($_GET['action']) && $_GET['action'] === "getProducts":
+            $controller->getProductList();
+            break;
+        case isset($_GET['action']) && $_GET['action'] === "getMaterials":
+            $controller->getMaterialList();
+            break;
+        case isset($_GET['action']) && $_GET['action'] === "checkIfLogExists":
+            $controller->checkLogDates($_GET['productID'], $_GET['date']);
+            break;
+        case isset($_GET['action']) && $_GET['action'] === "checkRun":
+            if (isset($_GET['productID'])) {
+                $controller->checkRun($_GET['productID']);
+            } else {
+                http_response_code(400);
+                echo json_encode(['error' => 'Missing productID']);
+            }
+            break;
+        default:
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid GET request']);
     }
-
-    http_response_code(400);
-    echo json_encode(['error' => 'Invalid GET request']);
 }

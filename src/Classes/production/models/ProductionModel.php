@@ -862,8 +862,10 @@ class ProductionModel
         $stmt->execute();
         $result = $stmt->fetchColumn();
 
-        error_log('CheckRun $result: ' . $result);
-        return ($result > 0);
+        $this->log->info('CheckRun $result: ' . $result);
+        $this->log->info("CheckProductionRuns raw result: " . var_export($result, true));
+
+        return ($result != false);
     }
 
     /**
@@ -887,6 +889,42 @@ class ProductionModel
         } catch (PDOException $e) {
             error_log("Error checking production date: " . $e->getMessage());
             return false;
+        }
+    }
+
+    public function getProductList()
+    {
+        try {
+            $sql = 'SELECT productID, partName from products';
+            $stmt = $this->con->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+            if ($result) {
+                return $result;
+            } else {
+                return 0;
+            }
+        } catch (\PDOException $e) {
+            $this->log->error("ERROR: Failed to get product list: " . $e->getMessage());
+        }
+    }
+
+    public function getMaterialList()
+    {
+        try {
+            $sql = 'SELECT matPartNumber, matName from material';
+            $stmt = $this->con->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+            if ($result) {
+                return $result;
+            } else {
+                return 0;
+            }
+        } catch (\PDOException $e) {
+            $this->log->error("ERROR: Failed to get material list: " . $e->getMessage());
         }
     }
 }

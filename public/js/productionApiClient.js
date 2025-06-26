@@ -44,18 +44,18 @@ export async function fetchMaterialList() {
   return handleResponse(res);
 }
 
-export async function checkIfRunExists(productID, date) {
+export async function checkIfLogExists(productID, date) {
   const res = await fetch(
-    `${BASE_URL}?action=checkRun&productID=${encodeURIComponent(productID)}&date=${encodeURIComponent(date)}`
+    `${BASE_URL}?action=checkIfLogExists&productID=${encodeURIComponent(
+      productID
+    )}&date=${encodeURIComponent(date)}`
   );
   return handleResponse(res);
 }
 
-
-//stubbed out function for add production log
-/* export async function checkIfLogExists(productID, date) {
+export async function checkIfRunExists(productID) {
   const res = await fetch(
-    `${BASE_URL}?action=checkLog&productID=${encodeURIComponent(productID)}&date=${encodeURIComponent(date)}`
+    `${BASE_URL}?action=checkRun&productID=${encodeURIComponent(productID)}`
   );
   return handleResponse(res);
 }
@@ -82,4 +82,4 @@ export async function finalizeProductionRun(runLogID) {
     `${BASE_URL}?action=finalizeRun&runLogID=${encodeURIComponent(runLogID)}`
   );
   return handleResponse(res);
-} */
+}
