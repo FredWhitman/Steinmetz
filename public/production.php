@@ -19,6 +19,9 @@
 <body>
     <!--Navbar -->
     <?php require_once '../includes/steinmetzNavbar.php'; ?>
+    
+ 
+    
     <!--------------------------------------------------------------------------------------------------------------->
     <!-- New production log modal start-->
     <div class="modal fade" id="addProductionModal" tabindex="-1">
@@ -136,7 +139,7 @@
                                                         <div class="input-group sm-1"><input class="form-control" type="number" name="dHop3" id="dHop3" readonly></div>
                                                     </div>
                                                     <div class="col-2">
-                                                        <div class="input-group sm-1"><input class="form-control" type="number" name="dHop3p" id="dHop3p" readonly></div>
+                                                        <div class="input-group sm-1"><input class="form-control" type="text" name="dHop3p" id="dHop3p" readonly></div>
                                                     </div>
                                                 </div>
                                                 <!-- Hopper 4 row -->
@@ -298,7 +301,7 @@
                                 </div>
                             </div>
                             <div class="d-flex justify-content-center p-2">
-                                <div class=pe-1><button type="submit" id="cancel" data-bs-dismiss="modal" class="btn btn-danger btn-sm">Cancel</button></div>
+                                <div class=pe-1><button type="button" id="cancel" data-bs-dismiss="modal" class="btn btn-danger btn-sm">Cancel</button></div>
                                 <button type="submit" id="add-log-btn" class="btn btn-success btn-sm">Add Log</button>
                             </div>
                         </div>
@@ -409,7 +412,7 @@
                                                         <input class="form-control text-center" type="number" name="vhop3LbsDaily" id="vdHop3" readonly>
                                                     </div>
                                                     <div class="col-2">
-                                                        <input class="form-control text-center" type="number" name="vhop3Percent" id="vdHop3p" readonly>
+                                                        <input class="form-control text-center" type="text" name="vhop3Percent" id="vdHop3p" readonly>
                                                     </div>
                                                 </div>
                                                 <!-- Hopper 4 row -->
@@ -570,7 +573,7 @@
                                 </div>
                             </div>
                             <div class="d-flex justify-content-center p-2">
-                                <div class=pe-1><button type="submit" id="close" data-bs-dismiss="modal" class="btn btn-danger btn-sm">Close</button></div>
+                                <div class=pe-1><button type="button" id="close" data-bs-dismiss="modal" class="btn btn-danger btn-sm">Close</button></div>
                             </div>
                         </div>
                     </form>
@@ -580,7 +583,12 @@
     </div>
     <!-- View production log modal end -->
     <!--------------------------------------------------------------------------------------------------------------->
-
+    <div id="loader" class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75" style="z-index: 1050;">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+    
     <!--------------------------------------------------------------------------------------------------------------->
     <!-- Add purge to production log start -->
     <div class="modal fade" id="addPurgeModal" tabindex="-1">

@@ -1,0 +1,82 @@
+Absolutely, Fred—here’s a full summary of everything we’ve covered so far, cleanly 
+organized so you can copy-paste and refer back to it whenever needed:
+
+---
+
+## 🧩 Modal Workflow Summary – Add Production Log
+
+### 🗺️ Form Structure
+- **Three logical sections**:
+  - Log & Material Usage (Part Name, Date, Run Status, Hopper Data)
+  - Dryer, Press & HotRunner Inputs
+  - Comments & Submit Controls
+
+### 🚦 Run Status Behavior
+- **Start (1)**:
+  - After Hopper 1–4 are entered, copy values directly into daily usage fields.
+  - Calculate material usage percentages and populate percent fields.
+  - Totals for Blender, Daily, and Percentage are auto-calculated.
+  - Validates whether a production run already exists for this product/date.
+
+- **In Progress (0)** and **End (2)**:
+  - Fetch previous material log.
+  - Subtract previous from current to populate daily usage.
+  - Calculate percentages and fill in total usage fields.
+  - For **End**, additionally:
+    - Fetch all logs tied to runLogID
+    - Aggregate totals for materials, rejects, purge
+    - Update production_run record and set `Completed = yes`.
+
+---
+
+## 🧠 Old Code Review (Pre-Modular)
+
+### ✅ Key Functions
+- `addBlenderOnBlur()` handled behavior after hopper weights were filled
+- `getAndSetDailyUsage()` calculated and updated daily usage/percentages
+- `doPercentage()` performed percentage math with fallback for 0 division
+- `fetchPreviousMatLogs()` retrieved material usage from prior log
+- `showAlertMessage()` injected Bootstrap alert into modal
+- Validated production date uniqueness and checked for existing active run
+
+---
+
+## 🧱 Modular Refactor Blueprint
+
+### 🔹 `productionApiClient.js`
+- All fetch/POST logic:
+  - Get product & material lists
+  - Check run/log existence
+  - Fetch previous log
+  - Submit production log
+  - Roll up "end" data
+
+### 🔹 `productionUiManager.js`
+- All DOM interaction:
+  - Fill selects
+  - Populate usage fields and percentages
+  - Reset and show/hide modal
+  - Display loader and alerts
+
+### 🔹 `productionMain.js`
+- Event orchestration:
+  - On modal show → preload selects
+  - On radio change → set `runMode`
+  - On hopper blur → trigger calculation workflow
+  - On submit → validate + send payload
+
+---
+
+## 💡 Technical Notes
+
+- **Only Hoppers 1 & 2 are required**—3 & 4 are optional and handled conditionally.
+- Used `requestAnimationFrame()` and a `setTimeout()` to ensure loader displays before fetch.
+- Moved all logic out of inline events into attached listeners for modularity.
+- Prevented default behavior on `<a href="#">` links and modal buttons to avoid unwanted reloads.
+- Added a fallback timer to prevent loaders from hanging if modal fails to render.
+
+---
+
+If you'd like, I can also turn this into a Markdown doc you can drop into your project’s `/docs` 
+folder, or help you bootstrap the new `productionApiClient.js` module and stub out each method. Want 
+to start with that next?

@@ -1,3 +1,5 @@
+//file prodLogSubmit.js
+
 const addLogForm = document.getElementById("add-productionLog-form");
 //const showAlert = document.getElementById("showAlert");
 const addLogModal = new bootstrap.Modal(
@@ -396,3 +398,16 @@ function validateDecimalInput(event) {
     event.target.value = parseFloat(value).toFixed(3);
   }
 }
+
+
+/* Handle all server communication:
+road map for add production log 
+  fetchProductList()
+  fetchMaterialList()
+  postProductionLog(data)
+  fetchPreviousMatLogs(productID, actionType)
+  checkIfRunExists(productID, date)
+  checkIfLogExists(productID, date)
+  finalizeProductionRun(runLogID)
+
+Encapsulate all fetches here so your UI and logic layers stay lean. */

@@ -65,7 +65,7 @@ export function buildProdLogsTable(prodLogs) {
                 <td>${row.purgeLbs}</td>
                 <td>${row.runStatus}</td>
                 <td>
-                    <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 viewLink" data-bs-toggle ="modal" data-bs-target="#viewProductionModal">View</a>
+                    <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 viewLink" data-bs-toggle ="modal" role="button" data-bs-target="#viewProductionModal">View</a>
                 </td>
             </tr>`;
   });
@@ -84,6 +84,7 @@ export function setupViewEventListener(elementId, table) {
     const viewLink = e.target.closest("a.viewLink");
     if (viewLink) {
       e.preventDefault();
+      e.stopPropagation();
       const row = e.target.closest("tr");
       const id = row ? row.getAttribute("data-id") : null;
       if (id && id.trim()) {
@@ -193,7 +194,11 @@ function fillPercentageFields(p) {
 
 export async function fetchAndFillForm(id, table) {
   const url = `${BASE_URL}?view${capitalize(table)}=1&id=${id}&table=${table}`;
+  showLoader();
   console.log("📨 FetchFillForm URL:", url);
+
+  // Let the browser paint the loader before fetching
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
 
   try {
     const currentLog = await fetchAndParseJSON(url);
@@ -210,47 +215,168 @@ export async function fetchAndFillForm(id, table) {
 
       fillDailyUsageFields(metrics.usage);
       fillPercentageFields(metrics.percentages);
-      const dailyTotalUsage =
-        metrics.usage.mat1 +
-        metrics.usage.mat2 +
-        metrics.usage.mat3 +
-        metrics.usage.mat4;
-      const el = document.getElementById("vdTotal");
-      if (el) el.value = dailyTotalUsage.toFixed(3);
+
+      const ele = document.getElementById("vdTotalp");
+      if(ele) ele.value = metrics.totals.percentTotal;
+
+      const dailyTotalUsage = metrics.totals.dailyMatTotal;
+        
+      document.getElementById("vdTotal").value =  dailyTotalUsage.toFixed(3);
+      
+
     }
   } catch (error) {
     console.error("🔥 fetchAndFillForm failed:", error);
+  }finally{
+    hideLoader();
   }
 }
 
-/* export function calculateDailyUsage(currentHoppers, previousValues) {
-  console.log("🔄 Calculating daily usage...");
+/* Manage DOM interactions and updates:
+  populateProductSelect(products)
+  populateMaterialSelects(materials)
+  fillDailyUsageFields(calculatedUsage)
+  fillPercentageFields(percentages)
+  resetAddModalForm()
+  showValidationErrors()
+  showAlertMessage(msg, containerID)
+  showLoader() / hideLoader() 
+  
+  
+  
 
-  const usageElements = ["dHop1", "dHop2", "dHop3", "dHop4"].map((id) =>
-    document.getElementById(id)
-  );
-  const percentageElements = ["dHop1p", "dHop2p", "dHop3p", "dHop4p"].map(
-    (id) => document.getElementById(id)
-  );
-  const dTotal = document.getElementById("dTotal");
-  const dTotalp = document.getElementById("dTotalp");
+  // src/js/productionUiManager.js
 
-  let usageTotals = currentHoppers.map((hop, i) => {
-    const current = parseFloat(hop.value) || 0;
-    const previous = parseFloat(previousValues[i]) || 0;
-    const delta = current - previous;
-    usageElements[i].value = delta.toFixed(3);
-    return delta;
+// —————————————————————————————
+// Loader & Alert Utilities
+// —————————————————————————————
+export function showLoader() {
+  const loader = document.getElementById("loader");
+  if (loader) loader.classList.remove("d-none");
+}
+
+export function hideLoader() {
+  const loader = document.getElementById("loader");
+  if (loader) loader.classList.add("d-none");
+}
+
+export function showAlertMessage(message, containerID = "alertContainer") {
+  const container = document.getElementById(containerID);
+  if (!container) return;
+  container.innerHTML = `
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>`;
+}
+
+export function clearAlert(containerID = "alertContainer") {
+  const c = document.getElementById(containerID);
+  if (c) c.innerHTML = "";
+}
+
+// —————————————————————————————
+// Select Population
+// —————————————————————————————
+function populateSelect(selectEl, items, { valueKey, labelKey, includeEmpty = true }) {
+  if (!selectEl) return;
+  selectEl.innerHTML = includeEmpty ? `<option value="">– Select –</option>` : "";
+  items.forEach(item => {
+    const opt = document.createElement("option");
+    opt.value = item[valueKey];
+    opt.textContent = item[labelKey];
+    selectEl.append(opt);
+  });
+}
+
+export function populateProductSelect(products) {
+  const sel = document.getElementById("partName");
+  populateSelect(sel, products, { valueKey: "productID", labelKey: "productName" });
+}
+
+export function populateMaterialSelects(materials) {
+  [1,2,3,4].forEach(i => {
+    const sel = document.getElementById(`Mat${i}Name`);
+    populateSelect(sel, materials, { valueKey: "materialID", labelKey: "materialName" });
+  });
+}
+
+// —————————————————————————————
+// Form Reset & Validation
+// —————————————————————————————
+export function resetAddModalForm() {
+  const form = document.getElementById("add-productionLog-form");
+  if (!form) return;
+  form.reset();
+  form.classList.remove("was-validated");
+  clearAlert("alertContainer");
+
+  // Clear all readonly calculation fields
+  ["dHop1","dHop2","dHop3","dHop4","dTotal","dTotalp","BlenderTotals"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+}
+
+// —————————————————————————————
+// Field Filling Helpers
+// —————————————————————————————
+export function fillFormFields(log, fieldMap) {
+  Object.entries(fieldMap).forEach(([key, selector]) => {
+    const el = document.querySelector(selector);
+    if (el) el.value = log[key] ?? "";
+  });
+}
+
+export function fillDailyUsageFields(usage) {
+  // usage: [val1, val2, val3?, val4?]
+  usage.forEach((v, idx) => {
+    const el = document.getElementById(`dHop${idx+1}`);
+    if (el) el.value = v.toFixed(3);
+  });
+}
+
+export function fillPercentageFields(percentages) {
+  // percentages: [p1, p2, p3?, p4?]
+  percentages.forEach((p, idx) => {
+    const el = document.getElementById(`dHop${idx+1}p`);
+    if (el) el.value = p.toFixed(2);
+  });
+}
+
+// —————————————————————————————
+// Totals Calculation (optional helper)
+// —————————————————————————————
+export function updateBlenderTotal() {
+  const hops = [1,2,3,4].map(i => parseFloat(document.getElementById(`hop${i}Lbs`).value) || 0);
+  const total = hops.reduce((a,b) => a+b, 0);
+  const el = document.getElementById("BlenderTotals");
+  if (el) el.value = total.toFixed(3);
+}
+
+// —————————————————————————————
+// Export a master init for the Add Modal
+// —————————————————————————————
+export function initAddModalUI({ onRadioChange, onHopperBlur }) {
+  const modalEl = document.getElementById("addProductionModal");
+  if (!modalEl) return;
+
+  // Reset form on each show
+  modalEl.addEventListener("show.bs.modal", resetAddModalForm);
+
+  // Hook radio changes
+  document.querySelectorAll('input[name="prodRun"]').forEach(radio => {
+    radio.addEventListener("change", onRadioChange);
   });
 
-  const total = usageTotals.reduce((sum, val) => sum + val, 0);
-  dTotal.value = total.toFixed(3);
-
-  let percentages = usageTotals.map((val) =>
-    total ? parseFloat(((val / total) * 100).toFixed(2)) : 0
-  );
-
-  percentages.forEach((pct, i) => (percentageElements[i].value = pct));
-  dTotalp.value = percentages.reduce((sum, val) => sum + val, 0).toFixed(2);
+  // Hook hopper blur (only needed on last hopper)
+  const hop4 = document.getElementById("hop4Lbs");
+  if (hop4 && onHopperBlur) hop4.addEventListener("blur", onHopperBlur);
 }
- */
+
+  
+  
+  
+  
+  
+  */
