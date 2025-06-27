@@ -76,10 +76,3 @@ export async function postProductionLog(payload) {
   });
   return handleResponse(res);
 }
-
-export async function finalizeProductionRun(runLogID) {
-  const res = await fetch(
-    `${BASE_URL}?action=finalizeRun&runLogID=${encodeURIComponent(runLogID)}`
-  );
-  return handleResponse(res);
-}

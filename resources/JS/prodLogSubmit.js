@@ -399,7 +399,6 @@ function validateDecimalInput(event) {
   }
 }
 
-
 /* Handle all server communication:
 road map for add production log 
   fetchProductList()

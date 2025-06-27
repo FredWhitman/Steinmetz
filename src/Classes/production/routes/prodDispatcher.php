@@ -2,6 +2,18 @@
 // File: src/Classes/production/routes/prodDispatcher.php
 $controller = require_once __DIR__ . '/../config/prodInit.php';
 
+$input = json_decode(file_get_contents('php://input'), true);
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    switch (true) {
+        case isset($input['action']) && $input['action'] === 'addLog':
+            $controller->addLog($input);
+            break;
+        default:
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid POST request']);
+    }
+}
+
 if ($_SERVER["REQUEST_METHOD"] === "GET") {
 
     switch (true) {

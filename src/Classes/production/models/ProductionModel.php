@@ -309,6 +309,12 @@ class ProductionModel
         try {
             $this->con->beginTransaction();
 
+            $this->log->info("⏳ insertProdLog called — raw input snapshot", [
+                'prodData' => $prodData,
+                'materialData' => $materialData,
+                'tempData' => $tempData
+            ]);
+
             $productID = $prodData['productID'];
 
             $transData = array(
@@ -366,6 +372,7 @@ class ProductionModel
                     break;
 
                 case '2':
+
                     $prodData['runStatus'] = 'end';
                     $prodRunID = $this->getProdRunID($productID);
                     if (!$prodRunID) {
