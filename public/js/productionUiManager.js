@@ -124,6 +124,10 @@ async function fetchPreviousLog(previousLogID) {
   }
 }
 
+/*This function takes the current hop1-4 weights, and the previous log in the production 
+run subtracts previous values from current to get daily usage, calculates the precentages 
+for each used hopper and returns them in three arrays.
+*/
 function calculateDailyMetrics(current, previous = {}) {
   const parseOrZero = (v) => parseFloat(v) || 0;
 
@@ -167,13 +171,14 @@ function calculateDailyMetrics(current, previous = {}) {
   };
 }
 
+/* this function uses the passed array to set the values of the daily usage hoppers */
 function fillDailyUsageFields(usage) {
   document.getElementById("vdHop1").value = usage.mat1.toFixed(3);
   document.getElementById("vdHop2").value = usage.mat2.toFixed(3);
   document.getElementById("vdHop3").value = usage.mat3.toFixed(3);
   document.getElementById("vdHop4").value = usage.mat4.toFixed(3);
 }
-
+/*this function uses the passed array to set the values of the daily usage percentages   */
 function fillPercentageFields(p) {
   document.getElementById("vdHop1p").value = `${p.mat1}%`;
   document.getElementById("vdHop2p").value = `${p.mat2}%`;
@@ -330,14 +335,30 @@ export function fillDailyUsage(usage) {
     const el = document.getElementById(`dHop${idx + 1}`);
     if (el) el.value = v.toFixed(3);
   });
+
+  const hops =[1, 2, 3, 4].map( 
+    (i) => parseFloat(document.getElementById(`dHop${i}`).value) || 0);
+    const total = hops.reduce((a, b) => a + b, 0);
+    const ele = document.getElementById("dTotal");
+    if(ele) ele.value = total.toFixed(3);
 }
 
 export function fillPercentage(percentages) {
   // percentages: [p1, p2, p3?, p4?]
   percentages.forEach((p, idx) => {
     const el = document.getElementById(`dHop${idx + 1}p`);
-    if (el) el.value = p.toFixed(2);
+    if (el) el.value = p.toFixed(2); 
   });
+
+
+  const percents = [1, 2, 3, 4].map(
+    (i) => parseFloat(document.getElementById(`dHop${i}p`).value) || 0
+  );
+  
+  const total = percents.reduce((a,b) => a + b, 0);
+  const ele = document.getElementById('dTotalp');
+  if(ele) ele.value = total.toFixed(2);
+ 
 }
 
 // —————————————————————————————

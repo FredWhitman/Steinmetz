@@ -85,7 +85,9 @@ async function onModalShow() {
 // 2) Handle run-status radio changes
 function onRadioChange(e) {
   runMode = e.target.value;
-  clearAlert();
+  validateRunAndLog();
+
+ /* clearAlert();
 
   const productID = document.getElementById("partName").value;
   const logDate = document.getElementById("logDate").value;
@@ -119,11 +121,11 @@ function onRadioChange(e) {
     // IN PROGRESS or END: require a production run
     checkIfRunExists(productID)
       .then((runData) => {
-        /* console.log(
+         console.log(
           "🧪 runData.exists =",
           runData.exists,
           typeof runData.exists
-        ); */
+        ); 
 
         if (!runData.exists) {
           showAlertMessage(
@@ -133,14 +135,14 @@ function onRadioChange(e) {
           // IN PROGRESS: optionally check if log already exists
           checkIfLogExists(productID, logDate)
             .then((logData) => {
-              /* console.log(
+               console.log(
                 "📋 logData.exists =",
                 logData.exists,
                 typeof logData.exists
-              ); */
+              ); 
               if (logData.exists) {
-                /* console.log("run exists:", runData.exists);
-                console.log("checking if log exists for:", productID, logDate) */ showAlertMessage(
+                console.log("run exists:", runData.exists);
+                console.log("checking if log exists for:", productID, logDate)  showAlertMessage(
                   "A log already exists for this product and date."
                 );
 
@@ -151,6 +153,51 @@ function onRadioChange(e) {
         }
       })
       .catch(console.error);
+  }*/
+}
+
+async function validateRunAndLog() {
+  clearAlert();
+  const productID = document.getElementById("partName").value;
+  const logDate   = document.getElementById("logDate").value;
+  if (!productID || !logDate || !runMode) return;
+
+  try {
+    if (runMode === "1") {
+      // START: block if run OR log exists
+      const [runData, logData] = await Promise.all([
+        checkIfRunExists(productID),
+        checkIfLogExists(productID, logDate),
+      ]);
+      if (runData.exists) {
+        showAlertMessage(
+          "A production run for this product is already active. Please end it before starting a new one."
+        );
+      } else if (logData.exists) {
+        showAlertMessage(
+          "A log already exists for this product and date. You cannot start a duplicate log."
+        );
+      }
+    }
+    else if (runMode === "0" || runMode === "2") {
+      // IN PROGRESS or END: require a run, then warn if log already exists
+      const runData = await checkIfRunExists(productID);
+      if (!runData.exists) {
+        showAlertMessage(
+          "No uncompleted production run found. Please start the run first."
+        );
+      } else {
+        const logData = await checkIfLogExists(productID, logDate);
+        if (logData.exists) {
+          showAlertMessage(
+            "A log already exists for this product and date."
+          );
+        }
+      }
+    }
+  } catch (err) {
+    console.error(err);
+    showAlertMessage("Validation failed. Please try again.");
   }
 }
 
@@ -296,6 +343,12 @@ document.addEventListener("DOMContentLoaded", () => {
     onHopperBlur,
   });
 
+  const prodSelect = document.getElementById("partName");
+  const dateInput  = document.getElementById("logDate");
+
+  prodSelect.addEventListener("change", validateRunAndLog);
+  dateInput .addEventListener("change", validateRunAndLog);
+  
   // Load data when modal shows
   const addModalEl = document.getElementById("addProductionModal");
   addModalEl.addEventListener("show.bs.modal", onModalShow);
