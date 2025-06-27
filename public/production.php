@@ -19,9 +19,9 @@
 <body>
     <!--Navbar -->
     <?php require_once '../includes/steinmetzNavbar.php'; ?>
-    
- 
-    
+
+
+
     <!--------------------------------------------------------------------------------------------------------------->
     <!-- New production log modal start-->
     <div class="modal fade" id="addProductionModal" tabindex="-1">
@@ -101,7 +101,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-2">
-                                                        <input class="form-control" type="number" step="0.001" name="hop1Lbs" id="hop1Lbs" tabindex="6" oninput="validateDecimalInput(event)" required>
+                                                        <input class="form-control" type="number" step="0.001" name="hop1Lbs" id="hop1Lbs" tabindex="6" required>
                                                     </div>
                                                     <div class="col-2">
                                                         <div class="input-group sm-1"><input class="form-control" type="number" name="dHop1" id="dHop1" readonly></div>
@@ -117,7 +117,7 @@
                                                         <div class="input-group sm-1"><label for="Mat2Name" class="input-group-text">Hopper 2</label><select class="form-select" type="text" list="materialNames" name="Mat2Name" id="Mat2Name" required></select></div>
                                                     </div>
                                                     <div class="col-2">
-                                                        <input class="form-control" type="number" step="0.001" name="hop2Lbs" id="hop2Lbs" tabindex="7" oninput="validateDecimalInput(event)" required>
+                                                        <input class="form-control" type="number" step="0.001" name="hop2Lbs" id="hop2Lbs" tabindex="7" required>
                                                     </div>
                                                     <div class="col-2">
                                                         <div class="input-group sm-1"><input class="form-control" type="number" name="dHop2" id="dHop2" readonly></div>
@@ -133,7 +133,7 @@
                                                         <div class="input-group sm-1"><label for="Mat3Name" class="input-group-text">Hopper 3</label><select class="form-select" type="text" list="materialNames" name="Mat3Name" id="Mat3Name"></select></div>
                                                     </div>
                                                     <div class="col-2">
-                                                        <input class="form-control" type="number" step="0.001" name="hop3Lbs" id="hop3Lbs" tabindex="8" oninput="validateDecimalInput(event)">
+                                                        <input class="form-control" type="number" step="0.001" name="hop3Lbs" id="hop3Lbs" tabindex="8">
                                                     </div>
                                                     <div class="col-2">
                                                         <div class="input-group sm-1"><input class="form-control" type="number" name="dHop3" id="dHop3" readonly></div>
@@ -152,7 +152,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-2">
-                                                        <input class="form-control" type="number" step="0.001" name="hop4Lbs" id="hop4Lbs" tabindex="9" oninput="validateDecimalInput(event)">
+                                                        <input class="form-control" type="number" step="0.001" name="hop4Lbs" id="hop4Lbs" tabindex="9">
                                                     </div>
                                                     <div class="col-2">
                                                         <div class="input-group sm-1">
@@ -170,13 +170,13 @@
                                                         <h6 class="text-end">Totals</h6>
                                                     </div>
                                                     <div class="col-2">
-                                                        <input class="form-control" type="number" step="0.001" name="totalsBlender" id="BlenderTotals" oninput="validateInput(event)" readonly>
+                                                        <input class="form-control" type="number" step="0.001" name="totalsBlender" id="BlenderTotals" readonly>
                                                     </div>
                                                     <div class="col-2">
-                                                        <input readonly class="form-control" type="number" name="totalDaily" id="dTotal" oninput="validateDecimalInput(event)" readonly>
+                                                        <input readonly class="form-control" type="number" name="totalDaily" id="dTotal" readonly>
                                                     </div>
                                                     <div class="col-2">
-                                                        <input readonly class="form-control" type="number" name="totalPercent" id="dTotalp" oninput="validateDecimalInput(event)" readonly>
+                                                        <input readonly class="form-control" type="number" name="totalPercent" id="dTotalp" readonly>
                                                     </div>
                                                 </div>
                                             </div>
@@ -588,7 +588,7 @@
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>
-    
+
     <!--------------------------------------------------------------------------------------------------------------->
     <!-- Add purge to production log start -->
     <div class="modal fade" id="addPurgeModal" tabindex="-1">

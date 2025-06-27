@@ -57,7 +57,7 @@ class ProductionController
     }
 
     /**
-     * getProductList function
+     * getProductList function return an array of productIDs and partNames
      *
      * @return void  a list of products
      */
@@ -74,6 +74,11 @@ class ProductionController
         }
     }
 
+    /**
+     * getMaterialList() function return an array of matPartNumber and matName
+     *
+     * @return void
+     */
     public function getMaterialList()
     {
         header('Content-Type: application/json');
@@ -111,11 +116,20 @@ class ProductionController
             echo json_encode(['error' => 'Failed to checkRun', 'details' => $e->getMessage()]);
         }
     }
+
+    public function getLastLog($productID)
+    {
+        header('Content-Type: application/json');
+        try {
+            $this->log->info("getLastLog caleed with this value: {$productID}.");
+            $matLog = $this->model->getLastMaterialLogForRun($productID);
+            echo json_encode($matLog);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to fetch last material log.', 'details: ' => $e->getMessage()]);
+        }
+    }
 }
-
-
-
-
 /* 
 Routes AJAX calls to relevant logic. You can read the action from POST or the $_GET flag:
     action = addLog

@@ -28,6 +28,14 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
                 echo json_encode(['error' => 'Missing productID']);
             }
             break;
+        case isset($_GET['action']) && in_array($_GET['action'], ['getLastLog', 'endRun']):
+            if (isset($_GET['productID'])) {
+                $controller->getLastLog($_GET['productID']);
+            } else {
+                http_response_code(400);
+                echo json_encode(['error' => 'Missing productID']);
+            }
+            break;
         default:
             http_response_code(400);
             echo json_encode(['error' => 'Invalid GET request']);
