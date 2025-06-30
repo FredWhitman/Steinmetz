@@ -2,11 +2,15 @@
 // File: src/Classes/production/routes/prodDispatcher.php
 $controller = require_once __DIR__ . '/../config/prodInit.php';
 
-$input = json_decode(file_get_contents('php://input'), true);
+$data = json_decode(file_get_contents('php://input'), true);
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    
+
     switch (true) {
-        case isset($input['action']) && $input['action'] === 'addLog':
-            $controller->addLog($input);
+
+        case isset($data['action']) && $data['action'] === 'addLog':
+            $controller->addLog($data);
             break;
         default:
             http_response_code(400);

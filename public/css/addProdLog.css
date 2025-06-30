@@ -1,0 +1,67 @@
+/* =================================================== */
+/* CUSTOM STYLES FOR PRODUCTION LOG MODAL       */
+/* =================================================== */
+
+/* 1. SET A CUSTOM WIDTH FOR THE MODAL DIALOG */
+/* This is the key fix. We are setting a width that is between the default (500px) and modal-lg (800px). */
+#addProductionModal .modal-dialog {
+  max-width: 900px; /* <-- ADJUST THIS VALUE AS NEEDED */
+}
+
+/* 2. MAKE FORM COMPONENTS MORE COMPACT */
+/* These styles reduce the vertical space and make the form less "puffy". */
+#addProductionModal .modal-body {
+    padding: .75rem; /* Give the body a bit of breathing room */
+}
+
+#addProductionModal .card {
+    margin-bottom: .75rem; /* Add space between the cards */
+}
+
+#addProductionModal .card-header,
+#addProductionModal .card-body {
+    padding: 0.75rem;
+    font-size: .75rem;
+}
+
+#addProductionModal .form-control,
+#addProductionModal .form-select,
+#addProductionModal .input-group-text {
+    padding: 0.25rem 0.5rem;
+    font-size: .75rem; /* Slightly increased font-size for readability */
+    height: calc(1.5em + 0.5rem + 2px);
+}
+
+#addProductionModal .form-check-label,
+#addProductionModal .form-check-input {
+    font-size: .75rem;
+}
+
+#addProductionModal h6,
+#addProductionModal .h6 {
+    font-size: .75rem;
+    margin-bottom: 0;
+}
+
+/* Ensure the hopper fields are wide enough for large numbers */
+#addProductionModal input[type="number"] {
+    min-width: 90px;
+}
+
+/* Ensure the buttons are nicely sized */
+#addProductionModal .btn {
+    padding: 0.375rem 0.75rem;
+}
+
+/* Remove or reduce padding/margin on specific elements if they are problematic */
+/* For example, if you have col divs with padding that adds height */
+#addProductionModal .col,
+#addProductionModal [class*="col-"] {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+/* Reduce margin-bottom on form groups/rows if they are creating too much space */
+#addProductionModal .mb-3 { /* Targeting Bootstrap's default margin-bottom for form groups */
+    margin-bottom: 0.5rem !important; /* Force a smaller margin if needed */
+}

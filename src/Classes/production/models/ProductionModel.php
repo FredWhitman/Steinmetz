@@ -316,7 +316,7 @@ class ProductionModel
             ]);
 
             $productID = $prodData['productID'];
-
+                       
             $transData = array(
                 "action" => 'insertProdLog',
                 "inventoryID" => $productID,
@@ -345,26 +345,10 @@ class ProductionModel
 
                     break;
                 case '1':
-
                     try {
                         $prodData['runStatus'] = 'start';
-
-                        $sql = "INSERT into prodrunlog (
-                                    productID,
-                                    startDate) 
-                                Values (
-                                    :productID, 
-                                    :prodDate, 
-                                    :runComplete)";
-
-                        $stmt = $this->con->prepare($sql);
-
-                        $stmt->execute([
-                            ':productID' => $productID,
-                            ':prodDate' => $prodData['prodDate'],
-                            ':runComplete' => 'no'
-                        ]);
-                        $prodRunID = $this->con->lastInsertId();
+                        $prodRunID = $this->insertProductionRun($productID, $prodData['prodDate']);
+                        $prodData['runLogID'] = $prodRunID;
                     } catch (PDOException $e) {
                         $this->log->error('Error submitting a new production run into prodrunlog: ' . $e->getMessage());
                     }
@@ -391,6 +375,11 @@ class ProductionModel
                     break;
             }
 
+            $matLogID = $this->insertMatLog($materialData);
+            $materialData['logID'] = $matLogID;
+            $tempLogID = $this->insertTempLog($tempData);
+            $tempData['logID'] = $tempLogID;
+            
             /////////////////////INSERT PRODUCTIONLOG INSERT START////////////////////////////
             $sqlInsertProdLog = "INSERT INTO productionlogs (
                                     productID,
@@ -420,22 +409,20 @@ class ProductionModel
                                     :comments)";
 
             $stmtInsertProdLog = $this->con->prepare($sqlInsertProdLog);
-
             $InsertParams = [
                 ':productID' => [$prodData['productID'],  \PDO::PARAM_STR],
                 ':prodDate' => [$prodData['prodDate'],  \PDO::PARAM_STR],
                 ':runStatus' => [$prodData['runStatus'],  \PDO::PARAM_STR],
                 ':prevProdLogID' => [$prodData['prevProdLogID'],  \PDO::PARAM_INT],
                 ':runLogID' => [$prodData['runLogID'], \PDO::PARAM_INT],
-                ':matLogID' => [$prodData['matLogID'],  \PDO::PARAM_INT],
-                ':tempLogID' => [$prodData['tempLogID'],  \PDO::PARAM_INT],
+                ':matLogID' => [$matLogID,  \PDO::PARAM_INT],
+                ':tempLogID' => [$tempLogID,  \PDO::PARAM_INT],
                 ':pressCounter' => [$prodData['pressCounter'],  \PDO::PARAM_INT],
                 ':startUpRejects' => [$prodData['startUpRejects'],  \PDO::PARAM_INT],
                 ':qaRejects' => [$prodData['qaRejects'],  \PDO::PARAM_INT],
                 ':purgeLbs' => [$prodData['purgeLbs'],  \PDO::PARAM_STR],
                 ':comments' => [$prodData['comments'],  \PDO::PARAM_STR],
             ];
-
             foreach ($InsertParams as $key => [$value, $type]) {
                 $stmtInsertProdLog->bindParam($key, $value, $type);
             }
@@ -445,97 +432,105 @@ class ProductionModel
                 $this->log->error('Production log insert failed: ' . print_r($stmtInsertProdLog->errorInfo(), true));
                 throw new \Exception("Production log insert failed.");
             }
-
-            $prodLogID = $this->con->query("SELECT LAST_INSERT_ID()")->fetchColumn();
-
+            $prodLogID = $this->con->query("SELECT LAST_INSERT_ID()");
+            $this->log->info('prodLogID: ' . $prodLogID);
             if (!$prodLogID) throw new \Exception("Failed to get last production log for production run!");
 
+
             $materialData["prodLogID"] = $prodLogID;
+            $tempData["prodLogID"] = $prodLogID;
+
+            
             $this->log->info('prodLogID from $materialData["prodLogID"]: ' . $materialData["prodLogID"]);
             /////////////////////INSERT PRODUCTIONLOG INSERT END//////////////////////////////////
 
+            //////////Insert Transaction for startuprejects, mat used, parts added to inventory, copper pins 
+            $oldStock = $this->getInvQty($productID);
+
+            $matData = $materialData;
+
+            for($i = 1; $i <= 4; $i++){
+                $matId = $matData["mat{$i}"];
+                $used = floatval($matData["matUsed{$i}"] ?? 0);
+                if(!$matId || $used <= 0) continue;
+                
+
+
+                if (!$transResult) {
+                $this->con->rollBack();
+                return ["success" => false, "message" => "Transaction failed!", "prodLogID" => $prodLogID];
+            }
+            }
+
+            $transProductData = array(
+                "action" => 'insertProdLog',
+                "inventoryID" => $productID,
+                "inventoryType" => 'product',
+                "prodLogID" => $prodLogID,
+                "oldStockCount" => $oldStock,
+                "transAmount" => $prodData['startUpRejects'],
+                "transType" => "production log",
+                "transComment" => $prodData['comments'],
+            );
+
+
+            /* must make loop to check if mat(i) = null
+                if not null fill array and insertTrans()
+             */
+
+            $transMaterialData = array(
+                "action" => 'insertProdLog',
+                "inventoryID" => $materialData[''],
+                "inventoryType" => 'material',
+                "prodLogID" => $prodLogID,
+                "oldStockCount" => $oldStock,
+                "transAmount" => $prodData['startUpRejects'],
+                "transType" => "production log",
+                "transComment" => $prodData['comments'],
+            );
+           
+           
             /////////////////////////////////////////////////////////////////////////////////////  
+            // update matlog withprodLogID
+            try {
+                $sqlUpdateMatLog = 'UPDATE materialLog SET prodLogID = :prodLogID WHERE matLogID = :matLogID';
 
-            ////////////////////INSERT MATERIALLOG START//////////////////////////////////////////
-            $sqlInsertMaterialLog = "INSERT INTO materialLog (
-                                        prodLogID,
-                                        mat1,
-                                        matUsed1,
-                                        mat2,
-                                        matUsed2,
-                                        mat3,
-                                        matUsed3,
-                                        mat4,
-                                        matUsed4) 
-                                    VALUES (
-                                        :prodLogID,
-                                        :mat1,
-                                        :matUsed1,
-                                        :mat2,
-                                        :matUsed2,
-                                        :mat3,
-                                        :matUsed3,
-                                        :mat4,
-                                        :matUsed4)";
+                $stmtUpdateMatLog = $this->con->prepare($sqlUpdateMatLog);
+                $matUpdateResult = $stmtUpdateMatLog->execute([
+                    ':prodLogID'=> $prodLogID,
+                    ':matLogID' => $matLogID]);
+                
+                    if(!$matUpdateResult) throw new \Exception(" Failed to update matLog with prodLogID: " . $prodLogID);
 
-            $stmtInsertMatLog = $this->con->prepare($sqlInsertMaterialLog);
-            $stmtInsertMatLog->execute($materialData);
+            } catch (\PDOException $e) {
+                $this->con->rollBack();
+                $this->log->error('Failed to update matLog: ' . $e->getMessage());
+            }
+            
 
-            $matLogID = $this->con->query("SELECT LAST_INSERT_ID()")->fetchColumn();
 
-            if (!$matLogID) throw new \Exception("Failed to insert into materialLog or set matLogID.");
-            ////////////////////INSERT MATERIALLOG END/////////////////////////////////////////////
 
+
+            
+
+            
             /////////////////////////////////////////////////////////////////////////////////////  
-            //insert tempLog return logID and set $tempLogID to this value
-            $tempData['prodLogID'] = $prodLogID;
-            $sqlInsertTempLog = "INSERT INTO tempLog (
-                                    prodLogID,
-                                    bigDryerTemp,
-                                    bigDryerDew,
-                                    pressDryerTemp,
-                                    pressDryerDew, 
-                                    t1,
-                                    t2,
-                                    t3,
-                                    t4,
-                                    m1,
-                                    m2,
-                                    m3,
-                                    m4,
-                                    m5,
-                                    m6,
-                                    m7,
-                                    chillerTemp,
-                                    moldTemp)
-                                VALUES(
-                                :prodLogID,
-                                :bigDryerTemp,
-                                :bigDryerDew,
-                                :pressDryerTemp,
-                                :pressDryerDew,
-                                :t1,
-                                :t2,
-                                :t3,
-                                :t4,
-                                :m1,
-                                :m2,
-                                :m3,
-                                :m4,
-                                :m5,
-                                :m6,
-                                :m7,
-                                :chillerTemp,
-                                :moldTemp)";
+            // update templog with prodLogID
+            try {
+                $sqlUpdateTempLog = 'UPDATE tempLog SET prodLogID = :prodLogID WHERE tempLogID = :tempLogID';
 
-            $stmtInsertTempLog = $this->con->prepare($sqlInsertTempLog);
-            $stmtInsertTempLog->execute($tempData);
+                $stmtUpdateTempLog = $this->con->prepare($sqlUpdateTempLog);
+                $tempUpdateResult = $stmtUpdateTempLog->execute([
+                    ':prodLogID'=> $prodLogID,
+                    ':tempLogID' => $tempLogID]);
+                
+                    if(!$tempUpdateResult) throw new \Exception(" Failed to update tempLog with prodLogID: " . $prodLogID);
 
-            $tempLogID = $this->con->query("SELECT LAST_INSERT_ID()")->fetchColumn();
-
-            if (!$tempLogID) throw new \Exception('Failed to insert tempLog and return tempLogID.');
-            ////////////////////////////INSERT TEMPLOG END/////////////////////////////////////////////
-
+            } catch (\PDOException $e) {
+                $this->con->rollBack();
+                $this->log->error('Failed to update tempLog: ' . $e->getMessage());
+            }
+            
             //update productionLog with $matLogID & tempLogID
             $sqlUpdateProdLog = "UPDATE productionlogs 
                                 SET 
@@ -617,20 +612,172 @@ class ProductionModel
 
             $stmtUpdateInventory = $this->con->prepare($sqlInventoryUpdate);
             $result = $stmtUpdateInventory->execute(['partsToAdd' => $partsToAdd, 'productID' => $productID]);
+
             if (!$result) throw new \Exception("Failed to update product inventory!");
-
-            $transResult = $this->insertTrans($transData);
-
-            if (!$transResult) {
-                $this->con->rollBack();
-                return ["success" => false, "message" => "Transaction failed!", "prodLogID" => $prodLogID];
-            }
+            
+            
+            
 
             $this->con->commit();
             return ["success" => true, "message" => "Transaction completed successfully.", "prodLogID" => $prodLogID];
         } catch (PDOException $e) {
             $this->con->rollBack();
             $this->log->error('PDO Rollback.  Error failed to insert Production log: ' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * insertMatLog
+     *
+     * @param  mixed $materialData
+     * @return void
+     */
+    private function insertMatLog($materialData){
+        try {
+            $sql = "INSERT INTO materialLog (
+                                        prodLogID,
+                                        mat1,
+                                        matUsed1,
+                                        mat2,
+                                        matUsed2,
+                                        mat3,
+                                        matUsed3,
+                                        mat4,
+                                        matUsed4) 
+                                    VALUES (
+                                        :prodLogID,
+                                        :mat1,
+                                        :matUsed1,
+                                        :mat2,
+                                        :matUsed2,
+                                        :mat3,
+                                        :matUsed3,
+                                        :mat4,
+                                        :matUsed4)";
+
+            $stmt = $this->con->prepare($sql);
+            $stmt->execute($materialData);
+
+            $matLogID = $this->con->query("SELECT LAST_INSERT_ID()");
+            $this->log->info('matLogID: ' . $matLogID);
+            if (!$matLogID) throw new \Exception("Failed to insert into materialLog or set matLogID.");
+            return $matLogID;
+
+        } catch (\PDOException $e) {
+            $this->con->rollBack();
+            $this->log->error('Failed to insert materialLog: '. $e->getMessage());
+        }
+    }
+
+    private function updateMatLogProdLogID($materialData){
+        try {
+            $sql = 'UPDATE materialLog SET prodLogID = :prodLogID WHERE matLogID = :logID';
+            $stmt = $this->con->prepare($sql);
+            $stmt->bindParam(':prodID', $materialData['prodLogID'], \PDO::PARAM_INT);
+            $stmt->bindParam(':logID', $materialData['logID'], \PDO::PARAM_INT);
+
+            if(!$stmt->execute()){
+                $this->log->error('material log update failed: ' . print_r($stmt->errorInfo(), true)); 
+                throw new \Exception("Material log update failed."); 
+            }
+        } catch (\PDOException $e) {
+            $this->log->error('material log update failed: ' . $e->getMessage());
+        }
+    }
+
+    private function insertTempLog($tempData){
+        try {
+            $sql = "INSERT INTO tempLog (
+                        prodLogID,
+                        bigDryerTemp,
+                        bigDryerDew,
+                        pressDryerTemp,
+                        pressDryerDew, 
+                        t1,
+                        t2,
+                        t3,
+                        t4,
+                        m1,
+                        m2,
+                        m3,
+                        m4,
+                        m5,
+                        m6,
+                        m7,
+                        chillerTemp,
+                        moldTemp)
+                    VALUES(
+                        :prodLogID,
+                        :bigDryerTemp,
+                        :bigDryerDew,
+                        :pressDryerTemp,
+                        :pressDryerDew,
+                        :t1,
+                        :t2,
+                        :t3,
+                        :t4,
+                        :m1,
+                        :m2,
+                        :m3,
+                        :m4,
+                        :m5,
+                        :m6,
+                        :m7,
+                        :chillerTemp,
+                        :moldTemp)";
+
+            $stmt = $this->con->prepare($sql);
+            $stmt->execute($tempData);
+            $tempLogID = $this->con->query("SELECT LAST_INSERT_ID()");
+            $this->log->info('tempLogID: ' . $tempLogID);
+            if (!$tempLogID) throw new \Exception('Failed to insert tempLog and return tempLogID.');
+            return $tempLogID;
+        } catch (\PDOException $e) {
+            $this->log->error('Failed to insert templog: ' . $e->getMessage());
+        }
+    }
+     
+    private function updateTempLogProdLogID($tempData){
+        try {
+            $sql = 'UPDATE tempLog SET prodLogID = :prodLogID WHERE tempLogID = :logID';
+            $stmt = $this->con->prepare($sql);
+            
+            if($stmt->execute()){
+                $this->log->error('temp log update failed: ' . print_r($stmt->errorInfo(), true)); 
+                throw new \Exception("Production log insert failed."); }
+        } catch (\PDOException $e) {
+            $this->log->error('templog update failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * insertProductionRun create a production run
+     *
+     * @param  mixed $productID
+     * @param  mixed $prodDate
+     * @return void
+     */
+    private function insertProductionRun($productID, $prodDate){
+        try {
+            $sql = "INSERT into prodrunlog (
+                                    productID,
+                                    startDate) 
+                                Values (
+                                    :productID, 
+                                    :prodDate, 
+                                    :runComplete)";
+                        $stmt = $this->con->prepare($sql);
+
+                        $stmt->execute([
+                            ':productID' => $productID,
+                            ':prodDate' => $prodDate,
+                            ':runComplete' => 'no'
+                        ]);
+                        $prodRunID = $this->con->lastInsertId();
+                        if(!$prodRunID) 
+                        return $prodRunID;
+        } catch (\PDOException $e) {
+            $this->log->error('Error creating production run: ' . $e->getMessage());
         }
     }
 

@@ -72,7 +72,7 @@ export async function postProductionLog(payload) {
   const res = await fetch(BASE_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "addLog", data: payload }),
+    body: JSON.stringify(payload),
   });
   return handleResponse(res);
 }

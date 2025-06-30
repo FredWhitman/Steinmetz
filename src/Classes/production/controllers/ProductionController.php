@@ -130,60 +130,11 @@ class ProductionController
         }
     }
 
-    public function addLog($payload)
+    public function addLog($data)
     {
         header('Content-Type: application/json');
         try {
-            $this->log->info("📦 Received payload for addLog()", ['payload' => $payload]);
-            // Parse flat POST payload into structured inputs
-            $prodData = [
-                'productID' => $payload['productID'],
-                'prodDate' => $payload['prodDate'],
-                'runStatus' => $payload['runStatus'],
-                'prevProdLogID' => $payload['prevProdLogID'],
-                'runLogID' => $payload['runLogID'],
-                'matLogID' => $payload['matLogID'],
-                'tempLogID' => $payload['tempLogID'],
-                'pressCounter' => $payload['pressCounter'],
-                'startUpRejects' => $payload['startUpRejects'],
-                'qaRejects' => $payload['qaRejects'],
-                'purgeLbs' => $payload['purgeLbs'],
-                'comments' => $payload['comments'],
-            ];
-
-            $materialData = [
-                'mat1' => $payload['materials'][0]['id'],
-                'matUsed1' => $payload['materials'][0]['used'],
-                'mat2' => $payload['materials'][1]['id'],
-                'matUsed2' => $payload['materials'][1]['used'],
-                'mat3' => $payload['materials'][2]['id'],
-                'matUsed3' => $payload['materials'][2]['used'],
-                'mat4' => $payload['materials'][3]['id'],
-                'matUsed4' => $payload['materials'][3]['used'],
-            ];
-
-            $temp = $payload['temperatures'];
-            $tempData = [
-                'bigDryerTemp' => $temp['bigDryerTemp'],
-                'bigDryerDew' => $temp['bigDryerDew'],
-                'pressDryerTemp' => $temp['pressDryerTemp'],
-                'pressDryerDew' => $temp['pressDryerDew'],
-                't1' => $temp['t1'],
-                't2' => $temp['t2'],
-                't3' => $temp['t3'],
-                't4' => $temp['t4'],
-                'm1' => $temp['m1'],
-                'm2' => $temp['m2'],
-                'm3' => $temp['m3'],
-                'm4' => $temp['m4'],
-                'm5' => $temp['m5'],
-                'm6' => $temp['m6'],
-                'm7' => $temp['m7'],
-                'chillerTemp' => $temp['chiller'],
-                'moldTemp' => $temp['tcuTemp'],
-            ];
-
-            $result = $this->model->insertProdLog($prodData, $materialData, $tempData);
+            $result = $this->model->insertProdLog($data["prodData"], $data["materialData"], $data["tempData"]);
             echo json_encode($result);
         } catch (\Exception $e) {
             http_response_code(500);

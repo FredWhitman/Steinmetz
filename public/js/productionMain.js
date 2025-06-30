@@ -87,6 +87,7 @@ function onRadioChange(e) {
   validateRunAndLog();
 }
 
+//check for production runs and existing logs
 async function validateRunAndLog() {
   clearAlert();
   const productID = document.getElementById("partName").value;
