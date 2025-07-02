@@ -206,7 +206,7 @@ function wireFormSubmission() {
         productID: data.get("partName"),
         prodDate: data.get("logDate"),
         runStatus: runMode,
-        prevProdLogID: "0", // PHP can overwrite if needed
+        prevProdLogID: "0", 
         runLogID: "0",
         matLogID: "0",
         tempLogID: "0",
