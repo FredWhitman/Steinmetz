@@ -11,8 +11,8 @@
   "autoload": {
     "psr-4": {
       "Fred\\Steinmetz\\": "src/",
-      "Inventory\\": "src/Classes/inventory/",
-      "Production\\": "src/Classes/production/"
+      "Inventory\\": "src/Classes/Inventory/",
+      "Production\\": "src/Classes/Production/"
     }
   },
   "authors": [
@@ -20,5 +20,13 @@
       "name": "yes"
     }
   ],
-  "minimum-stability": "stable"
+  "minimum-stability": "stable",
+  "require-dev": {
+    "phpunit/phpunit": "^10.0"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Fred\\Steinmetz\\Tests\\": "tests/"
+    }
+  }
 }

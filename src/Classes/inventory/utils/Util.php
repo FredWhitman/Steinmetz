@@ -1,5 +1,6 @@
 <?php
-namespace Inventory\utils;
+
+namespace Inventory\Utils;
 
 use BcMath\Number;
 
@@ -26,20 +27,20 @@ class Util
                 </div>';
     }
 
-    public function getNewInvQty($stock, $operator, $changeAmount){
+    public function getNewInvQty($stock, $operator, $changeAmount)
+    {
         $stock = (float) $stock;
         $changeAmount = (float) $changeAmount;
 
         switch ($operator) {
-        case '+':
-            return round($stock + $changeAmount, 3);
-        case '-':
-            return round($stock - $changeAmount, 3);
-        default:
-            throw new \InvalidArgumentException("Unsupported operator: {$operator}");
-    }
+            case '+':
+                return round($stock + $changeAmount, 3);
+            case '-':
+                return round($stock - $changeAmount, 3);
+            default:
+                throw new \InvalidArgumentException("Unsupported operator: {$operator}");
+        }
 
         return $newStockQty;
     }
-
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Production\utils;
+namespace Production\Utils;
 
 class Util
 {
