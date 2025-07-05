@@ -17,7 +17,7 @@ class ProductionController
         $this->model = $model;
         $this->util  = $util;
         $this->log   = $log;
-        $this->log->info("Controller logger test", ['file' => __FILE__]);
+        //$this->log->info("Controller logger test", ['file' => __FILE__]);
     }
 
     public function read4wks()

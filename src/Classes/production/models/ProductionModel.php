@@ -308,7 +308,6 @@ class ProductionModel
     public function insertProdLog($prodData, $materialData, $tempData)
     {
         try {
-            $this->con->beginTransaction();
 
             $this->log->info("⏳ insertProdLog called — raw input snapshot", [
                 'prodData' => $prodData,
@@ -316,8 +315,15 @@ class ProductionModel
                 'tempData' => $tempData
             ]);
 
+            /*  setting variables that are need to complete the updates and inserts */
             $productID = $prodData['productID'];
+            $prodDate = $prodData['prodDate'];
+            $parts = $prodData['pressCounter'] - $prodData['startUpRejects'];
+            $copperPins = $parts * 2;
 
+            $oldProductStock = $this->getInvQty($productID);
+            if(!$oldProductStock) throw new \Exception("Failed to get old inventory for {$oldProductStock}");
+           
             /*  set runStatus to either start,in progress or end
                 0 - get $prodRunID, using prodRunID get prevProdLogID and set prodData[] values
                 1 - create Productionrun, set prodRunID, set $prevProdLogID to 0
@@ -328,35 +334,44 @@ class ProductionModel
                     $prodData['runStatus'] = 'in progress';
                     //use productID to get production run id
                     $prodRunID = $this->getProdRunID($productID);
-                    if (!$prodRunID) throw new \Exception("Failed to get production run ID");
+                    if (!$prodRunID) throw new \RuntimeException("No active production run for product {$productID}");
+
                     //use prodRunID to get last prodLogID and set $prevProdLogID
                     $prevProdLogID = $this->getPrevProdLog($prodRunID);
-                    if (!$prevProdLogID) throw new \Exception("Failed to get previous production log ID");
+                    if (!$prevProdLogID) throw new \RuntimeException("No previous production log found for run {$prodRunID}");
+
                     $this->log->info('Previous Log ID: ' . $prevProdLogID);
                     $prodData['runLogID'] = $prodRunID;
                     $prodData['prevProdLogID'] = $prevProdLogID;
                     break;
+
                 case '1':
                     $prodData['runStatus'] = 'start';
+
                     $prodRunID = $this->insertProductionRun($productID, $prodData['prodDate']);
-                    if (!$prodRunID) throw new \Exception("Failed to get prodRunID!");
+                    if (!$prodRunID) throw new \RuntimeException("Failed to create new production run for product {$productID}!");
+
                     $prodData['runLogID'] = $prodRunID;
                     $prevProdLogID = "0";
                     break;
+
                 case '2':
                     $prodData['runStatus'] = 'end';
                     $prodRunID = $this->getProdRunID($productID);
-                    if (!$prodRunID) throw new \Exception("Failed to get production run ID");
+                    if (!$prodRunID) throw new \RuntimeException("No active production run for product {$productID}");
+
                     $prevProdLogID = $this->getPrevProdLog($prodRunID);
-                    if (!$prevProdLogID) throw new \Exception("Failed to get previous production log ID.");
+                    if (!$prevProdLogID) throw new  \RuntimeException("No previous production log found for run {$prodRunID}");
                     $this->log->info('Previous Log ID: ' . $prevProdLogID);
+
                     $prodData['runLogID'] = $prodRunID;
                     $prodData['prevProdLogID'] = $prevProdLogID;
                     break;
                 default:
-                    $this->log->error("RunStatus was not the correct type!");
-                    throw new \Exception("Invalid runStatus in prodData");
+                    throw new \InvalidArgumentException("Invalid runStatus: {$prodData['runStatus']}");
             }
+            
+            $this->con->beginTransaction();
 
             /* Insert materialLog & tempLog returnint their logIDs and add logID to each of their respective arrays */
             $matLogID = $this->insertMatLog($materialData);
@@ -393,6 +408,7 @@ class ProductionModel
                                     :comments)";
 
             $stmtInsertProdLog = $this->con->prepare($sqlInsertProdLog);
+
             $InsertParams = [
                 ':productID' => [$prodData['productID'],  \PDO::PARAM_STR],
                 ':prodDate' => [$prodData['prodDate'],  \PDO::PARAM_STR],
@@ -428,65 +444,25 @@ class ProductionModel
 
             //////////Insert Transaction for startuprejects, mat used, parts added to inventory, copper pins 
 
+            $this->updateMaterialInventory($materialData, '-');
 
-            $matData = $materialData;
-
-            $transMaterialData = array(
-                "action" => 'insertProdLog',
-                "inventoryID" => "",
-                "inventoryType" => 'material',
-                "prodLogID" => $prodLogID,
-                "oldStockCount" => "",
-                "transAmount" => "",
-                "transType" => "production log",
-                "transComment" => "",
-            );
-
-            /*  loop throw materials and update material inventory
-                Insert trans record for each material */
-            for ($i = 1; $i <= 4; $i++) {
-
-                $matId = $matData["mat{$i}"];
-                $used = floatval($matData["matUsed{$i}"] ?? 0);
-                if (!$matId || $used <= 0) continue;
-                $transMaterialData['oldStockCount'] = $this->getMaterialLbs($matId);
-                $transMaterialData['inventoryID'] = $matId;
-                $transMaterialData['transAmount'] = $used;
-
-                $this->updateMaterialInventory(
-                    $transMaterialData['inventoryID'],
-                    $transMaterialData['transAmount'],
-                    $transMaterialData['oldStockCount'],
-                    '-'
-                );
-
-                $this->insertTrans($transMaterialData);
-            }
-
-            //parts getting added to inventory
-
-            $parts = $prodData['pressCounter'] - $prodData['startUpRejects'];
-            /* prep and insert trans record for product inventory update */
-
-            $oldStock = $this->getInvQty($productID);
             $transProductData = array(
                 "action" => 'insertProdLog',
                 "inventoryID" => $productID,
                 "inventoryType" => 'product',
                 "prodLogID" => $prodLogID,
-                "oldStockCount" => $oldStock,
+                "oldStockCount" => $oldProductStock,
                 "transAmount" => $parts,
                 "transType" => "production log",
                 "transComment" => $prodData['comments'],
             );
 
-            $this->updateProductInventory($productID, $transProductData['transAmount'], $oldStock, '+');
+            $this->updateProductInventory($productID, $parts, '+');
             $this->insertTrans($transProductData);
 
             // check to see if this is the end of the production run and fetch material data for the run
             // and update prodrunlog with totals, end date and completed
-
-            $prodDate = $prodData['prodDate'];
+            
             if ($prodData['runStatus'] === 'end') {
 
                 $this->log->info('End of prodcution run detected aquiring run production totals');
@@ -494,13 +470,10 @@ class ProductionModel
                 $this->updateProductionRun($prodDate, 'yes');
             }
 
-            /* copper pins removed from inventory */
-            $copperPins = $parts * 2;
-
             $this->updatePFMInventory('349-61A0', $copperPins, '-');
 
             $this->con->commit();
-            return ["success" => true, "message" => "Transaction completed successfully.", "prodLogID" => $prodLogID];
+            return ["success" => true, "message" => "Transaction completed successfully added {$parts} {$productID} into product inventory and removed {$copperPins} copper pins from pfm inventory."];
         } catch (\Throwable $e) {
             $this->con->rollBack();
             $this->log->error('PDO Rollback.  Error failed to insert Production log: ' . $e->getMessage());
@@ -508,25 +481,10 @@ class ProductionModel
         }
     }
 
-    /**
-     * updatePFMInventory
-     *
-     * @param  mixed $partNumber
-     * @param  mixed $amount
-     * @param  mixed $operator
-     * @return void
-     */
-    public function updatePFMInventory($partNumber, $amount, $operator)
-    {
-        $oldStock = $this->getPFMQty($partNumber);
-        $sql = 'UPDATE pfmInventory SET qty = :newQty WHERE partNumber = :partNumber';
-        ($operator === '+') ? $newQty = $amount + $oldStock : $newQty = $oldStock - $amount;
-        $stmt = $this->con->prepare($sql);
-        $stmt->bindParam(':partNumber', $partNumber, \PDO::PARAM_STR);
-        $stmt->bindParam(':newQty', $newQty, \PDO::PARAM_INT);
 
-        if (!$stmt->execute()) throw new \Exception("Failed to update {$partNumber}.");
-    }
+    /* 
+        INSERT FUNCTIONS
+    */
 
     /**
      * insertMatLog
@@ -564,26 +522,6 @@ class ProductionModel
         $this->log->info('matLogID: ' . $matLogID);
         if (!$matLogID) throw new \Exception("Failed to insert into materialLog or set matLogID.");
         return $matLogID;
-    }
-
-    /**
-     * updateMatLogProdLogID
-     *
-     * @param  mixed $materialData
-     * @return void
-     */
-    private function updateMatLogProdLogID($materialData)
-    {
-
-        $sql = 'UPDATE materialLog SET prodLogID = :prodLogID WHERE matLogID = :logID';
-        $stmt = $this->con->prepare($sql);
-        $stmt->bindParam(':prodID', $materialData['prodLogID'], \PDO::PARAM_INT);
-        $stmt->bindParam(':logID', $materialData['logID'], \PDO::PARAM_INT);
-
-        if (!$stmt->execute()) {
-            $this->log->error('material log update failed: ' . print_r($stmt->errorInfo(), true));
-            throw new \Exception("Material log update failed.");
-        }
     }
 
     /**
@@ -643,39 +581,6 @@ class ProductionModel
     }
 
     /**
-     * updateTempLogProdLogID
-     *
-     * @param  mixed $tempData
-     * @return void
-     */
-    private function updateTempLogProdLogID($tempData)
-    {
-        $sql = 'UPDATE tempLog SET prodLogID = :prodLogID WHERE tempLogID = :logID';
-        $stmt = $this->con->prepare($sql);
-
-        if (!$stmt->execute()) {
-            $this->log->error('temp log update failed: ' . print_r($stmt->errorInfo(), true));
-            throw new \Exception("Production log insert failed.");
-        }
-    }
-
-    /**
-     * getMaterialLbs
-     *
-     * @param  mixed $matPartNumber
-     * @return void
-     */
-    private function getMaterialLbs($matPartNumber)
-    {
-        $sql = 'SELECT matLbs FROM materialInventory WHERE matPartNumber = : matPartNumber';
-        $stmt = $this->con->prepare($sql);
-        $stmt->bindParam(':matPartNumber', $matPartNumber, \PDO::PARAM_STR);
-        $result = $stmt->execute();
-        if (!$result) throw new \Exception("Failed to get {$matPartNumber} inventory amount!");
-        return $result;
-    }
-
-    /**
      * insertProductionRun create a production run
      *
      * @param  mixed $productID
@@ -700,6 +605,111 @@ class ProductionModel
         $prodRunID = $this->con->lastInsertId();
         if (!$prodRunID) throw new \Exception("failed to insert production run!");
         return $prodRunID;
+    }
+
+    /**
+     * insertTrans 
+     *
+     * @param  mixed $data  this array must contain an action element for routing to the correct case
+     * @return void
+     */
+    public function insertTrans($data)
+    {
+        //transtype ENUM('production log','admin edit','qa rejects','shipped')
+        //inventoryType ENUM('product','material'pfm)
+        $this->log->info("insertTrans called for : {$data['action']}");
+
+        $sql = 'INSERT INTO inventorytrans
+                    (inventoryID,
+                    inventoryType,
+                    prodLogID,
+                    oldStockCount,
+                    transAmount,
+                    transType,  
+                    transComment)
+                VALUES (
+                    :inventoryID,
+                    :inventoryType,
+                    :prodLogID,
+                    :oldStockCount,
+                    :transAmount,
+                    :transType,
+                    :transComment)';
+
+        $stmt = $this->con->prepare($sql);
+
+        $stmt->bindParam(':inventoryID', $data['inventoryID'], \PDO::PARAM_STR);
+        $stmt->bindParam(':inventoryType', $data['inventoryType'], \PDO::PARAM_STR);
+        $stmt->bindParam(':prodLogID', $data['prodLogID'], \PDO::PARAM_INT);
+        $stmt->bindParam(':oldStockCount', $data['oldStockCount'], \PDO::PARAM_STR);
+        $stmt->bindParam(':transAmount', $data['transAmount'], \PDO::PARAM_STR);
+        $stmt->bindParam(':transType', $data['transType'], \PDO::PARAM_STR);
+        $stmt->bindParam(':transComment', $data['transComment'], \PDO::PARAM_STR);
+
+        $result = $stmt->execute();
+        if (!$result) throw new \Exception("Failed to insert transaction for {$data['inventoryID']}.");
+
+    }
+
+    /* UPDATE FUNCTIONS */
+
+    /**
+     * updatePFMInventory
+     *
+     * @param  mixed $partNumber
+     * @param  mixed $amount
+     * @param  mixed $operator
+     * @return void
+     */
+    public function updatePFMInventory($partNumber, $amount, $operator)
+    {
+        $oldStock = $this->getPFMQty($partNumber);
+        $sql = 'UPDATE pfmInventory SET qty = :newQty WHERE partNumber = :partNumber';
+        ($operator === '+') ? $newQty = $amount + $oldStock : $newQty = $oldStock - $amount;
+        $stmt = $this->con->prepare($sql);
+        $stmt->bindParam(':partNumber', $partNumber, \PDO::PARAM_STR);
+        $stmt->bindParam(':newQty', $newQty, \PDO::PARAM_INT);
+
+        if (!$stmt->execute()) throw new \Exception("Failed to update {$partNumber}.");
+    }
+
+    /**
+     * updateMatLogProdLogID
+     *
+     * @param  mixed $materialData
+     * @return void
+     */
+    private function updateMatLogProdLogID($materialData)
+    {
+
+        $sql = 'UPDATE materiallog SET prodLogID = :prodLogID WHERE matLogID = :logID';
+        $stmt = $this->con->prepare($sql);
+        $stmt->bindParam(':prodLogID', $materialData['prodLogID'], \PDO::PARAM_INT);
+        $stmt->bindParam(':logID', $materialData['logID'], \PDO::PARAM_INT);
+
+        if (!$stmt->execute()) {
+            $this->log->error('material log update failed: ' . print_r($stmt->errorInfo(), true));
+            throw new \Exception("Material log update failed.");
+        }
+    }
+
+    /**
+     * updateTempLogProdLogID
+     *
+     * @param  mixed $tempData
+     * @return void
+     */
+    private function updateTempLogProdLogID($tempData)
+    {
+        $sql = 'UPDATE tempLog SET prodLogID = :prodLogID WHERE tempLogID = :logID';
+        $stmt = $this->con->prepare($sql);
+        $stmt->bindParam(':logID', $tempData['logID'], \PDO::PARAM_INT);
+        $stmt->bindParam(':prodLogID', $tempData['prodLogID'], \PDO::PARAM_INT);
+
+        if (!$stmt->execute()) {
+            $this->log->error('temp log update failed: ' . print_r($stmt->errorInfo(), true));
+            throw new \Exception("Production log insert failed.");
+        }
     }
 
     /**
@@ -746,81 +756,6 @@ class ProductionModel
     }
 
     /**
-     * getPFMQty
-     *
-     * @param  mixed $partNumber
-     * @return void
-     */
-    private function getPFMQty($partNumber)
-    {
-        $sql = 'SELECT partNumber, qty FROM pfmInventory WHERE partNumber = :partNumber';
-        $stmt = $this->con->prepare($sql);
-        $stmt->bindParam(':partNumber', $partNumber, \PDO::PARAM_STR);
-
-        $qty = $stmt->execute();
-        if (!$qty) throw new \Exception("Failed to get PFM Qty for {$partNumber}.");
-        return  $qty;
-    }
-
-    /**
-     * insertTrans 
-     *
-     * @param  mixed $data  this array must contain an action element for routing to the correct case
-     * @return void
-     */
-
-    public function insertTrans($data)
-    {
-        //transtype ENUM('production log','admin edit','qa rejects','shipped')
-        //inventoryType ENUM('product','material'pfm)
-        $this->log->info("insertTrans called for : {$data['action']}");
-        $sql = 'INSERT INTO inventorytrans
-                    (inventoryID,
-                    inventoryType,
-                    prodLogID,
-                    oldStockCount,
-                    transAmount,
-                    transType,  
-                    transComment)
-                VALUES (
-                    :inventoryID,
-                    :inventoryType,
-                    :prodLogID,
-                    :oldStockCount,
-                    :transAmount,
-                    :transType,
-                    :transComment)';
-
-        $stmt = $this->con->prepare($sql);
-        $result = $stmt->execute([
-            ':inventoryID' => $data['inventoryID'],
-            ':inventoryType' => $data['inventoryType'],
-            ':prodLogID' => $data['prodLogID'],
-            ':oldStockCount' => $data['oldStockCount'],
-            ':transAmount' => $data['transAmount'],
-            ':transType' => $data['transType'],
-            ':transComment' => $data['transComment']
-        ]);
-
-        if (!$result) throw new \Exception("Failed to insert transaction for {$data['inventoryID']}.");
-    }
-
-    /**
-     * getInvQty function
-     *
-     * @param [type] $productID
-     * @return void
-     */
-    public function getInvQty($productID)
-    {
-        $sql = 'SELECT partQty FROM productInventory WHERE productID = :productID';
-        $stmt = $this->con->prepare($sql);
-        $qty = $stmt->execute([':productID' => $productID]);
-        if (!$qty) throw new \Exception("Failed to get qty for {$productID}.");
-        return $qty;
-    }
-
-    /**
      * updateProductInventory
      *
      * @param  mixed $productID
@@ -829,10 +764,10 @@ class ProductionModel
      * @param  mixed $operator
      * @return void
      */
-    private function updateProductInventory($productID, $transAmount, $oldStock, $operator)
+    private function updateProductInventory($productID, $qty, $operator)
     {
-        $sql = 'UPDATE productInventory SET qty = :qty WHERE productID = :productID';
-        ($operator === '+') ? $qty = $transAmount + $oldStock : $qty = $oldStock - $transAmount;
+        $op = $op = ($operator === "+") ? '+' : '-' ;
+        $sql = "UPDATE productInventory SET partQty = partQty {$op} :qty WHERE productID = :productID";
         $stmt = $this->con->prepare($sql);
         $stmt->bindParam(':qty', $qty, \PDO::PARAM_INT);
         $stmt->bindParam(':productID', $productID, \PDO::PARAM_INT);
@@ -849,15 +784,105 @@ class ProductionModel
      * @param  mixed $operator
      * @return void
      */
-    private function updateMaterialInventory($matPartNumber, $matLbs, $oldStock, $operator)
+    private function updateMaterialInventory($materialData, $operator)
     {
-        $sql = 'UPDATE materialInventory SET matLbs = : matLbs WHERE matPartNumber = : matPartNumber';
-        ($operator === '+') ? $qty = $matLbs + $oldStock : $qty = $oldStock - $matLbs;
-        $stmt = $this->con->prepare($sql);
-        $stmt->bindParam(':matLbs', $qty, \PDO::PARAM_STR);
-        $stmt->bindParam(':matPartNumber', $matPartNumber, \PDO::PARAM_STR);
+        $prodLogID = $materialData['prodLogID'];
+        $op = ($operator === "+") ? '+' : '-' ;
 
-        if (!$stmt->execute()) throw new \Exception("Failed to update material inventory for {$matPartNumber}.");
+        $matData = $materialData;
+
+        $transMaterialData = array(
+            "action" => 'insertProdLog',
+            "inventoryID" => "",
+            "inventoryType" => 'material',
+            "prodLogID" => $prodLogID,
+            "oldStockCount" => "",
+            "transAmount" => "",
+            "transType" => "production log",
+            "transComment" => "",
+        );
+
+        /*  loop throw materials and update material inventory
+            Insert trans record for each material */
+        for ($i = 1; $i <= 4; $i++) {
+
+            $matId = $matData["mat{$i}"];
+            $used = floatval($matData["matUsed{$i}"] ?? 0);
+            
+            if (!$matId || $used <= 0) continue;
+
+            $oldMatStock = $this->getMaterialLbs($matId);
+            $transMaterialData['oldStockCount'] = $oldMatStock;
+            $transMaterialData['inventoryID'] = $matId;
+            $transMaterialData['transAmount'] = $used;
+
+            $sql = "UPDATE materialinventory 
+                    SET matLbs = matlbs {$op} :matLbs 
+                    WHERE matPartNumber = :matPartNumber";
+
+            $stmt = $this->con->prepare($sql);
+            $stmt->bindParam(':matLbs', $used, \PDO::PARAM_STR);
+            $stmt->bindParam(':matPartNumber', $matId, \PDO::PARAM_STR);
+
+            if (!$stmt->execute()) throw new \Exception("Failed to update material inventory for {$matId}.");
+
+            $this->insertTrans($transMaterialData);
+        }
+    }
+
+    /* GET FUNCTIONS */
+
+    /**
+     * getMaterialLbs
+     *
+     * @param  mixed $matPartNumber
+     * @return void
+     */
+    private function getMaterialLbs($matPartNumber)
+    {
+        $sql = 'SELECT matLbs, matPartNumber FROM materialinventory WHERE matPartNumber = :matPartNumber';
+        $stmt = $this->con->prepare($sql);
+        $stmt->bindParam(':matPartNumber', $matPartNumber, \PDO::PARAM_STR);
+        $stmt->execute();
+
+        $result = $stmt->fetch();
+        if (!$result) throw new \Exception("Failed to get {$matPartNumber} inventory amount!");
+        $lbs = $result['matLbs'];
+        return $lbs;
+    }
+
+    /**
+     * getPFMQty
+     *
+     * @param  mixed $partNumber
+     * @return void
+     */
+    private function getPFMQty($partNumber)
+    {
+        $sql = 'SELECT partNumber, qty FROM pfmInventory WHERE partNumber = :partNumber';
+        $stmt = $this->con->prepare($sql);
+        $stmt->bindParam(':partNumber', $partNumber, \PDO::PARAM_STR);
+        $stmt->execute();
+        $result = $stmt->fetch();
+        if (!$result) throw new \Exception("Failed to get PFM Qty for {$partNumber}.");
+        $qty = $result['qty'];
+
+        return  $qty;
+    }
+
+    /**
+     * getInvQty function
+     *
+     * @param [type] $productID
+     * @return void
+     */
+    public function getInvQty($productID)
+    {
+        $sql = 'SELECT partQty FROM productInventory WHERE productID = :productID';
+        $stmt = $this->con->prepare($sql);
+        $qty = $stmt->execute([':productID' => $productID]);
+        if (!$qty) throw new \Exception("Failed to get qty for {$productID}.");
+        return $qty;
     }
 
     /**
@@ -903,10 +928,10 @@ class ProductionModel
         return $prevLogID;
     }
 
-    //This will return the logID of the production run no completed based on the part number.    
     /**
      * getProdRunID
-     *
+     * This will return the logID of the production run no completed based on the part number.   
+     *  
      * @param  mixed $productID
      * @return void
      */

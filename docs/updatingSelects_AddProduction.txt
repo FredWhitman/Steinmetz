@@ -1,0 +1,111 @@
+To auto-populate your hopper dropdowns and weights whenever the user picks “In Progress” 
+or “End,” you’ll need to:
+
+1. **Fetch the previous material‐log** for that run (you already have `fetchPreviousMatLogs()`)  
+2. **Fill the four select+input pairs** with the returned `matN` and `matUsedN` values  
+
+Here’s a complete example, building on your existing modules:
+
+---
+
+## 1) Add a “fillHopperFields” helper in `productionUiManager.js`
+
+```js
+// src/js/productionUiManager.js
+export function fillHopperFields(materialLog) {
+  // materialLog has keys mat1–mat4 and matUsed1–matUsed4
+  [1,2,3,4].forEach(i => {
+    const sel   = document.getElementById(`Mat${i}Name`);
+    const input = document.getElementById(`hop${i}Lbs`);
+
+    // if that mat slot exists in the log, select it
+    if (sel && materialLog[`mat${i}`]) {
+      sel.value = materialLog[`mat${i}`];
+    }
+    // and populate the lbs field
+    if (input && materialLog[`matUsed${i}`] != null) {
+      input.value = parseFloat(materialLog[`matUsed${i}`]).toFixed(3);
+    }
+  });
+
+  // recalc blender total & daily usage immediately
+  updateBlenderTotal();
+}
+```
+
+Make sure you’ve also exported `updateBlenderTotal()` from this module.
+
+---
+
+## 2) In `productionMain.js`, extend your `onRadioChange` to fetch & fill
+
+```js
+async function onRadioChange(e) {
+  runMode = e.target.value;
+  clearAlert();
+
+  const productID = document.getElementById("partName").value;
+  const logDate   = document.getElementById("logDate").value;
+  if (!productID || !logDate) return;
+
+  // existing validation...
+  await validateRunAndLog();
+
+  // only for “In Progress” (0) or “End” (2), pull the last material log
+  if (runMode === "0" || runMode === "2") {
+    showLoader();
+    try {
+      const actionType = runMode === "0" ? "getLastLog" : "endRun";
+      const materialLog = await fetchPreviousMatLogs(productID, actionType);
+
+      if (materialLog) {
+        // fill the four Mat‐selects and hopN lbs inputs
+        fillHopperFields(materialLog);
+      }
+    } catch (err) {
+      console.error(err);
+      showAlertMessage("Failed to load previous material usage.");
+    } finally {
+      hideLoader();
+    }
+  }
+}
+```
+
+Be sure to import the new helper at the top:
+
+```js
+import { fillHopperFields, updateBlenderTotal, … } from "./productionUiManager.js";
+```
+
+---
+
+## 3) Wire Date & Product Listeners (if you haven’t already)
+
+You’ll also want to re‐fetch and refill if the user changes product or date *after* 
+they’ve chosen “In Progress” or “End”:
+
+```js
+const prodSelect = document.getElementById("partName");
+const dateInput  = document.getElementById("logDate");
+
+[prodSelect, dateInput].forEach(el => {
+  el.addEventListener("change", () => {
+    // re‐run the same fetch+fill logic
+    if (runMode === "0" || runMode === "2") {
+      onRadioChange({ target: { value: runMode } });
+    }
+  });
+});
+```
+
+---
+
+### How It Works
+
+- **`fetchPreviousMatLogs()`** returns the last material log object `{ mat1, matUsed1, … }`  
+- **`fillHopperFields()`** picks off each `matN` and `matUsedN` and populates your selects + inputs  
+- You wrap it all in your existing loader/alert logic so the user sees feedback while the AJAX call runs  
+
+Paste those snippets in, adjust any element IDs if yours differ, and you’ll have fully automated 
+“fill‐from‐last‐log” behavior for In Progress and End modes.

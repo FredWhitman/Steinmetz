@@ -99,6 +99,9 @@ async function fetchAndParseJSON(url) {
   return JSON.parse(raw);
 }
 
+/*  This function takes data from controller->viewProdLog and fills fields
+    on viewProdLogModal.
+*/
 function fillFormFields(data, mapping) {
   Object.entries(mapping).forEach(([dbKey, formID]) => {
     const element = document.getElementById(formID);
@@ -241,11 +244,11 @@ export function hideLoader() {
   if (loader) loader.classList.add("d-none");
 }
 
-export function showAlertMessage(message, containerID = "alertContainer") {
+export function showAlertMessage(message, containerID = "alertContainer", level = 'success') {
   const container = document.getElementById(containerID);
   if (!container) return;
   container.innerHTML = `
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <div class="alert alert-${level} alert-dismissible fade show" role="alert">
       ${message}
       <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>`;

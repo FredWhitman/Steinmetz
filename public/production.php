@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quality</title>
+    <title>Production</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/lib/css/bootstrap.min.css" rel="stylesheet">
@@ -13,7 +13,7 @@
     <link href="/css/myCSS.css" rel="stylesheet">
     <link rel="stylesheet" href="https://www.devwares.com/docs/contrast/javascript/sections/timepicker/">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" href="steinmetz.ico" type="image/x-icon">
 
 </head>
 

@@ -255,7 +255,7 @@ function wireFormSubmission() {
 
     try {
       const result = await postProductionLog(payload);
-
+      
       // close, reset, refresh
       bootstrap.Modal.getInstance(
         document.getElementById("addProductionModal")
@@ -266,9 +266,13 @@ function wireFormSubmission() {
       if (data) {
         renderTables(data);
       }
+
+      // result.message = "Transaction completed successfully"
+      showAlertMessage(result.message, "showAlert");
+
     } catch (err) {
       console.error(err);
-      showAlertMessage("Failed to save production log. Try again.");
+      showAlertMessage("Failed to save production log. Try again.", 'showAlert');
     } finally {
       hideLoader();
     }

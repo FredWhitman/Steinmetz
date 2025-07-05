@@ -25,13 +25,40 @@ export async function fetchProdLogs() {
 }
 
 async function handleResponse(res) {
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  //read raw text
+  const text = await res.text();
+
+  //try to parse JSON, otherwise leave text
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = null;
+  }
+
+  // HTTP error?
+  if(!res.ok){
+    //check body for message and use it
+    const msg = data?.message || `HTTP ${res.status} ${res.statusText}`;
+    throw new Error(msg);
+  }
+
+  // business-logic error?
+  if(data && data.success === false){
+    //sever returned {success: false, message:"..."}
+    throw new Error(data.message || "Unknown server error");
+  }
+
+  // all good: return parsed JSON (or plain text)
+  return data ?? text;
+  
+  /* if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const text = await res.text();
   try {
     return JSON.parse(text);
   } catch {
     return text;
-  }
+  } */
 }
 
 export async function fetchProductList() {

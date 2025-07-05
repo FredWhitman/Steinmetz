@@ -16,8 +16,9 @@
             "request": "launch",
             "program": "${file}",
             "cwd": "${fileDirname}",
-            "port": 0,
+            "port": 9003,
             "runtimeArgs": [
+                "-dxdebug.mode=debug",
                 "-dxdebug.start_with_request=yes"
             ],
             "env": {
@@ -33,9 +34,9 @@
                 "-dxdebug.mode=debug",
                 "-dxdebug.start_with_request=yes",
                 "-S",
-                "localhost:0"
+                "localhost:8000"
             ],
-            "program": "",
+            "program": "${workspaceRoot}/index.php",
             "cwd": "${workspaceRoot}",
             "port": 9003,
             "serverReadyAction": {
