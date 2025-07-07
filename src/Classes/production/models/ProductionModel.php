@@ -440,10 +440,7 @@ class ProductionModel
             $tempData["prodLogID"] = $prodLogID;
             $this->updateTempLogProdLogID($tempData);
 
-            /////////////////////INSERT PRODUCTIONLOG INSERT END//////////////////////////////////
-
-            //////////Insert Transaction for startuprejects, mat used, parts added to inventory, copper pins 
-
+            
             $this->updateMaterialInventory($materialData, '-');
 
             $transProductData = array(
@@ -471,13 +468,19 @@ class ProductionModel
             }
 
             $this->updatePFMInventory('349-61A0', $copperPins, '-');
-
+            
             $this->con->commit();
-            return ["success" => true, "message" => "Transaction completed successfully added {$parts} {$productID} into product inventory and removed {$copperPins} copper pins from pfm inventory."];
+            $message = "Transaction completed successfully added {$parts} of {$productID} into product inventory and removed {$copperPins} copper pins from pfm inventory.";
+            return ["success" => true, "message" => $message];
         } catch (\Throwable $e) {
+            $message = "Failed to add prodcution log and a rollback was triggered by this error: {$e}";
+
             $this->con->rollBack();
             $this->log->error('PDO Rollback.  Error failed to insert Production log: ' . $e->getMessage());
+
             throw $e;
+
+            return ['success' => false, "message" => $message];
         }
     }
 
