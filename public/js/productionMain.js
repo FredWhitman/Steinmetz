@@ -206,7 +206,7 @@ function wireFormSubmission() {
         productID: data.get("partName"),
         prodDate: data.get("logDate"),
         runStatus: runMode,
-        prevProdLogID: "0", 
+        prevProdLogID: "0",
         runLogID: "0",
         matLogID: "0",
         tempLogID: "0",
@@ -255,7 +255,7 @@ function wireFormSubmission() {
 
     try {
       const result = await postProductionLog(payload);
-      
+
       // close, reset, refresh
       bootstrap.Modal.getInstance(
         document.getElementById("addProductionModal")
@@ -269,10 +269,13 @@ function wireFormSubmission() {
 
       // result.message = "Transaction completed successfully"
       showAlertMessage(result.message, "showAlert");
-
     } catch (err) {
       console.error(err);
-      showAlertMessage("Failed to save production log. Try again.", 'showAlert', 'danger');
+      showAlertMessage(
+        "Failed to save production log. Try again.",
+        "showAlert",
+        "danger"
+      );
     } finally {
       hideLoader();
     }

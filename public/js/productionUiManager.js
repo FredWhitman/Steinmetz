@@ -244,7 +244,11 @@ export function hideLoader() {
   if (loader) loader.classList.add("d-none");
 }
 
-export function showAlertMessage(message, containerID = "alertContainer", level = 'success') {
+export function showAlertMessage(
+  message,
+  containerID = "alertContainer",
+  level = "success"
+) {
   const container = document.getElementById(containerID);
   if (!container) return;
   container.innerHTML = `
@@ -339,29 +343,28 @@ export function fillDailyUsage(usage) {
     if (el) el.value = v.toFixed(3);
   });
 
-  const hops =[1, 2, 3, 4].map( 
-    (i) => parseFloat(document.getElementById(`dHop${i}`).value) || 0);
-    const total = hops.reduce((a, b) => a + b, 0);
-    const ele = document.getElementById("dTotal");
-    if(ele) ele.value = total.toFixed(3);
+  const hops = [1, 2, 3, 4].map(
+    (i) => parseFloat(document.getElementById(`dHop${i}`).value) || 0
+  );
+  const total = hops.reduce((a, b) => a + b, 0);
+  const ele = document.getElementById("dTotal");
+  if (ele) ele.value = total.toFixed(3);
 }
 
 export function fillPercentage(percentages) {
   // percentages: [p1, p2, p3?, p4?]
   percentages.forEach((p, idx) => {
     const el = document.getElementById(`dHop${idx + 1}p`);
-    if (el) el.value = p.toFixed(2); 
+    if (el) el.value = p.toFixed(2);
   });
-
 
   const percents = [1, 2, 3, 4].map(
     (i) => parseFloat(document.getElementById(`dHop${i}p`).value) || 0
   );
-  
-  const total = percents.reduce((a,b) => a + b, 0);
-  const ele = document.getElementById('dTotalp');
-  if(ele) ele.value = total.toFixed(2);
- 
+
+  const total = percents.reduce((a, b) => a + b, 0);
+  const ele = document.getElementById("dTotalp");
+  if (ele) ele.value = total.toFixed(2);
 }
 
 // —————————————————————————————

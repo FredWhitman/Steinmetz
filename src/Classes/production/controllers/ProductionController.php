@@ -142,9 +142,3 @@ class ProductionController
         }
     }
 }
-/* 
-Routes AJAX calls to relevant logic. You can read the action from POST or the $_GET flag:
-    action = addLog
-    action = getLastLog
-    checkRun = 1
-    checkLogs = 1 */

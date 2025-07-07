@@ -14,3 +14,6 @@ $dbConn = new Connection();
 
 $model = new QualityModel($dbConn, $logger);
 
+$controller = new QualityController($model, $util, $logger);
+
+return $controller;
