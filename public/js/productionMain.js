@@ -272,7 +272,7 @@ function wireFormSubmission() {
 
     } catch (err) {
       console.error(err);
-      showAlertMessage("Failed to save production log. Try again.", 'showAlert');
+      showAlertMessage("Failed to save production log. Try again.", 'showAlert', 'danger');
     } finally {
       hideLoader();
     }

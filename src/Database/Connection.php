@@ -1,6 +1,7 @@
 <?php
-
-namespace Fred\Steinmetz\Database;
+declare(strict_types=1);
+//FILE:  src/Database/Connection.php
+namespace Database;
 
 use PDO;
 use PDOException;
@@ -13,20 +14,30 @@ class Connection
     private $password = "";
 
 
-    public $con;
+    /** @var PDO|null */
+    private ?PDO $pdo = null;
 
-    //Method for returing protect connection
-    public function dbConnection()
+    /*  
+        Returns a singleton PDO instance
+    */
+    public function getPDO(): PDO
     {
-        $this->con = null;
-        try {
-            $this->con = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->dbName, $this->username, $this->password, array(
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
-            ));
-        } catch (PDOException $exception) {
-            echo "Connection error: " . $exception->getMessage();
+        if($this->pdo instanceof PDO){
+            return $this->pdo;
         }
-        return $this->con;
+
+        $dsn = sprintf('mysql:host=%s;dbname=%s;charset=utf8',
+                        $this->host, $this->dbName);
+        try {
+            $this->pdo = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->dbName, $this->username, $this->password, 
+                [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
+            ]);
+        } catch (PDOException $e) {
+            throw new \RuntimeException('Database connection failed: ' . $e->getMessage(), (int)$e->getCode());
+        }
+        return $this->pdo;
     }
 }

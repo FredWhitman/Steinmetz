@@ -12,7 +12,9 @@
     "psr-4": {
       "Fred\\Steinmetz\\": "src/",
       "Inventory\\": "src/Classes/Inventory/",
-      "Production\\": "src/Classes/Production/"
+      "Production\\": "src/Classes/Production/",
+      "Quality\\": "src/Classes/Quality/",
+      "Database\\": "src/Database/"
     }
   },
   "authors": [
