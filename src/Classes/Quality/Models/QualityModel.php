@@ -19,6 +19,57 @@ class QualityModel
         $this->log = $log;
     }
 
+    public function getQALogs()
+    {
+        try {
+            $qaRejectLogs = $this->getQARejectLogs();
+            $qaOvenLogs = $this->getOvenLogs();
+            $qaLotChangeLogs = $this->getLotChanges();
+
+            return [
+                'qaRejectLogs' => $qaRejectLogs ?? [],
+                'ovenLogs' => $qaOvenLogs ?? [],
+                'lotChangeLogs' => $qaLotChangeLogs ?? []
+            ];
+        } catch (\Throwable $e) {
+            return ["success" => false, "message" => "Failed to getQA Logs: {$e}"];
+        }
+    }
+
+    public function getQARejectLogs()
+    {
+        $sql = 'SELECT * FROM qarejects
+                WHERE prodDate = NOW() - INTERVAL 4 WEEK Order By prodDate Desc';
+
+        $stmt = $this->pdo->prepare($sql);
+        if (!$stmt->execute()) {
+            $errorInfo = $stmt->errorInfo();
+            throw new \Exception("Failed to get QA Reject logs. ERROR: {$errorInfo}");
+        }
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    public function getLotChanges()
+    {
+        $sql = 'SELECT * FROM lotchange
+                WHERE ChangeDate = NOW() - INTERVAL 12 WEEK Order By ChangeDate Desc';
+        $stmt = $this->pdo->prepare($sql);
+        if (!$stmt->execute()) throw new \Exception("Failed to get Lot Changes logs.");
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getOvenLogs()
+    {
+        $sql = 'SELECT * FROM ovenlogs
+                WHERE inOvenDate = NOW() - INTERVAL 4 WEEK Order By inOvenDate Desc';
+        $stmt = $this->pdo->prepare($sql);
+        if (!$stmt->execute()) throw new \Exception("Failed to get Oven Logs");
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+
     /**
      * insertQaRejects function
      *

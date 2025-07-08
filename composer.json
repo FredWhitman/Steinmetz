@@ -14,7 +14,8 @@
       "Inventory\\": "src/Classes/Inventory/",
       "Production\\": "src/Classes/Production/",
       "Quality\\": "src/Classes/Quality/",
-      "Database\\": "src/Database/"
+      "Database\\": "src/Database/",
+      "Util\\": "src/Util/"
     }
   },
   "authors": [

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,12 +13,15 @@
     <link href="/css/myCSS.css" rel="stylesheet">
     <link rel="stylesheet" href="https://www.devwares.com/docs/contrast/javascript/sections/timepicker/">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="icon" href="steinmetz.ico" type="image/x-icon">
+
 
 </head>
+
 <body>
-<!--Navbar -->
+    <!--Navbar -->
     <?php require_once '../includes/steinmetzNavbar.php'; ?>
-    
+
 
     <!-- Add QA Rejects to production log start-->
     <div class="modal fade" id="addQARejectsModal" tabindex="-1" aria-labelledby="addQARejectsModal">
@@ -63,7 +67,7 @@
 
 
 
-<!-- Table to hold the last 4 weeks of production  -->
+    <!-- Table to hold the last 4 weeks of production  -->
     <div class="container-fluid">
         <div class="mt-5">
             <div class="row mt-2">
@@ -85,7 +89,80 @@
                 </div>
             </div>
             <div class="row justify-content-center">
-                
+                <div class="col-md-4">
+                    <div class="table-container-scroll">
+                        <!-- <div class="table-responsive"> -->
+                        <!-- Table to display QA Reject Logs -->
+                        <table class="table table-striped table-bordered text-center">
+                            <thead class="sticky-header">
+                                <tr>
+                                    <th colspan="5">QA Reject Logs</th>
+                                </tr>
+                                <tr>
+                                    <th>Production Date</th>
+                                    <th>Production Log</th>
+                                    <th>Part Number</th>
+                                    <th>Rejects</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="qaRejectLogs">
+
+                            </tbody>
+                        </table>
+                        <!-- </div> -->
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="table-container-scroll">
+                        <!--  Table to display Oven Logs-->
+                        <table class="table table-striped table-bordered text-center">
+                            <thead class="sticky-header">
+                                <tr>
+                                    <th colspan="8">Oven Logs</th>
+                                </tr>
+                                <tr>
+                                    <th>Part Number</th>
+                                    <th>In Date</th>
+                                    <th>In Time</th>
+                                    <th>In Initials</th>
+                                    <th>Out Date</th>
+                                    <th>Out Time</th>
+                                    <th>Out Initials</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ovenLogs">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="table-container-scroll">
+                        <!-- Table to display Lot change logs -->
+                        <table class="table table-striped table-bordered text-center">
+                            <thead class="sticky-header">
+                                <tr>
+                                    <th colspan="8">Lot Change Logs</th>
+                                </tr>
+                                <tr>
+                                    <th>Production Log Id</th>
+                                    <th>Product ID</th>
+                                    <th>Material Name</th>
+                                    <th>Change Date</th>
+                                    <th>Change Time</th>
+                                    <th>Old Lot #</th>
+                                    <th>New Lot #</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lotChangeLogs">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -93,6 +170,7 @@
     <!-- Bootstrap js -->
     <script type="text/javascript" src="/lib/js/bootstrap.bundle.min.js"></script>
     <!-- Custom javascript -->
-    <script type="text/javascript" src="../resources/js/qaRejects.js"></script>    
+    <script type="module" src="/js/qualityMain.js"></script>
 </body>
+
 </html>

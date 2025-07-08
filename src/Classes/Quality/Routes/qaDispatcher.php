@@ -10,22 +10,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         case 'value':
             # code...
             break;
-        
-        default:
-            # code...
-            break;
-    }    
-}
 
-if($_SERVER["REQUEST_METHOD"] === "GET"){
-    switch (true) {
-        case 'value':
-            # code...
-            break;
-        
         default:
             # code...
             break;
     }
 }
 
+if ($_SERVER["REQUEST_METHOD"] === "GET") {
+    switch (true) {
+        case 'GetQaLogs':
+            $controller->getQALogs();
+            break;
+
+        default:
+            # code...
+            break;
+    }
+}

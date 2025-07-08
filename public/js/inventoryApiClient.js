@@ -83,7 +83,7 @@ export async function fetchAndFillForm(id, table) {
   }
 }
 
-// Fill a form for updating (GET request) - similar logic as above:
+// Fill a form for updating (GET request)
 export async function fetchAndFillUpdateForm(id, table) {
   const url = `${BASE_URL}?update${
     table.charAt(0).toUpperCase() + table.slice(1)
@@ -106,7 +106,7 @@ export async function fetchAndFillUpdateForm(id, table) {
         partName: "pPartName",
         partQty: "pStock",
       },
-      materials:{
+      materials: {
         matPartNumber: "h_matPartNumber",
         matName: "umMatName",
         matLbs: "umMatLbs",
@@ -116,7 +116,7 @@ export async function fetchAndFillUpdateForm(id, table) {
         partNumber: "h_partNumber",
         partName: "uPfmName",
         Qty: "uPfmStock",
-      }
+      },
 
       // Add pfm mappings if needed.
     };
