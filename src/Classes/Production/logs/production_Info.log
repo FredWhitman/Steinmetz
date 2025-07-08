@@ -248,3 +248,4 @@
 [2025-07-07T04:23:59.439372+02:00] Production.INFO: End of prodcution run detected aquiring run production totals [] []
 [2025-07-07T04:23:59.442396+02:00] Production.ERROR: PDO Rollback.  Error failed to insert Production log: Error: productionDB_SQL->getMaterialTotals for prodRunID logID: 2025-07-15 [] []
 [2025-07-07T18:53:48.849647+02:00] Production.INFO: read4wks called to fill table [] []
+[2025-07-08T03:03:08.773257+02:00] Production.INFO: read4wks called to fill table [] []

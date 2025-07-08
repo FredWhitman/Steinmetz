@@ -2,7 +2,6 @@
 
 import { showLoader, hideLoader } from "./inventoryUiManager.js";
 
-// Adjust your base URL/path if needed.
 const BASE_URL = "/api/dispatcher.php";
 
 // Fetch inventory data (GET request)
