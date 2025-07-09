@@ -37,3 +37,42 @@ export async function fetchAndFillUpdateForm(id, table) {
     console.error("Failed to parse JSON in FetchAndFill UpdateForm: ", error);
   }
 }
+
+async function handleResponse(res) {
+  //read raw text
+  const text = await res.text();
+
+  //try to parse JSON, otherwise leave text
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = null;
+  }
+
+  // HTTP error?
+  if (!res.ok) {
+    //check body for message and use it
+    const msg = data?.message || `HTTP ${res.status} ${res.statusText}`;
+    throw new Error(msg);
+  }
+
+  // business-logic error?
+  if (data && data.success === false) {
+    //sever returned {success: false, message:"..."}
+    throw new Error(data.message || "Unknown server error");
+  }
+
+  // all good: return parsed JSON (or plain text)
+  return data ?? text;
+}
+
+export async function postQaRejects(payload){
+  const res = await(BASE_URL, {
+    method: "POST",
+    header: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse(res);
+}
+

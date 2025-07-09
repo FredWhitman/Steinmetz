@@ -32,4 +32,11 @@ class QualityController
             echo json_encode(['error' => 'Failed to fetch QA Logs', 'details' => $e->getMessage()]);
         }
     }
+
+    public function addQaRejects($data){
+        header('Content-Type: application/json');
+        
+        $result = $this->model->addQaRejects($data);
+
+    }
 }

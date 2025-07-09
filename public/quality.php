@@ -14,14 +14,17 @@
     <link rel="stylesheet" href="https://www.devwares.com/docs/contrast/javascript/sections/timepicker/">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="icon" href="steinmetz.ico" type="image/x-icon">
-
-
 </head>
 
 <body>
     <!--Navbar -->
     <?php require_once '../includes/steinmetzNavbar.php'; ?>
 
+    <div id="loader" class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75" style="z-index: 1050;">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
 
     <!-- Add QA Rejects to production log start-->
     <div class="modal fade" id="addQARejectsModal" tabindex="-1" aria-labelledby="addQARejectsModal">
@@ -64,7 +67,64 @@
         </div>
     </div>
     <!-- Add QA Rejects to production log end-->
-
+     
+    <!-- Add Lot Changes to production log start-->
+    <div class="modal fade" id="addLotChangeModal" tabindex="-1" aria-labelledby="addLotChangeModal">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Lot Change</h1>
+                </div>
+                <div class="modal-body">
+                    <form id="add-lotchange-form" class="needs-validation p-2" novalidate>
+                        <div class="mb-3">
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="lcPartName">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="lcPartName" name="lcPart" required></select></div>
+                                    <div class="invalid-feedback">Part name is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="lcPartName">Material Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="lcMatName" name="lcMat" required></select></div>
+                                    <div class="invalid-feedback">Material is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="lcLotDate">Production Date</label><input class="form-control" type="date" tabindex="2" id="lclotDate" name="lcLotDate" required></div>
+                                    <div class="invalid-feedback">Production date is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="lcaTime">Time</label><input class="form-control" type="time" id="lclotTime" name="lcLotTime" value="09:00" required></div>
+                                    <div class="invalid-feedback">Change time is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="input-group sm-3"><label class="input-group-text" for="lcOldLot">Old Lot</label><input type="text" tabindex="1" class="form-control form-control-sm" id="lcOldLot" name="lcOldLot" required></div>
+                                <div class="invalid-feedback">Old lot number is required!</div>
+                            </div>
+                            <div class="row">
+                                <div class="input-group sm-3"><label class="input-group-text" for="lcNewLot">New Lot</label><input type="text" tabindex="1" class="form-control form-control-sm" id="lcNewLot" name="lcNewLot" required></div>
+                                <div class="invalid-feedback">New lot numger is required!</div>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="message-text" class="col-form-label">Comments</label>
+                            <textarea class="form-control" type="text" id="comment-text" name="lcComments"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" value="Add Lot Change" class="btn btn-success" id="add-lotchange-btn">Add Lot Change</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add Lot Changes to production log end-->
 
 
     <!-- Table to hold the last 4 weeks of production  -->

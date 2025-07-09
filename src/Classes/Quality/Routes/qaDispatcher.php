@@ -7,13 +7,13 @@ $data = json_decode(file_get_contents('php://input'), true);
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     switch (true) {
-        case 'value':
-            # code...
+        case isset($data['action']) && $data['action'] === 'addQaRejects':
+            $controller->addQaRejects($data);
             break;
 
         default:
-            # code...
-            break;
+            http_response_code(400);
+            echo json_encode(['error' => "Invalid POST request."]);
     }
 }
 
