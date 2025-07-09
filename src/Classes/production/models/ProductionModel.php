@@ -117,187 +117,6 @@ class ProductionModel
     }
 
     /**
-     * insertQaRejects function
-     *
-     * @param [type] $productID
-     * @param [type] $prodDate
-     * @param [type] $rejects
-     * @param [type] $comments
-     * @return void
-     */
-    public function insertQaRejects($productID, $prodDate, $rejects, $comments)
-    {
-        try {
-            $this->con->beginTransaction();
-
-            //SETUP ARRAY FOR TRANSACTION INSERT
-            $transData = array(
-                "action" => 'updateProdLog',
-                "inventoryID" => $productID,
-                "inventoryType" => 'product',
-                "prodLogID" => "0",
-                "oldStockCount" => "",
-                "transAmount" => $rejects,
-                "transType" => "qa rejects",
-                "transComment" => $comments,
-            );
-
-            $row = $this->getProductionlog($productID, $prodDate);
-            $invQty = $this->getInvQty($productID);
-
-            if (!$row) {
-                $this->log->info("Error: nothing was returned for previous log!");
-                $this->con->rollback(); //revert changes
-                return false;
-            } else {
-                $prodLogID = $row['logID'];
-                $prevRejects = $row['qaRejects'];
-
-                $transData['prodLogID'] = $prodLogID;
-                $transData['oldStockCount'] = $invQty;
-            }
-
-            $newTotal = $prevRejects + $rejects;
-            //Insert info into qaRejects Table
-            $sqlInsert = "INSERT 
-                          INTO qarejects (
-                            prodDate,
-                            prodLogID, 
-                            productID, 
-                            rejects, 
-                            comments) 
-                          VALUES (
-                            :prodDate,
-                            :prodLogID,
-                            :productID,
-                            :rejects,
-                            :comments)";
-
-            $stmtInsert = $this->con->prepare($sqlInsert);
-
-            //setup bindParams
-            $insertParams = [
-                ':prodDate' => [$prodDate, \PDO::PARAM_STR],
-                ':prodLogID' => [$prodLogID, \PDO::PARAM_STR],
-                ':productID' => [$productID, \PDO::PARAM_INT],
-                ':rejects' => [$rejects, \PDO::PARAM_INT],
-                ':comments' => [$comments, \PDO::PARAM_INT],
-            ];
-
-            //set bindParams
-            foreach ($insertParams as $key => [$value, $type]) {
-                $stmtInsert->bindParam($key, $value, $type);
-            }
-
-            $InsertResult = $stmtInsert->execute();
-
-            if (!$InsertResult) {
-                $this->con->rollBack();
-                $errorInfo = $InsertResult->errorInfo();
-                return ["success" => false, "message" => "Database failed to insert a record into inventorytrans.", "error" => $errorInfo];
-            }
-
-            //Update productionLogs table
-            $sqlUpdate = 'UPDATE productionlogs 
-                          SET 
-                            qaRejects =  qaRejects + :rejects 
-                          WHERE 
-                            logID = :prodLogID';
-
-            $stmtUpdateLog = $this->con->prepare($sqlUpdate);
-
-            $updateParams = [
-                ':rejects' => [$rejects, \PDO::PARAM_INT],
-                ':prodLogID' => [$prodLogID, \PDO::PARAM_INT],
-            ];
-
-            foreach ($updateParams as $key => [$value, $type]) {
-                $stmtUpdateLog->bindParam($key, $value, $type);
-            }
-
-            $stmtUpdateLog->execute();
-
-            $sqlProductUpdate = "UPDATE productInventory 
-                                 SET 
-                                    partQty = partQty - :rejects 
-                                WHERE 
-                                    productID = :productID";
-
-            $stmtInvUpdate = $this->con->prepare($sqlProductUpdate);
-
-            $InvUpdateParams = [
-                ':rejects' => [$rejects, \PDO::PARAM_INT],
-                ':productID' => [$productID, \PDO::PARAM_INT],
-            ];
-
-            foreach ($InvUpdateParams as $key => [$value, $type]) {
-                $stmtInvUpdate->bindParam($key, $value, $type);
-            }
-
-            $stmtInvUpdate->execute();
-
-            if ($stmtUpdateLog->rowCount() === 0 && $InsertResult === true && $stmtInvUpdate->rowCount() === 0) {
-                $this->con->rollback();
-                error_log("Transaction Failed: QA Rejects were not added and productionlogs qarejects was not updated.");
-                return false;
-            } else {
-                //Commit transaction
-                $this->con->commit();
-                error_log("Transaction successful: QA Rejects added and productionlogs qarejects updated.");
-                return true;
-            }
-        } catch (PDOException $e) {
-            $this->con->rollback();
-            error_log("QA Rejects Transaction failed: " . $e->getMessage());
-        }
-    }
-
-    /**
-     * addPurge
-     *
-     * @param  mixed $productID
-     * @param  mixed $prodDate
-     * @param  mixed $purge
-     * @return void
-     */
-    public function addPurge($productID, $prodDate, $purge)
-    {
-        try {
-            $this->con->beginTransaction();
-            $row = $this->getProductionlog($productID, $prodDate);
-
-            if (!$row) {
-                error_log("Error:  nothing was returned for previous log!");
-                $this->con->rollback(); //revert changes
-                return false;
-            }
-
-            $prodLogID = $row['logID'];
-
-            //Update productionLogs table
-
-            $sqlUpdate = 'UPDATE productionlogs SET purgelbs =  purgelbs + :purge WHERE logID = :prodLogID';
-            $stmtUpdate = $this->con->prepare($sqlUpdate);
-            $stmtUpdate->bindParam(":purge", $purge, \PDO::PARAM_STR);
-            $stmtUpdate->bindParam(":prodLogID", $prodLogID, \PDO::PARAM_INT);
-            $stmtUpdate->execute();
-
-            if ($stmtUpdate->rowCount() === 0) {
-                error_log("Transaction Failed: productionlogs purge update.");
-                $this->con->rollback();
-                return false;
-            } else {
-                //Commit transaction
-                $this->con->commit();
-                error_log("Transaction successful: productionlogs purge updated.");
-                return true;
-            }
-        } catch (PDOException $e) {
-            error_log('Error adding purge to production log: ' . $e->getMessage());
-        }
-    }
-
-    /**
      * insertProdLog
      *
      * @param  mixed $prodData form data array
@@ -322,8 +141,8 @@ class ProductionModel
             $copperPins = $parts * 2;
 
             $oldProductStock = $this->getInvQty($productID);
-            if(!$oldProductStock) throw new \Exception("Failed to get old inventory for {$oldProductStock}");
-           
+            if (!$oldProductStock) throw new \Exception("Failed to get old inventory for {$oldProductStock}");
+
             /*  set runStatus to either start,in progress or end
                 0 - get $prodRunID, using prodRunID get prevProdLogID and set prodData[] values
                 1 - create Productionrun, set prodRunID, set $prevProdLogID to 0
@@ -370,7 +189,7 @@ class ProductionModel
                 default:
                     throw new \InvalidArgumentException("Invalid runStatus: {$prodData['runStatus']}");
             }
-            
+
             $this->con->beginTransaction();
 
             /* Insert materialLog & tempLog returnint their logIDs and add logID to each of their respective arrays */
@@ -440,7 +259,7 @@ class ProductionModel
             $tempData["prodLogID"] = $prodLogID;
             $this->updateTempLogProdLogID($tempData);
 
-            
+
             $this->updateMaterialInventory($materialData, '-');
 
             $transProductData = array(
@@ -459,7 +278,7 @@ class ProductionModel
 
             // check to see if this is the end of the production run and fetch material data for the run
             // and update prodrunlog with totals, end date and completed
-            
+
             if ($prodData['runStatus'] === 'end') {
 
                 $this->log->info('End of prodcution run detected aquiring run production totals');
@@ -468,7 +287,7 @@ class ProductionModel
             }
 
             $this->updatePFMInventory('349-61A0', $copperPins, '-');
-            
+
             $this->con->commit();
             $message = "Transaction completed successfully added {$parts} of {$productID} into product inventory and removed {$copperPins} copper pins from pfm inventory.";
             return ["success" => true, "message" => $message];
@@ -651,7 +470,6 @@ class ProductionModel
 
         $result = $stmt->execute();
         if (!$result) throw new \Exception("Failed to insert transaction for {$data['inventoryID']}.");
-
     }
 
     /* UPDATE FUNCTIONS */
@@ -769,7 +587,7 @@ class ProductionModel
      */
     private function updateProductInventory($productID, $qty, $operator)
     {
-        $op = $op = ($operator === "+") ? '+' : '-' ;
+        $op = $op = ($operator === "+") ? '+' : '-';
         $sql = "UPDATE productInventory SET partQty = partQty {$op} :qty WHERE productID = :productID";
         $stmt = $this->con->prepare($sql);
         $stmt->bindParam(':qty', $qty, \PDO::PARAM_INT);
@@ -790,7 +608,7 @@ class ProductionModel
     private function updateMaterialInventory($materialData, $operator)
     {
         $prodLogID = $materialData['prodLogID'];
-        $op = ($operator === "+") ? '+' : '-' ;
+        $op = ($operator === "+") ? '+' : '-';
 
         $matData = $materialData;
 
@@ -811,7 +629,7 @@ class ProductionModel
 
             $matId = $matData["mat{$i}"];
             $used = floatval($matData["matUsed{$i}"] ?? 0);
-            
+
             if (!$matId || $used <= 0) continue;
 
             $oldMatStock = $this->getMaterialLbs($matId);

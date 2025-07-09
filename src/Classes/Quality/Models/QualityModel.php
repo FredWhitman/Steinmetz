@@ -79,128 +79,122 @@ class QualityModel
      * @param [type] $comments
      * @return void
      */
-    public function insertQaRejects($productID, $prodDate, $rejects, $comments)
+    public function insertQaRejects($data)
     {
+        $productID = $data['productID'];
+        $rejects = $data['rejects'];
+        $comments = $data['comments'];
+        $prodDate = $data['prodDate'];
+
+        $row = $this->getProductionLogID($productID, $prodDate);
+        if (!$row) throw new \Exception('Failed to get prodLogID.');
+        $prodLogID = $row['prodLogID'];
+        $productStockQty = $this->getProductInventory($productID);
+        $pfmStockQty = $this->getPFMInventory('349-61A0');
+        $copperPins = $rejects * 2;
+
         try {
             $this->pdo->beginTransaction();
 
-            //SETUP ARRAY FOR TRANSACTION INSERT
-            $transData = array(
+            //SETUP ARRAY FOR Product TRANSACTION INSERT
+            $transProductData = array(
                 "action" => 'updateProdLog',
                 "inventoryID" => $productID,
                 "inventoryType" => 'product',
-                "prodLogID" => "0",
-                "oldStockCount" => "",
+                "prodLogID" => $prodLogID,
+                "oldStockCount" => $productStockQty,
                 "transAmount" => $rejects,
                 "transType" => "qa rejects",
                 "transComment" => $comments,
             );
 
-            $row = $this->getProductionLogID($productID, $prodDate);
-            $invQty = $this->getInvQty($productID);
+            //SETUP ARRAY FOR PFM TRANSACTION INSERT
+            $transPFMData = array(
+                "action" => 'updateProdLog',
+                "inventoryID" => '349-61A0',
+                "inventoryType" => 'pfm',
+                "prodLogID" => $prodLogID,
+                "oldStockCount" => $pfmStockQty,
+                "transAmount" => $copperPins,
+                "transType" => "qa rejects",
+                "transComment" => 'qaReject Log',
+            );
 
-            if (!$row) {
-                $this->log->info("Error: nothing was returned for previous log!");
-                $this->pdo->rollback(); //revert changes
-                return false;
-            } else {
-                $prodLogID = $row['logID'];
-                $prevRejects = $row['qaRejects'];
+            // insert QA Rejects
+            $sql = 'INSERT  
+                    INTO qarejects (prodDate, prodLogID, productID, rejects, commments)
+                    VALUES (:prodDate, :prodLogID, :productID, :rejects, :commments)';
 
-                $transData['prodLogID'] = $prodLogID;
-                $transData['oldStockCount'] = $invQty;
-            }
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':prodDate', $prodDate, \PDO::PARAM_STR);
+            $stmt->bindParam(':prodLogID', $prodLogID, \PDO::PARAM_INT);
+            $stmt->bindParam(':productID', $productID, \PDO::PARAM_STR);
+            $stmt->bindParam(':rejects', $rejects, \PDO::PARAM_INT);
+            $stmt->bindParam(':comments', $comments, \PDO::PARAM_STR);
 
-            $newTotal = $prevRejects + $rejects;
-            //Insert info into qaRejects Table
-            $sqlInsert = "INSERT 
-                          INTO qarejects (
-                            prodDate,
-                            prodLogID, 
-                            productID, 
-                            rejects, 
-                            comments) 
-                          VALUES (
-                            :prodDate,
-                            :prodLogID,
-                            :productID,
-                            :rejects,
-                            :comments)";
+            if (!$stmt->execute()) {
+                $errorInfo = $stmt->errorInfo();
+                throw new \Exception('Failed to insert QaReject log. ERROR: ' . $errorInfo);
+            };
 
-            $stmtInsert = $this->pdo->prepare($sqlInsert);
+            // insert transaction for QA rejects
+            $this->insertTransactions($transProductData);
 
-            //setup bindParams
-            $insertParams = [
-                ':prodDate' => [$prodDate, \PDO::PARAM_STR],
-                ':prodLogID' => [$prodLogID, \PDO::PARAM_STR],
-                ':productID' => [$productID, \PDO::PARAM_INT],
-                ':rejects' => [$rejects, \PDO::PARAM_INT],
-                ':comments' => [$comments, \PDO::PARAM_INT],
-            ];
+            // insert transaction for copper pins being added back into inventory
+            $this->insertTransactions($transPFMData);
 
-            //set bindParams
-            foreach ($insertParams as $key => [$value, $type]) {
-                $stmtInsert->bindParam($key, $value, $type);
-            }
+            // update production log with QA rejects
+            $this->updateQaRejects($prodLogID, $rejects);
 
-            $InsertResult = $stmtInsert->execute();
+            // update subtract rejects for productID from product inventory
+            $this->updateProductQty($productID, $rejects, "-");
 
-            if (!$InsertResult) {
-                $this->pdo->rollBack();
-                $errorInfo = $InsertResult->errorInfo();
-                return ["success" => false, "message" => "Database failed to insert a record into inventorytrans.", "error" => $errorInfo];
-            }
+            // update add copper pins to inventory
+            $this->updatePFMQty('349-6140', $copperPins, "+");
 
-            //Update productionLogs table
-            $sqlUpdate = 'UPDATE productionlogs 
-                          SET 
-                            qaRejects =  qaRejects + :rejects 
-                          WHERE 
-                            logID = :prodLogID';
+            $this->pdo->commit();
 
-            $stmtUpdateLog = $this->pdo->prepare($sqlUpdate);
-
-            $updateParams = [
-                ':rejects' => [$rejects, \PDO::PARAM_INT],
-                ':prodLogID' => [$prodLogID, \PDO::PARAM_INT],
-            ];
-
-            foreach ($updateParams as $key => [$value, $type]) {
-                $stmtUpdateLog->bindParam($key, $value, $type);
-            }
-
-            $stmtUpdateLog->execute();
-
-            $sqlProductUpdate = "UPDATE productInventory 
-                                 SET partQty = partQty - :rejects 
-                                WHERE productID = :productID";
-
-            $stmtInvUpdate = $this->pdo->prepare($sqlProductUpdate);
-
-            $InvUpdateParams = [
-                ':rejects' => [$rejects, \PDO::PARAM_INT],
-                ':productID' => [$productID, \PDO::PARAM_INT],
-            ];
-
-            foreach ($InvUpdateParams as $key => [$value, $type]) {
-                $stmtInvUpdate->bindParam($key, $value, $type);
-            }
-
-            $stmtInvUpdate->execute();
-
-            if ($stmtUpdateLog->rowCount() === 0 && $InsertResult === true && $stmtInvUpdate->rowCount() === 0) {
-                $this->pdo->rollback();
-                error_log("Transaction Failed: QA Rejects were not added and productionlogs qarejects was not updated.");
-                return false;
-            } else {
-                //Commit transaction
-                $this->pdo->commit();
-                error_log("Transaction successful: QA Rejects added and productionlogs qarejects updated.");
-                return true;
-            }
+            return ['success' => true, 'message' => "Successfully added {$rejects} of {$productID} to  production log from {$prodDate} and added {$copperPins} back to inventory."];
         } catch (\Throwable $e) {
+
             $this->pdo->rollback();
-            error_log("QA Rejects Transaction failed: " . $e->getMessage());
+            return ['success' => false, 'message' => 'QA Rejects insert failed: ' . $e->getMessage()];
+        }
+    }
+
+    public function updateQaRejects($prodLogID, $rejects)
+    {
+        //Update productionLogs table
+        $sql = 'UPDATE productionlogs 
+                          SET qaRejects =  qaRejects + :rejects 
+                          WHERE logID = :prodLogID';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':prodLogID', $prodLogID, \PDO::PARAM_INT);
+        $stmt->bindParam(':rejects', $rejects, \PDO::PARAM_INT);
+
+        if (!$stmt->execute()) {
+            $error = $stmt->errorInfo();
+            throw new \Exception("Failed to update qarejects for productionLog id: {$prodLogID} for {$prodDate}. ERROR: {$error}");
+        }
+    }
+
+    public function insertTransactions($data)
+    {
+        $sql = 'INSERT INTO 
+                    inventorytransaction (inventoryID, inventoryType, prodLogID, oldStockCount, transAmount, transType, transComment) 
+                VALUES (:inventoryID, :inventoryType, :prodLogID, :oldStockCount, :transAmount, :transType, :transComment)';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':inventoryID', $data['inventoryID'], \PDO::PARAM_STR);
+        $stmt->bindParam(':inventoryType', $data['inventoryType'], \PDO::PARAM_STR);
+        $stmt->bindParam(':prodLogID', $data['prodLogID'], \PDO::PARAM_INT);
+        $stmt->bindParam(':oldStockCount', $data['oldStockCount'], \PDO::PARAM_INT);
+        $stmt->bindParam(':tranAmount', $data['transAmount'], \PDO::PARAM_INT);
+        $stmt->bindParam(':tranType', $data['transType'], \PDO::PARAM_STR);
+        $stmt->bindParam(':transComment', $data['transComment'], \PDO::PARAM_STR);
+
+        if (!$stmt->execute()) {
+            $error = $stmt->errorInfo();
+            throw new \Exception("Failed to insert transactions for {$data['inventoryID']}.  ERROR: {$error}");
         }
     }
 
@@ -260,6 +254,65 @@ class QualityModel
 
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
         if (!$result) throw new \Exception("Failed to get production log for {$productID} made on {$prodDate}.");
+
         return $result;
+    }
+
+    private function getProductInventory($productID)
+    {
+        $sql = 'SELECT partQty FROM productinventory WHERE productID = :productID';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':productID', $productID, \PDO::PARAM_STR);
+        if (!$stmt->execute()) {
+            $error = $stmt->errorInfo();
+            throw new \Exception("Failed to get product: {$productID}'s qty. ERROR: {$error}");
+        }
+        $result = $stmt->fetch();
+        return $result;
+    }
+
+    private function getPFMInventory($pfmID)
+    {
+        $sql = 'SELECT Qty FROM pfminventory WHERE partNumber = :partNumber';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':partNumber', $pfmID, \PDO::PARAM_STR);
+
+        if (!$stmt->execute()) {
+            $error = $stmt->errorInfo();
+            throw new \Exception("Failed to get PFM: {$pfmID}'s qty. ERROR: {$error}");
+        }
+
+        $result = $stmt->fetch();
+        return $result;
+    }
+
+    public function updatePFMQty($pfmID, $copperPins, $operator)
+    {
+        $op = $op = ($operator === "+") ? '+' : '-';
+
+        $sql = "UPDATE pfminventory SET partQty = partQty {$op} :partQty() WHERE partNumber = :partNumber";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':partQty', $copperPins, \PDO::PARAM_INT);
+        $stmt->bindParam(':partNumber', $pfmID, \PDO::PARAM_STR);
+
+        if (!$stmt->execute()) {
+            $error = $stmt->errorInfo();
+            throw new \Exception("Failed to update PFM: {$pfmID}'s qty. ERROR: {$error}");
+        }
+    }
+
+    public function updateProductQty($productID, $amount, $operator)
+    {
+        $op = $op = ($operator === "+") ? '+' : '-';
+
+        $sql = "UPDATE productinventory SET partQty = partQty {$op} :partQty() WHERE productID = :productID";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':partQty', $amount, \PDO::PARAM_INT);
+        $stmt->bindParam(':productID', $productID, \PDO::PARAM_STR);
+
+        if (!$stmt->execute()) {
+            $error = $stmt->errorInfo();
+            throw new \Exception("Failed to update Product: {$productID}'s qty. ERROR: {$error}");
+        }
     }
 }

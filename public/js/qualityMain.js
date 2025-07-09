@@ -21,8 +21,8 @@ function addQaRejectsFormSubmision() {
   const form = document.getElementById("add-qaReject-form");
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    
-    if(!form.checkValidity()){
+
+    if (!form.checkValidity()) {
       form.classList.add("was-validated");
       return;
     }
@@ -30,27 +30,37 @@ function addQaRejectsFormSubmision() {
     const data = new FormData(form);
     const payload = {
       action: "addQaRejects",
-      qaRejectData:{
+      qaRejectData: {
         //db column: data.get("element id"),
+        prodDate: data.get(""),
+        productID: data.get(""),
+        rejects: data.get(""),
+        comments: data.get(""),
       },
     };
 
     try {
       const result = await postQaRejects(payload);
-      if(result){
-        bootstrap.Modal.getInstance(document.getElementById("addQARejectsModal")).hide();
+      if (result) {
+        bootstrap.Modal.getInstance(
+          document.getElementById("addQARejectsModal")
+        ).hide();
       }
-
+      console.log("postQaRejects result: ".result);
       const data = await fetchQualityLogs();
-      if(data){
+      if (data) {
         renderTables(data);
       }
-
     } catch (error) {
-      
-    } 
-
-
+      console.error("Failed to submit QA Rejects:", error);
+    }
   });
-  
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Load data when modal shows
+  const addModalEl = document.getElementById("addQARejectsModal");
+  addModalEl.addEventListener("show.bs.modal", onModalShow);
+
+  addQaRejectsFormSubmision();
+});

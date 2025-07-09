@@ -199,7 +199,7 @@ function wireFormSubmission() {
 
     showLoader();
     const data = new FormData(form);
-    // Build payload exactly how your PHP expects it:
+    // Build payload
     const payload = {
       action: "addLog",
       prodData: {

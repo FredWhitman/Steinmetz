@@ -33,10 +33,15 @@ class QualityController
         }
     }
 
-    public function addQaRejects($data){
+    public function addQaRejects($data)
+    {
         header('Content-Type: application/json');
-        
-        $result = $this->model->addQaRejects($data);
-
+        try {
+            $result = $this->model->addQaRejects($data);
+            echo json_encode($result);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode($result);
+        }
     }
 }

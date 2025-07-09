@@ -67,12 +67,11 @@ async function handleResponse(res) {
   return data ?? text;
 }
 
-export async function postQaRejects(payload){
-  const res = await(BASE_URL, {
+export async function postQaRejects(payload) {
+  const res = await fetch(BASE_URL, {
     method: "POST",
     header: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
   return handleResponse(res);
 }
-
