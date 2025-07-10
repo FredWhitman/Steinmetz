@@ -132,3 +132,52 @@ export function renderTables({ qaRejectLogs, ovenLogs, lotChangeLogs }) {
   document.getElementById("lotChangeLogs").innerHTML =
     buildLotChangeTable(lotChangeLogs);
 }
+
+
+export function showAlertMessage(
+  message,
+  containerID = "showAlert",
+  level = "success"
+) {
+  const container = document.getElementById(containerID);
+  if (!container) return;
+  container.innerHTML = `
+    <div class="alert alert-${level} alert-dismissible fade show" role="alert">
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>`;
+}
+
+//Clears the showAlert message above the tables
+export function clearAlert(containerID = "showAlert") {
+  const c = document.getElementById(containerID);
+  if (c) c.innerHTML = "";
+}
+
+// —————————————————————————————
+// Select Population
+// —————————————————————————————
+function populateSelect(
+  selectEl,
+  items,
+  { valueKey, labelKey, includeEmpty = true }
+) {
+  if (!selectEl) return;
+  selectEl.innerHTML = includeEmpty
+    ? `<option value="">– Select –</option>`
+    : "";
+  items.forEach((item) => {
+    const opt = document.createElement("option");
+    opt.value = item[valueKey];
+    opt.textContent = item[labelKey];
+    selectEl.append(opt);
+  });
+}
+
+export function populateProductSelect(products) {
+  const sel = document.getElementById("partName");
+  populateSelect(sel, products, {
+    valueKey: "productID",
+    labelKey: "partName",
+  });
+}

@@ -257,8 +257,8 @@ export function showAlertMessage(
       <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>`;
 }
-
-export function clearAlert(containerID = "alertContainer") {
+//Clears the showAlert message above the tables
+export function clearAlert(containerID = "showAlert") {
   const c = document.getElementById(containerID);
   if (c) c.innerHTML = "";
 }
@@ -309,7 +309,7 @@ export function resetAddModalForm() {
   if (!form) return;
   form.reset();
   form.classList.remove("was-validated");
-  clearAlert("alertContainer");
+  clearAlert("showAlert");
 
   // Clear all readonly calculation fields
   [

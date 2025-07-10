@@ -31,11 +31,10 @@ function addQaRejectsFormSubmision() {
     const payload = {
       action: "addQaRejects",
       qaRejectData: {
-        //db column: data.get("element id"),
-        prodDate: data.get(""),
-        productID: data.get(""),
-        rejects: data.get(""),
-        comments: data.get(""),
+        prodDate: data.get("logDate"),
+        productID: data.get("qaPartName"),
+        rejects: data.get("qaRejects"),
+        comments: data.get("comment-text"),
       },
     };
 
