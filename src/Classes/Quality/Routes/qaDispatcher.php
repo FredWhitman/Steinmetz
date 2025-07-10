@@ -17,14 +17,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 
-if ($_SERVER["REQUEST_METHOD"] === "GET") {
-    switch (true) {
-        case 'GetQaLogs':
+
+if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET['action'])) {
+
+    switch ($_GET['action']) {
+        case 'getQaLogs':
             $controller->getQALogs();
             break;
-
+        case 'getProducts':
+            $logger->info('getProducts called from qaDispatcher.', ['source' => 'QualityController.php']);
+            $controller->getProductList();
+            break;
         default:
-            # code...
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid GET action.']);
             break;
     }
 }

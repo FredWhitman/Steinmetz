@@ -133,7 +133,6 @@ export function renderTables({ qaRejectLogs, ovenLogs, lotChangeLogs }) {
     buildLotChangeTable(lotChangeLogs);
 }
 
-
 export function showAlertMessage(
   message,
   containerID = "showAlert",
@@ -175,7 +174,8 @@ function populateSelect(
 }
 
 export function populateProductSelect(products) {
-  const sel = document.getElementById("partName");
+  console.log("qualityUiManager.js->populateProductSelect(products) called");
+  const sel = document.getElementById("qaPartName");
   populateSelect(sel, products, {
     valueKey: "productID",
     labelKey: "partName",

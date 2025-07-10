@@ -1,8 +1,20 @@
 //FILE /js/qualityMain.js
 
-import { renderTables, setupEventListener } from "./qualityUiManager.js";
+import {
+  renderTables,
+  setupEventListener,
+  showAlertMessage,
+  clearAlert,
+  populateProductSelect,
+  showLoader,
+  hideLoader,
+} from "./qualityUiManager.js";
 
-import { fetchQualityLogs, postQaRejects } from "./qualityApiClient.js";
+import {
+  fetchQualityLogs,
+  postQaRejects,
+  fetchProductList,
+} from "./qualityApiClient.js";
 
 async function init() {
   //load and render tables for OvenLog and QA Rejects
@@ -31,10 +43,10 @@ function addQaRejectsFormSubmision() {
     const payload = {
       action: "addQaRejects",
       qaRejectData: {
-        prodDate: data.get("logDate"),
-        productID: data.get("qaPartName"),
-        rejects: data.get("qaRejects"),
-        comments: data.get("comment-text"),
+        prodDate: data.get("qaLogDate"),
+        productID: data.get("qaPart"),
+        rejects: data.get("rejects"),
+        comments: data.get("qaComments"),
       },
     };
 
@@ -54,6 +66,31 @@ function addQaRejectsFormSubmision() {
       console.error("Failed to submit QA Rejects:", error);
     }
   });
+}
+
+// 1) When the modal opens, load options
+async function onModalShow() {
+  showLoader();
+  clearAlert();
+
+  try {
+    const response = await fetchProductList();
+    const products = response.products;
+    console.log("🧪 products:", products);
+
+    if (!Array.isArray(products)) {
+      showAlertMessage("⚠️ Product list failed to load properly.");
+      console.error("products", products);
+      return;
+    }
+
+    populateProductSelect(products);
+  } catch (err) {
+    console.error(err);
+    showAlertMessage("Unable to load products or materials.");
+  } finally {
+    hideLoader();
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {

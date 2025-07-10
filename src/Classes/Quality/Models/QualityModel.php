@@ -81,14 +81,14 @@ class QualityModel
      */
     public function insertQaRejects($data)
     {
-        $productID = $data['productID'];
-        $rejects = $data['rejects'];
-        $comments = $data['comments'];
-        $prodDate = $data['prodDate'];
+        $productID = $data['qaRejectData']['productID'];
+        $rejects = $data['qaRejectData']['rejects'];
+        $comments = $data['qaRejectData']['comments'];
+        $prodDate = $data['qaRejectData']['prodDate'];
 
         $row = $this->getProductionLogID($productID, $prodDate);
         if (!$row) throw new \Exception('Failed to get prodLogID.');
-        $prodLogID = $row['prodLogID'];
+        $prodLogID = $row['logID'];
         $productStockQty = $this->getProductInventory($productID);
         $pfmStockQty = $this->getPFMInventory('349-61A0');
         $copperPins = $rejects * 2;
@@ -122,8 +122,8 @@ class QualityModel
 
             // insert QA Rejects
             $sql = 'INSERT  
-                    INTO qarejects (prodDate, prodLogID, productID, rejects, commments)
-                    VALUES (:prodDate, :prodLogID, :productID, :rejects, :commments)';
+                    INTO qarejects (prodDate, prodLogID, productID, rejects, comments)
+                    VALUES (:prodDate, :prodLogID, :productID, :rejects, :comments)';
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':prodDate', $prodDate, \PDO::PARAM_STR);
@@ -134,6 +134,7 @@ class QualityModel
 
             if (!$stmt->execute()) {
                 $errorInfo = $stmt->errorInfo();
+                $this->log->error(print_r("failed to insert qarejects log:" . $stmt->debugDumpParams(), true));
                 throw new \Exception('Failed to insert QaReject log. ERROR: ' . $errorInfo);
             };
 
@@ -194,6 +195,7 @@ class QualityModel
 
         if (!$stmt->execute()) {
             $error = $stmt->errorInfo();
+            $this->log->error("error insert inventory transaction: {$data['inventoryID']}:  ERROR: " . $error);
             throw new \Exception("Failed to insert transactions for {$data['inventoryID']}.  ERROR: {$error}");
         }
     }
@@ -313,6 +315,28 @@ class QualityModel
         if (!$stmt->execute()) {
             $error = $stmt->errorInfo();
             throw new \Exception("Failed to update Product: {$productID}'s qty. ERROR: {$error}");
+        }
+    }
+
+    /**
+     * getProductList returns a list of productID and PartName
+     * @return void
+     */
+    public function getProductList()
+    {
+        try {
+            $sql = 'SELECT productID, partName from products';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+            if ($result) {
+                return $result;
+            } else {
+                return 0;
+            }
+        } catch (\PDOException $e) {
+            $this->log->error("ERROR: Failed to get product list: " . $e->getMessage());
         }
     }
 }

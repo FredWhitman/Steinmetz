@@ -8,7 +8,7 @@ const BASE_URL = "/api/qaDispatcher.php";
 export async function fetchQualityLogs() {
   showLoader();
   try {
-    const response = await fetch(`${BASE_URL}?getQaLogs=1`, {
+    const response = await fetch(`${BASE_URL}?action=getQaLogs`, {
       method: "GET",
     });
 
@@ -65,6 +65,11 @@ async function handleResponse(res) {
 
   // all good: return parsed JSON (or plain text)
   return data ?? text;
+}
+
+export async function fetchProductList() {
+  const res = await fetch(`${BASE_URL}?action=getProducts`);
+  return handleResponse(res);
 }
 
 export async function postQaRejects(payload) {

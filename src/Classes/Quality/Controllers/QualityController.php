@@ -37,11 +37,25 @@ class QualityController
     {
         header('Content-Type: application/json');
         try {
-            $result = $this->model->addQaRejects($data);
+            $result = $this->model->insertQaRejects($data);
             echo json_encode($result);
         } catch (\Exception $e) {
             http_response_code(500);
             echo json_encode($result);
+        }
+    }
+
+    public function getProductList()
+    {
+        ob_clean();
+        header('Content-Type: application/json');
+        try {
+            $result = $this->model->getProductList();
+            $this->log->info("product List for select");
+            echo json_encode(['success' => true, 'products' => $result]);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 }
