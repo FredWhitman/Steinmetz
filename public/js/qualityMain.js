@@ -52,12 +52,15 @@ function addQaRejectsFormSubmision() {
 
     try {
       const result = await postQaRejects(payload);
+      
       if (result) {
+        const alertData = JSON.parse(result.message);
+          document.getElementById("showAlert").innerHTML = alertData.html;
         bootstrap.Modal.getInstance(
           document.getElementById("addQARejectsModal")
         ).hide();
       }
-      console.log("postQaRejects result: ".result);
+      console.log("postQaRejects result: ", result);
       const data = await fetchQualityLogs();
       if (data) {
         renderTables(data);

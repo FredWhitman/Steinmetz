@@ -38,10 +38,16 @@ class QualityController
         header('Content-Type: application/json');
         try {
             $result = $this->model->insertQaRejects($data);
-            echo json_encode($result);
+            if($result['success']){
+                $alert = $this->util->showMessage('success', json_decode($result['message']));
+            }else{
+                $alert = $this->util->showMessage('danger', json_decode($result['message']));
+            }
+            echo $alert;
         } catch (\Exception $e) {
             http_response_code(500);
-            echo json_encode($result);
+            $alert = $this->util->showMessage('danger', 'Unhandled exception: '.$e->getMessage());
+            echo $$alert;
         }
     }
 

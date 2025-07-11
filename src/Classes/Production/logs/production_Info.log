@@ -257,3 +257,4 @@
 [2025-07-10T04:21:24.973776+02:00] Production.INFO: prevLog ID: 136 [] []
 [2025-07-10T04:21:24.984174+02:00] Production.INFO: result of ReadPrevious() function: Array (     [logID] => 136     [matLogID] => 134     [prodLogID] => 136     [mat1] => 01623811     [matUsed1] => 4823.03     [mat2] => RV53631502     [matUsed2] => 132.369     [mat3] =>      [matUsed3] => 0     [mat4] => 02983811     [matUsed4] => 4825.359 )  [] []
 [2025-07-10T20:29:09.907122+02:00] Production.INFO: read4wks called to fill table [] []
+[2025-07-11T00:09:09.931305+02:00] Production.INFO: read4wks called to fill table [] []

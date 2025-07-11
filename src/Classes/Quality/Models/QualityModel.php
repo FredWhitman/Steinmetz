@@ -6,17 +6,22 @@ namespace Quality\Models;
 
 use Psr\Log\LoggerInterface;
 use Database\Connection;
+use Util\Utilities;
 use Exception;
+use Quality\Util\Utilities as UtilUtilities;
 
 class QualityModel
 {
     private \PDO $pdo;
     private LoggerInterface $log;
+    private $util;
 
     public function __construct(Connection $dbConnection, LoggerInterface $log)
     {
+        $this->util = new UtilUtilities();
         $this->pdo = $dbConnection->getPdo();
         $this->log = $log;
+        
     }
 
     public function getQALogs()
@@ -89,8 +94,10 @@ class QualityModel
         $row = $this->getProductionLogID($productID, $prodDate);
         if (!$row) throw new \Exception('Failed to get prodLogID.');
         $prodLogID = $row['logID'];
-        $productStockQty = $this->getProductInventory($productID);
-        $pfmStockQty = $this->getPFMInventory('349-61A0');
+        $qResult = $this->getProductInventory($productID);
+        $productStockQty = $qResult['partQty'];
+        $pfResult = $this->getPFMInventory('349-61A0');
+        $pfmStockQty =  $pfResult['Qty'];
         $copperPins = $rejects * 2;
 
         try {
@@ -138,6 +145,8 @@ class QualityModel
                 throw new \Exception('Failed to insert QaReject log. ERROR: ' . $errorInfo);
             };
 
+            $this->log->Info("Insert Transaction Payload: " . print_r($transProductData, true));
+
             // insert transaction for QA rejects
             $this->insertTransactions($transProductData);
 
@@ -151,11 +160,13 @@ class QualityModel
             $this->updateProductQty($productID, $rejects, "-");
 
             // update add copper pins to inventory
-            $this->updatePFMQty('349-6140', $copperPins, "+");
+            $this->updatePFMQty('349-61A0', $copperPins, "+");
 
             $this->pdo->commit();
 
-            return ['success' => true, 'message' => "Successfully added {$rejects} of {$productID} to  production log from {$prodDate} and added {$copperPins} back to inventory."];
+            return ['success' => true, 
+                    'message' => $this->util->showMessage("Successfully added {$rejects} of {$productID} to  production log from {$prodDate} and added {$copperPins} back to inventory.")
+                ];
         } catch (\Throwable $e) {
 
             $this->pdo->rollback();
@@ -175,28 +186,29 @@ class QualityModel
 
         if (!$stmt->execute()) {
             $error = $stmt->errorInfo();
-            throw new \Exception("Failed to update qarejects for productionLog id: {$prodLogID} for {$prodDate}. ERROR: {$error}");
+            throw new \Exception("Failed to update qarejects for productionLog id: {$prodLogID}.  ERROR: {$error}");
         }
     }
 
     public function insertTransactions($data)
     {
         $sql = 'INSERT INTO 
-                    inventorytransaction (inventoryID, inventoryType, prodLogID, oldStockCount, transAmount, transType, transComment) 
+                    inventorytrans (inventoryID, inventoryType, prodLogID, oldStockCount, transAmount, transType, transComment) 
                 VALUES (:inventoryID, :inventoryType, :prodLogID, :oldStockCount, :transAmount, :transType, :transComment)';
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':inventoryID', $data['inventoryID'], \PDO::PARAM_STR);
         $stmt->bindParam(':inventoryType', $data['inventoryType'], \PDO::PARAM_STR);
         $stmt->bindParam(':prodLogID', $data['prodLogID'], \PDO::PARAM_INT);
         $stmt->bindParam(':oldStockCount', $data['oldStockCount'], \PDO::PARAM_INT);
-        $stmt->bindParam(':tranAmount', $data['transAmount'], \PDO::PARAM_INT);
-        $stmt->bindParam(':tranType', $data['transType'], \PDO::PARAM_STR);
+        $stmt->bindParam(':transAmount',  $data['transAmount'], \PDO::PARAM_STR);
+        $stmt->bindParam(':transType', $data['transType'], \PDO::PARAM_STR);
         $stmt->bindParam(':transComment', $data['transComment'], \PDO::PARAM_STR);
 
         if (!$stmt->execute()) {
             $error = $stmt->errorInfo();
             $this->log->error("error insert inventory transaction: {$data['inventoryID']}:  ERROR: " . $error);
-            throw new \Exception("Failed to insert transactions for {$data['inventoryID']}.  ERROR: {$error}");
+            throw new \Exception("Failed to insert transactions... ERROR: " . print_r($error, true));
+
         }
     }
 
@@ -290,12 +302,12 @@ class QualityModel
 
     public function updatePFMQty($pfmID, $copperPins, $operator)
     {
-        $op = $op = ($operator === "+") ? '+' : '-';
+        $op = ($operator === "+") ? '+' : '-';
 
-        $sql = "UPDATE pfminventory SET partQty = partQty {$op} :partQty() WHERE partNumber = :partNumber";
+        $sql = "UPDATE pfminventory SET Qty = Qty {$op} :partQty WHERE partNumber = :partNumber";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindParam(':partQty', $copperPins, \PDO::PARAM_INT);
-        $stmt->bindParam(':partNumber', $pfmID, \PDO::PARAM_STR);
+        $stmt->bindValue(':partQty', $copperPins);
+        $stmt->bindValue(':partNumber', $pfmID);
 
         if (!$stmt->execute()) {
             $error = $stmt->errorInfo();
@@ -305,9 +317,9 @@ class QualityModel
 
     public function updateProductQty($productID, $amount, $operator)
     {
-        $op = $op = ($operator === "+") ? '+' : '-';
+        $op = ($operator === "+") ? '+' : '-';
 
-        $sql = "UPDATE productinventory SET partQty = partQty {$op} :partQty() WHERE productID = :productID";
+        $sql = "UPDATE productinventory SET partQty = partQty {$op} :partQty WHERE productID = :productID";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':partQty', $amount, \PDO::PARAM_INT);
         $stmt->bindParam(':productID', $productID, \PDO::PARAM_STR);
