@@ -72,7 +72,21 @@ export async function fetchProductList() {
   return handleResponse(res);
 }
 
+export async function fetchMaterialList() {
+  const res = await fetch(`${BASE_URL}?action=getMaterials`);
+  return handleResponse(res);
+}
+
 export async function postQaRejects(payload) {
+  const res = await fetch(BASE_URL, {
+    method: "POST",
+    header: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse(res);
+}
+
+export async function postLotChange(payload) {
   const res = await fetch(BASE_URL, {
     method: "POST",
     header: { "Content-Type": "application/json" },

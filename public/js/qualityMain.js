@@ -6,6 +6,7 @@ import {
   showAlertMessage,
   clearAlert,
   populateProductSelect,
+  populateMaterialSelect,
   showLoader,
   hideLoader,
 } from "./qualityUiManager.js";
@@ -14,6 +15,7 @@ import {
   fetchQualityLogs,
   postQaRejects,
   fetchProductList,
+  fetchMaterialList,
 } from "./qualityApiClient.js";
 
 async function init() {
@@ -52,10 +54,10 @@ function addQaRejectsFormSubmision() {
 
     try {
       const result = await postQaRejects(payload);
-      
+
       if (result) {
         const alertData = JSON.parse(result.message);
-          document.getElementById("showAlert").innerHTML = alertData.html;
+        document.getElementById("showAlert").innerHTML = alertData.html;
         bootstrap.Modal.getInstance(
           document.getElementById("addQARejectsModal")
         ).hide();
@@ -71,6 +73,50 @@ function addQaRejectsFormSubmision() {
   });
 }
 
+function addLotChangeFormSubmission() {
+  const form = document.getElementById("add-lotchange-form");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    if (!form.checkValidity()) {
+      form.classList.add("was-validated");
+      return;
+    }
+
+    const data = new FormData(form);
+    const payload = {
+      action: "addLotChange",
+      lotChangeData: {
+        productID: data.get("lc_PartName"),
+        MaterialName: data.get("lc_MatName"),
+        ChangeDate: data.get("lc_LotDate"),
+        ChangeTime: data.get("lc_LotTime"),
+        OldLot: data.get("lc_OldLot"),
+        NewLot: data.get("lc_NewLot"),
+        Comments: data.get("lc_Comments"),
+      },
+    };
+
+    try {
+      const result = await postLotChange(payload);
+      if (result) {
+        const alertData = JSON.parse(result.message);
+        document.getElementById("showAlert").innerHTML = alertData.html;
+        bootstrap.Modal.getInstance(
+          document.getElementById("addLotChangeModal")
+        ).hide();
+      }
+
+      console.log("postLotChange result: ", result);
+      const data = await fetchQualityLogs();
+      if (data) {
+        renderTables(data);
+      }
+    } catch (error) {
+      console.error("Failed to submit Lot Change:", error);
+    }
+  });
+}
 // 1) When the modal opens, load options
 async function onModalShow() {
   showLoader();
@@ -95,11 +141,43 @@ async function onModalShow() {
     hideLoader();
   }
 }
+//fill selects with list of products and materials
+async function onLotChangeModalShow() {
+  showLoader();
+  clearAlert();
+
+  try {
+    const [products, materials] = await Promise.all([
+      fetchProductList(),
+      fetchMaterialList(),
+    ]);
+
+    if (!Array.isArray(products) || !Array.isArray(materials)) {
+      showAlertMessage("⚠️ Product or material lists failed to load properly.");
+      console.error("products", products);
+      console.error("material", materials);
+      return;
+    }
+
+    const sel = document.getElementById("lc_PartName");
+    populateProductSelect(sel, products);
+    populateMaterialSelect(materials);
+  } catch (err) {
+    console.error(err);
+    showAlertMessage("Unable to load products or materials.");
+  } finally {
+    hideLoader();
+  }
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   // Load data when modal shows
   const addModalEl = document.getElementById("addQARejectsModal");
   addModalEl.addEventListener("show.bs.modal", onModalShow);
 
+  const addLotModalEl = document.getElementById("addLotChangeModal");
+  addLotModalEl.addEventListener("show.bs.modal", onLotChangeModalShow);
+
   addQaRejectsFormSubmision();
+  addLotChangeFormSubmission();
 });

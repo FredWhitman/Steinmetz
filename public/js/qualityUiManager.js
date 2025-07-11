@@ -173,11 +173,24 @@ function populateSelect(
   });
 }
 
-export function populateProductSelect(products) {
+export function populateProductSelect(selectEl, products) {
+  if (!selectEl) {
+    console.warn("🚨 Select element not found!");
+    return;
+  }
+
   console.log("qualityUiManager.js->populateProductSelect(products) called");
-  const sel = document.getElementById("qaPartName");
-  populateSelect(sel, products, {
+
+  populateSelect(selectEl, products, {
     valueKey: "productID",
     labelKey: "partName",
+  });
+}
+
+export function populateMaterialSelect(materials) {
+  const sel = document.getElementById("lc_MatName");
+  populateSelect(sel, materials, {
+    valueKey: "matPartNumber",
+    labelKey: "matName",
   });
 }

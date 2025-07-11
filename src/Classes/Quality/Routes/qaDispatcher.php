@@ -10,7 +10,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         case isset($data['action']) && $data['action'] === 'addQaRejects':
             $controller->addQaRejects($data);
             break;
-
+        case isset($data['action']) && $data['action'] === 'addLotChange':
+            $controller->addLotChange($data);
+            break;
         default:
             http_response_code(400);
             echo json_encode(['error' => "Invalid POST request."]);
@@ -27,6 +29,9 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET['action'])) {
         case 'getProducts':
             $logger->info('getProducts called from qaDispatcher.', ['source' => 'QualityController.php']);
             $controller->getProductList();
+            break;
+        case 'getMaterials':
+            $controller->getMaterialList();
             break;
         default:
             http_response_code(400);

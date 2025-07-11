@@ -38,15 +38,33 @@ class QualityController
         header('Content-Type: application/json');
         try {
             $result = $this->model->insertQaRejects($data);
-            if($result['success']){
+            if ($result['success']) {
                 $alert = $this->util->showMessage('success', json_decode($result['message']));
-            }else{
+            } else {
                 $alert = $this->util->showMessage('danger', json_decode($result['message']));
             }
             echo $alert;
         } catch (\Exception $e) {
             http_response_code(500);
-            $alert = $this->util->showMessage('danger', 'Unhandled exception: '.$e->getMessage());
+            $alert = $this->util->showMessage('danger', 'Unhandled exception: ' . $e->getMessage());
+            echo $$alert;
+        }
+    }
+
+    public function addLotChange($data)
+    {
+        header('Content-Type: application/json');
+        try {
+            $result = $this->model->insertLotChange($data);
+            if ($result['success']) {
+                $alert = $this->util->showMessage('success', json_decode($result['message']));
+            } else {
+                $alert = $this->util->showMessage('danger', json_decode($result['message']));
+            }
+            echo $alert;
+        } catch (\Throwable $e) {
+            http_response_code(500);
+            $alert = $this->util->showMessage('danger', 'Unhandled exception: ' . $e->getMessage());
             echo $$alert;
         }
     }
@@ -58,7 +76,21 @@ class QualityController
         try {
             $result = $this->model->getProductList();
             $this->log->info("product List for select");
-            echo json_encode(['success' => true, 'products' => $result]);
+            echo json_encode($result);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function getMaterialList()
+    {
+        ob_clean();
+        header('Content-Type: application/json');
+        try {
+            $result = $this->model->getMaterialList();
+            $this->log->info("material list for select");
+            echo json_encode($result);
         } catch (\Exception $e) {
             http_response_code(500);
             echo json_encode(['success' => false, 'message' => $e->getMessage()]);

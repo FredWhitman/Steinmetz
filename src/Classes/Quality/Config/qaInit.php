@@ -1,5 +1,5 @@
 <?php
-//FILE: src/Classes?Quality/Config/qaInity.php
+//FILE: src/Classes?Quality/Config/qaInit.php
 
 require_once __DIR__ . '/../../../../vendor/autoload.php';
 
@@ -15,7 +15,7 @@ $util = new Utilities();
 
 $dbConn = new Connection();
 
-$model = new QualityModel($dbConn, $logger);
+$model = new QualityModel($dbConn, $logger, $util);
 
 $controller = new QualityController($model, $util, $logger);
 
