@@ -56,7 +56,8 @@ function addQaRejectsFormSubmision() {
       const result = await postQaRejects(payload);
 
       if (result) {
-        const alertData = JSON.parse(result.message);
+        console.log("Raw result:", result);
+        const alertData = result;
         document.getElementById("showAlert").innerHTML = alertData.html;
         bootstrap.Modal.getInstance(
           document.getElementById("addQARejectsModal")
@@ -124,16 +125,18 @@ async function onModalShow() {
 
   try {
     const response = await fetchProductList();
-    const products = response.products;
-    console.log("🧪 products:", products);
+    //const products = response.products;
+    console.log("🧪 products:", response);
 
-    if (!Array.isArray(products)) {
+    if (!Array.isArray(response)) {
       showAlertMessage("⚠️ Product list failed to load properly.");
-      console.error("products", products);
+      console.error("products", response);
       return;
     }
 
-    populateProductSelect(products);
+    const sel = document.getElementById("qaPartName");
+    populateProductSelect(sel, response);
+
   } catch (err) {
     console.error(err);
     showAlertMessage("Unable to load products or materials.");

@@ -73,6 +73,8 @@ class QualityModel
                 "transType" => "qa rejects",
                 "transComment" => 'qaReject Log',
             );
+            $this->log->info('Reached insertQaRejects with data:', $data);
+            $this->log->error("Logger alive check: about to try insert");
 
             // insert QA Rejects
             $sql = 'INSERT  
@@ -86,11 +88,32 @@ class QualityModel
             $stmt->bindParam(':rejects', $rejects, \PDO::PARAM_INT);
             $stmt->bindParam(':comments', $comments, \PDO::PARAM_STR);
 
-            if (!$stmt->execute()) {
-                $errorInfo = $stmt->errorInfo();
-                $this->log->error(print_r("failed to insert qarejects log:" . $stmt->debugDumpParams(), true));
-                throw new \Exception('Failed to insert QaReject log. ERROR: ' . $errorInfo);
-            };
+            try {
+                $success = $stmt->execute();
+                if(!$success){
+                    $errorInfo = $stmt->errorInfo();
+                    $this->log->error("Insert into qarejects failed", [
+                        'errorInfo' => $errorInfo,
+                        'prodDate' => $prodDate,
+                        'prodLogID' => $prodLogID,
+                        'productID' => $productID,
+                        'rejects' => $rejects,
+                        'comments' => $comments
+                    ]);
+                    throw new \Exception('Failed to insert QaReject log. ERROR: ' . $errorInfo[2]);
+                }
+            } catch (\PDOException $e) {
+                $this->log->error("Insert into qarejects failed (via exception)", [
+                    'exception' => $e->getMessage(),
+                    'prodDate' => $prodDate,
+                    'prodLogID' => $prodLogID,
+                    'productID' => $productID,
+                    'rejects' => $rejects,
+                    'comments' => $comments
+                ]);
+                throw $e;
+            }
+            
 
             // insert transaction for QA rejects
             $this->insertTransactions($transProductData);
@@ -105,13 +128,13 @@ class QualityModel
             $this->updateProductQty($productID, $rejects, "-");
 
             // update add copper pins to inventory
-            $this->updatePFMQty('349-6140', $copperPins, "+");
+            $this->updatePFMQty('349-61A0', $copperPins, "+");
 
             $this->pdo->commit();
 
             return [
                 'success' => true,
-                'message' => "Successfully added {$rejects} of {$productID} to  production log from {$prodDate} and added {$copperPins} back to inventory."
+                'message' => "Successfully added {$rejects} of {$productID} to  production log from {$prodDate} and added {$copperPins} copper pins back to inventory."
             ];
         } catch (\Throwable $e) {
             $this->pdo->rollback();
@@ -126,15 +149,15 @@ class QualityModel
     public function insertTransactions($data)
     {
         $sql = 'INSERT INTO 
-                    inventorytransaction (inventoryID, inventoryType, prodLogID, oldStockCount, transAmount, transType, transComment) 
+                    inventorytrans (inventoryID, inventoryType, prodLogID, oldStockCount, transAmount, transType, transComment) 
                 VALUES (:inventoryID, :inventoryType, :prodLogID, :oldStockCount, :transAmount, :transType, :transComment)';
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':inventoryID', $data['inventoryID'], \PDO::PARAM_STR);
         $stmt->bindParam(':inventoryType', $data['inventoryType'], \PDO::PARAM_STR);
         $stmt->bindParam(':prodLogID', $data['prodLogID'], \PDO::PARAM_INT);
         $stmt->bindParam(':oldStockCount', $data['oldStockCount'], \PDO::PARAM_INT);
-        $stmt->bindParam(':tranAmount', $data['transAmount'], \PDO::PARAM_INT);
-        $stmt->bindParam(':tranType', $data['transType'], \PDO::PARAM_STR);
+        $stmt->bindParam(':transAmount', $data['transAmount'], \PDO::PARAM_INT);
+        $stmt->bindParam(':transType', $data['transType'], \PDO::PARAM_STR);
         $stmt->bindParam(':transComment', $data['transComment'], \PDO::PARAM_STR);
 
         if (!$stmt->execute()) {
@@ -208,7 +231,8 @@ class QualityModel
 
         if (!$stmt->execute()) {
             $error = $stmt->errorInfo();
-            throw new \Exception("Failed to update qarejects for productionLog id: {$prodLogID} for {$prodDate}. ERROR: {$error}");
+            $this->log->error("Failed to update qarejects for productionLog id: {$prodLogID}. ERROR: {$error}");
+            throw new \Exception("Failed to update qarejects for productionLog id: {$prodLogID}. ERROR: {$error}");
         }
     }
 
@@ -216,13 +240,19 @@ class QualityModel
     {
         $op = $op = ($operator === "+") ? '+' : '-';
 
-        $sql = "UPDATE pfminventory SET partQty = partQty {$op} :partQty() WHERE partNumber = :partNumber";
+        $sql = "UPDATE pfminventory SET Qty = Qty {$op} :partQty WHERE partNumber = :partNumber";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':partQty', $copperPins, \PDO::PARAM_INT);
         $stmt->bindParam(':partNumber', $pfmID, \PDO::PARAM_STR);
 
         if (!$stmt->execute()) {
             $error = $stmt->errorInfo();
+            $this->log->error("Failed to update PFM: {$pfmID}'s qty. \n", [
+                                'errorInfo' => $error,
+                                'partNumber' => $pfmID,
+                                'partQty' => $copperPins,
+                                'operator' => $operator
+                            ]);
             throw new \Exception("Failed to update PFM: {$pfmID}'s qty. ERROR: {$error}");
         }
     }
@@ -231,13 +261,19 @@ class QualityModel
     {
         $op = $op = ($operator === "+") ? '+' : '-';
 
-        $sql = "UPDATE productinventory SET partQty = partQty {$op} :partQty() WHERE productID = :productID";
+        $sql = "UPDATE productinventory SET partQty = partQty {$op} :partQty WHERE productID = :productID";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':partQty', $amount, \PDO::PARAM_INT);
         $stmt->bindParam(':productID', $productID, \PDO::PARAM_STR);
 
         if (!$stmt->execute()) {
             $error = $stmt->errorInfo();
+            $this->log->error("Failed to update Product: {$productID}'s qty. \n", [
+                                'errorInfo' => $error,
+                                'productID' => $productID,
+                                'Qty' => $amount,
+                                'operator' => $operator
+                            ]);
             throw new \Exception("Failed to update Product: {$productID}'s qty. ERROR: {$error}");
         }
     }
