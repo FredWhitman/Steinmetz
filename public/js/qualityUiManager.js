@@ -22,7 +22,7 @@ export function buildQaRejectTable(qaRejectLogs) {
                     <td>${row.productID}</td>
                     <td>${row.rejects}</td>
                     <td>
-                      <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 viewLink" title="view qa reject" data-bs-toggle="modal" data-bs-target="#viewQaRejectLog"><i class="bi bi-eye-fill"></a>
+                      <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 viewLink" title="view qa reject" data-bs-toggle="modal" data-bs-target="#viewQaRejectLog"><i class="bi bi-eye-fill"></i></a>
                     </td>
                 </tr>`;
     });
@@ -36,7 +36,7 @@ export function buildOvenLogsTable(ovenLogs) {
   let html = "";
 
   if (!ovenLogs.length) {
-    html = `<tr><td colspan = "7" class="text-center">No records found</td></tr>`;
+    html = `<tr><td colspan = "8" class="text-center">No records found</td></tr>`;
   } else {
     ovenLogs.forEach((row) => {
       html += ` <tr data-id="${row.ovenLogID}">
@@ -48,8 +48,12 @@ export function buildOvenLogsTable(ovenLogs) {
                 <td>${row.outOvenTime}</td>
                 <td>${row.outOvenInitials}</td>
                 <td>
-                  <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 viewLink" title="view ovenLog" data-bs-toggle="modal" data-bs-target="#viewOvenLogModal"><i class="bi bi-eye-fill"></a>
-                  <a href="#" class="btn btn-success btn-sm rounded-pill py-0 updateLink" title="update ovenLog" data-bs-toggle="modal" data-bs-target="#updateOvenLogModal"><i class="bi bi-file-earmark-check"></a>
+                  <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 viewLink" title="view ovenLog" data-bs-toggle="modal" data-bs-target="#viewOvenLogModal">
+                    <i class="bi bi-eye-fill"></i>
+                  </a>
+                  <a href="#" class="btn btn-success btn-sm rounded-pill py-0 updateLink" title="update ovenLog" data-bs-toggle="modal" data-bs-target="#updateOvenLogModal">
+                    <i class="bi bi-file-earmark-check"></i>
+                  </a>
                 </td>
               </tr>`;
     });
@@ -74,8 +78,12 @@ export function buildLotChangeTable(lotChangeLogs) {
                   <td>${row.OldLot}</td>
                   <td>${row.NewLot}</td>
                   <td>
-                    <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 viewLink" title="view ovenLog" data-bs-toggle="modal" data-bs-target="#viewLotChangeModal"><i class="bi bi-eye-fill"></a>
-                    <a href="#" class="btn btn-success btn-sm rounded-pill py-0 updateLink" title="update ovenLog" data-bs-toggle="modal" data-bs-target="#updateLotChangeModal"><i class="bi bi-file-earmark-check"></a>
+                    <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 viewLink" title="view ovenLog" data-bs-toggle="modal" data-bs-target="#viewLotChangeModal">
+                      <i class="bi bi-eye-fill"></i>
+                    </a>
+                    <a href="#" class="btn btn-success btn-sm rounded-pill py-0 updateLink" title="update ovenLog" data-bs-toggle="modal" data-bs-target="#updateLotChangeModal">
+                      <i class="bi bi-file-earmark-check"></i>
+                    </a>
                   </td>
                </tr>`;
     });

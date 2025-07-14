@@ -9,8 +9,9 @@
     <!-- Bootstrap core CSS -->
     <link href="/lib/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom styles for this template -->
-    <link href="/lib/css/dashboard.css" rel="stylesheet">
-    <link href="/css/myCSS.css" rel="stylesheet">
+    <!-- <link href="/lib/css/dashboard.css" rel="stylesheet">
+    <link href="/css/myCSS.css" rel="stylesheet"> -->
+    <!-- <link href="/css/qualityTable.css" rel="stylesheet"> -->
     <link rel="stylesheet" href="https://www.devwares.com/docs/contrast/javascript/sections/timepicker/">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="icon" href="steinmetz.ico" type="image/x-icon">
@@ -67,6 +68,48 @@
         </div>
     </div>
     <!-- Add QA Rejects to production log end-->
+
+    <!-- Add QA Rejects to production log start-->
+    <div class="modal fade" id="viewQARejectsModal" tabindex="-1" aria-labelledby="viewQARejectsModal">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addQARejectsModal">QA Rejects</h1>
+                </div>
+                <div class="modal-body">
+                    <form id="view-qaReject-form" class="needs-validation p-2" novalidate>
+                        <div class="mb-3">
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="qaPartName">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="v_qaPartName" name="v_qaPart" required></select></div>
+                                    <div class="invalid-feedback">Part name is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="qaLogDate">Production Date</label><input class="form-control" type="date" tabindex="2" id="v_logDate" name="v_qaLogDate" required></div>
+                                    <div class="invalid-feedback">Production date is required!</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-group sm-3"><label class="input-group-text" for="qaRejects">Reject Quantity</label><input type="number" tabindex="1" class="form-control form-control-sm" id="v_qaRejects" name="v_rejects" required></div>
+                                <div class="invalid-feedback">Number of rejects is required!</div>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="message-text" class="col-form-label">Comments</label>
+                            <textarea class="form-control" type="text" id="v_comment-text" name="v_qaComments"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add QA Rejects to production log end-->
+
 
     <!-- Add Lot Changes start-->
     <div class="modal fade" id="addLotChangeModal" tabindex="-1" aria-labelledby="addLotChangeModal">
@@ -126,6 +169,63 @@
     </div>
     <!-- Add Lot Changes end-->
 
+    <!-- Vieww Lot Changes start-->
+    <div class="modal fade" id="viewLotChangeModal" tabindex="-1" aria-labelledby="viewLotChangeModal">
+        <div class="modal-dialog modal-sm-1">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Lot Change</h1>
+                </div>
+                <div class="modal-body">
+                    <form id="add-lotchange-form" class="needs-validation p-2" novalidate>
+                        <div class="mb-3">
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="lcPartName">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="v_lcPartName" name="v_lcPartName" required></select></div>
+                                    <div class="invalid-feedback">Part name is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="lcPartName">Material Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="v_lcMatName" name="v_lcMatName" readonly></select></div>
+                                    <div class="invalid-feedback">Material is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="lcLotDate">Production Date</label><input class="form-control" type="date" tabindex="2" id="v_lclotDate" name="v_lcLotDate" readonly></div>
+                                    <div class="invalid-feedback">Production date is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="lcaTime">Time</label><input class="form-control" type="time" id="v_lclotTime" name="v_lcLotTime" value="09:00" readonly></div>
+                                    <div class="invalid-feedback">Change time is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="input-group sm-3"><label class="input-group-text" for="lcOldLot">Old Lot</label><input type="text" tabindex="1" class="form-control form-control-sm" id="v_lcOldLot" name="v_lcOldLot" readonly></div>
+                                <div class="invalid-feedback">Old lot number is required!</div>
+                            </div>
+                            <div class="row">
+                                <div class="input-group sm-3"><label class="input-group-text" for="lcNewLot">New Lot</label><input type="text" tabindex="1" class="form-control form-control-sm" id="v_lcNewLot" name="v_lcNewLot" readonly></div>
+                                <div class="invalid-feedback">New lot numger is required!</div>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="message-text" class="col-form-label">Comments</label>
+                            <textarea class="form-control" type="text" id="v_lcComments" name="v_lcComments"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- View Lot Changes end-->
+
     <!-- Add Oven Logs start-->
     <div class="modal fade" id="addOvenLogModal" tabindex="-1" aria-labelledby="addOvenLogModal">
         <div class="modal-dialog modal-sm">
@@ -180,6 +280,58 @@
     </div>
     <!-- Add Oven Logs end-->
 
+    <!-- View Oven Logs start-->
+    <div class="modal fade" id="viewOvenLogModal" tabindex="-1" aria-labelledby="viewOvenLogModal">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Oven Log</h1>
+                </div>
+                <div class="modal-body">
+                    <form id="view-ovenlog-form" class="needs-validation p-2" novalidate>
+                        <div class="mb-3">
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="olPartName">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="v_olPartName" name="v_olPartName" readonly></select></div>
+                                    <div class="invalid-feedback">Part name is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="lcLotDate">In Oven Date</label><input class="form-control" type="date" tabindex="2" id="v_olinOvenDate" name="v_olinOvenDate" readonly></div>
+                                    <div class="invalid-feedback">In Oven date is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="lcaTime">In Oven Time</label><input class="form-control" type="time" id="v_olinOvenTime" name="v_olinOvenTime" value="09:00" readonly></div>
+                                    <div class="invalid-feedback">In Oven time is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="lcaTime">In Oven Temp</label><input class="form-control" type="number" id="v_olinOvenTemp" name="v_olinOvenTemp" readonly></div>
+                                    <div class="invalid-feedback">In Oven temp is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="input-group sm-3"><label class="input-group-text" for="lcOldLot">In Initials</label><input type="text" tabindex="1" class="form-control form-control-sm" id="v_olinOvenInitials" name="v_olinOvenInitials" readonly></div>
+                                <div class="invalid-feedback">In Initials is required!</div>
+                            </div>
+                        </div>
+                        <div_v> <label for="message-text" class="col-form-label">Comments</label>
+                            <textarea class="form-control" type="text" id="v_olComments" name="v_olComments" readonly></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+    <!-- View Oven Logs end-->
+
     <!-- Add Material Receive start-->
     <div class="modal fade" id="addMaterialReceivedModal" tabindex="-1" aria-labelledby="addMaterialReceivedModal">
         <div class="modal-dialog modal-sm">
@@ -225,7 +377,7 @@
             <div class="row mt-2">
                 <div class="col-lg-12 d-flex justify-content-between align-items-center mt-4">
                     <div>
-                        <h4 class="text-primary">Quality</h4>
+                        <h3 class="text-primary">Quality</h3>
                     </div>
                     <div>
                         <button class="btn btn-primary" type="button" id="loadOvenLogForm" data-bs-toggle="modal" data-bs-target="#addOvenLogModal">Add Oven Log</button>
@@ -241,81 +393,76 @@
                     <div id="showAlert"></div>
                 </div>
             </div>
-            <div class="row justify-content-center">
-                <div class="col-md-4">
-                    <div class="table-container-scroll">
-                        <!-- <div class="table-responsive"> -->
-                        <!-- Table to display QA Reject Logs -->
-                        <table class="table table-striped table-bordered text-center">
-                            <thead class="sticky-header">
-                                <tr>
-                                    <th colspan="5">QA Reject Logs</th>
-                                </tr>
-                                <tr>
-                                    <th>Production Date</th>
-                                    <th>Production Log</th>
-                                    <th>Part Number</th>
-                                    <th>Rejects</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="qaRejectLogs">
+            <div class="d-flex flex-column justify-content-around sm-3 p-2" style="height: 400px;">
+                <div class="p-2 table-container-scroll">
+                    <!-- <div class="table-responsive"> -->
+                    <!-- Table to display QA Reject Logs -->
+                    <table class="table table-striped table-bordered text-center">
+                        <thead class="sticky-header">
+                            <tr class="table-primary">
+                                <th colspan="5">QA Reject Logs</th>
+                            </tr>
+                            <tr class="table-primary">
+                                <th>Production Date</th>
+                                <th>Production Log</th>
+                                <th>Part Number</th>
+                                <th>Rejects</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="qaRejectLogs">
 
-                            </tbody>
-                        </table>
-                        <!-- </div> -->
-                    </div>
+                        </tbody>
+                    </table>
+                    <!-- </div> -->
                 </div>
-                <div class="col-md-4">
-                    <div class="table-container-scroll">
-                        <!--  Table to display Oven Logs-->
-                        <table class="table table-striped table-bordered text-center">
-                            <thead class="sticky-header">
-                                <tr>
-                                    <th colspan="8">Oven Logs</th>
-                                </tr>
-                                <tr>
-                                    <th>Part Number</th>
-                                    <th>In Date</th>
-                                    <th>In Time</th>
-                                    <th>In Initials</th>
-                                    <th>Out Date</th>
-                                    <th>Out Time</th>
-                                    <th>Out Initials</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="ovenLogs">
+                <div class="p-2 table-container-scroll">
+                    <!--  Table to display Oven Logs-->
+                    <table class="table table-striped table-bordered text-center">
+                        <thead class="sticky-header">
+                            <tr class="table-primary">
+                                <th colspan="8">Oven Logs</th>
+                            </tr>
+                            <tr class="table-primary">
+                                <th>Part Number</th>
+                                <th>In Date</th>
+                                <th>In Time</th>
+                                <th>In Initials</th>
+                                <th>Out Date</th>
+                                <th>Out Time</th>
+                                <th>Out Initials</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ovenLogs">
 
-                            </tbody>
-                        </table>
-                    </div>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="col-md-4">
-                    <div class="table-container-scroll">
-                        <!-- Table to display Lot change logs -->
-                        <table class="table table-striped table-bordered text-center">
-                            <thead class="sticky-header">
-                                <tr>
-                                    <th colspan="8">Lot Change Logs</th>
-                                </tr>
-                                <tr>
-                                    <th>Production Log Id</th>
-                                    <th>Product ID</th>
-                                    <th>Material Name</th>
-                                    <th>Change Date</th>
-                                    <th>Change Time</th>
-                                    <th>Old Lot #</th>
-                                    <th>New Lot #</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="lotChangeLogs">
+                <div class="p-2 table-container-scroll">
+                    <!-- Table to display Lot change logs -->
+                    <table class="table table-striped table-bordered text-center">
+                        <thead class="sticky-header">
+                            <tr class="table-primary">
+                                <th colspan="8">Lot Change Logs</th>
+                            </tr>
+                            <tr class="table-primary">
+                                <th>Production Log Id</th>
+                                <th>Product ID</th>
+                                <th>Material Name</th>
+                                <th>Change Date</th>
+                                <th>Change Time</th>
+                                <th>Old Lot #</th>
+                                <th>New Lot #</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lotChangeLogs">
 
-                            </tbody>
-                        </table>
-                    </div>
+                        </tbody>
+                    </table>
                 </div>
+
             </div>
         </div>
     </div>
