@@ -68,7 +68,7 @@
     </div>
     <!-- Add QA Rejects to production log end-->
 
-    <!-- Add Lot Changes to production log start-->
+    <!-- Add Lot Changes start-->
     <div class="modal fade" id="addLotChangeModal" tabindex="-1" aria-labelledby="addLotChangeModal">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
@@ -124,7 +124,62 @@
             </div>
         </div>
     </div>
-    <!-- Add Lot Changes to production log end-->
+    <!-- Add Lot Changes end-->
+
+    <!-- Add Oven Logs start-->
+    <div class="modal fade" id="addOvenLogModal" tabindex="-1" aria-labelledby="addOvenLogModal">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Oven Log</h1>
+                </div>
+                <div class="modal-body">
+                    <form id="add-ovenlog-form" class="needs-validation p-2" novalidate>
+                        <div class="mb-3">
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="olPartName">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="ol_PartName" name="ol_PartName" required></select></div>
+                                    <div class="invalid-feedback">Part name is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="lcLotDate">In Oven Date</label><input class="form-control" type="date" tabindex="2" id="ol_inOvenDate" name="ol_inOvenDate" required></div>
+                                    <div class="invalid-feedback">In Oven date is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="lcaTime">In Oven Time</label><input class="form-control" type="time" id="ol_inOvenTime" name="ol_inOvenTime" value="09:00" required></div>
+                                    <div class="invalid-feedback">In Oven time is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="lcaTime">In Oven Temp</label><input class="form-control" type="number" id="ol_inOvenTemp" name="ol_inOvenTemp" required></div>
+                                    <div class="invalid-feedback">In Oven temp is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="input-group sm-3"><label class="input-group-text" for="lcOldLot">In Initials</label><input type="text" tabindex="1" class="form-control form-control-sm" id="ol_inOvenInitials" name="ol_inOvenInitials" required></div>
+                                <div class="invalid-feedback">In Initials is required!</div>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="message-text" class="col-form-label">Comments</label>
+                            <textarea class="form-control" type="text" id="ol_Comments" name="ol_Comments"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" value="Add Lot Change" class="btn btn-success" id="add-ovenlog-btn">Add OvenLog</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add Oven Logs end-->
+
 
     <!-- Table to hold the last 4 weeks of production  -->
     <div class="container-fluid">
@@ -135,6 +190,7 @@
                         <h4 class="text-primary">Quality</h4>
                     </div>
                     <div>
+                        <button class="btn btn-primary" type="button" id="loadOvenLogForm" data-bs-toggle="modal" data-bs-target="#addOvenLogModal">Add Oven Log</button>
                         <button class="btn btn-primary" type="button" id="loadProductForm" data-bs-toggle="modal" data-bs-target="#addLotChangeModal">Add Lot Change</button>
                         <button class="btn btn-primary" type="button" id="loadQARejectForm" data-bs-toggle="modal" data-bs-target="#addQARejectsModal">Add QA Rejects</button>
                         <button class="btn btn-primary" type="button" id="loadMaterialForm" data-bs-toggle="modal" data-bs-target="#receiveMaterial">Receive Material</button>

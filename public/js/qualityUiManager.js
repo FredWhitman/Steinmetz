@@ -18,7 +18,7 @@ export function buildQaRejectTable(qaRejectLogs) {
     qaRejectLogs.forEach((row) => {
       html += ` <tr data-id="${row.qaRejectID}">
                     <td>${row.prodDate}</td>
-                    <td>${row.prodLog}</td>
+                    <td>${row.prodLogID}</td>
                     <td>${row.productID}</td>
                     <td>${row.rejects}</td>
                     <td>
@@ -36,7 +36,7 @@ export function buildOvenLogsTable(ovenLogs) {
   let html = "";
 
   if (!ovenLogs.length) {
-    html = `<tr><td colspan = "5" class="text-center">No records found</td></tr>`;
+    html = `<tr><td colspan = "7" class="text-center">No records found</td></tr>`;
   } else {
     ovenLogs.forEach((row) => {
       html += ` <tr data-id="${row.ovenLogID}">
@@ -62,7 +62,7 @@ export function buildLotChangeTable(lotChangeLogs) {
   let html = "";
 
   if (!lotChangeLogs.length) {
-    html = `<tr><td colspan = "5" class="text-center">No records found</td></tr>`;
+    html = `<tr><td colspan = "7" class="text-center">No records found</td></tr>`;
   } else {
     lotChangeLogs.forEach((row) => {
       html += ` <tr data-id="${row.LotChangeID}">

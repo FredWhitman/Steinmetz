@@ -14,6 +14,8 @@ import {
 import {
   fetchQualityLogs,
   postQaRejects,
+  postLotChange,
+  postOvenLog,
   fetchProductList,
   fetchMaterialList,
 } from "./qualityApiClient.js";
@@ -70,6 +72,7 @@ function addQaRejectsFormSubmision() {
       }
     } catch (error) {
       console.error("Failed to submit QA Rejects:", error);
+      document.getElementById('showAlert').innerHtml 
     }
   });
 }
@@ -101,7 +104,7 @@ function addLotChangeFormSubmission() {
     try {
       const result = await postLotChange(payload);
       if (result) {
-        const alertData = JSON.parse(result.message);
+        const alertData = result;
         document.getElementById("showAlert").innerHTML = alertData.html;
         bootstrap.Modal.getInstance(
           document.getElementById("addLotChangeModal")
@@ -118,6 +121,60 @@ function addLotChangeFormSubmission() {
     }
   });
 }
+
+function addOvenLogFormSubmission(){
+  //create form value
+  const form = document.getElementById("add-ovenlog-form");
+  //add listener to form that catches submit event
+  form.addEventListener("submit", async (e) => {
+    //prevent form submission
+    e.preventDefault();
+    //check validity of form
+    if(!form.checkValidity()){
+      form.classList.add("was-validated");
+      return;
+    }
+
+    //store form data in array
+    const data = new FormData(form)
+    //capture form data
+    const payload = {
+      action: 'addOvenLog',
+      ovenLogData: {
+        productID: data.get('ol_PartName'),
+        inOvenDate: data.get('ol_inOvenDate'),
+        inOvenTime: data.get('ol_inOvenTime'),
+        inOvenTemp: data.get('ol_inOvenTemp'),
+        inOvenInitials: data.get('ol_inOvenInitials'),
+        ovenComments: data.get('ol_Comments')
+      }};
+    console.log(JSON.stringify(payload, null, 2));
+    try {
+      const result = await postOvenLog(payload);
+      console.log("RAW result: ", result);
+      console.log("Alert HTML: ", result?.html);
+
+      if(result){
+
+        const alertData = result;
+        document.getElementById("showAlert").innerHTML = alertData.html;
+        bootstrap.Modal.getInstance(
+          document.getElementById("addOvenLogModal")
+        ).hide();
+      }
+      console.log("postOvenLog result: ", result);
+      const data = await fetchQualityLogs();
+      if (data) {
+        renderTables(data);
+      }
+
+    } catch (error) {
+      console.error("Failed to submit oven log: ", error);
+    }
+  })
+
+}
+
 // 1) When the modal opens, load options
 async function onModalShow() {
   showLoader();
@@ -173,6 +230,30 @@ async function onLotChangeModalShow() {
   }
 }
 
+async function onOvenLogModalShow(){
+//Fill productID select
+  showLoader();
+  clearAlert();
+  try {
+    const [products] = await Promise.all([
+      fetchProductList()
+    ]);
+
+    if(!Array.isArray(products)){
+      showAlertMessage("⚠️ Product or material lists failed to load properly.", 'showAlert', 'danger')
+      console.error("products",products)
+      return;
+    }
+  const sel = document.getElementById("ol_PartName");
+  populateProductSelect(sel, products);
+  } catch (error) {
+    console.error(error);
+    showAlertMessage("Unable to load product list!", 'showAlert', 'danger')
+  }finally {
+    hideLoader();
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   // Load data when modal shows
   const addModalEl = document.getElementById("addQARejectsModal");
@@ -181,6 +262,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const addLotModalEl = document.getElementById("addLotChangeModal");
   addLotModalEl.addEventListener("show.bs.modal", onLotChangeModalShow);
 
+  const addOvenLogModalEl = document.getElementById("addOvenLogModal");
+  addOvenLogModalEl.addEventListener("show.bs.modal", onOvenLogModalShow)
+
   addQaRejectsFormSubmision();
   addLotChangeFormSubmission();
+  addOvenLogFormSubmission();
 });

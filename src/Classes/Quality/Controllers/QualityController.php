@@ -39,8 +39,8 @@ class QualityController
         try {
             $result = $this->model->insertQaRejects($data);
             $type = $result['success'] ? 'success' : 'danger';
-            $slert = $this->util->showMessage($type, $result['message']);
-            echo $slert;
+            $alert = $this->util->showMessage($type, $result['message']);
+            echo $alert;
         }catch (\Exception $e) {
             http_response_code(500);
             $alert = $this->util->showMessage('danger', 'Unhandled exception: ' . $e->getMessage());
@@ -53,16 +53,28 @@ class QualityController
         header('Content-Type: application/json');
         try {
             $result = $this->model->insertLotChange($data);
-            if ($result['success']) {
-                $alert = $this->util->showMessage('success', json_decode($result['message']));
-            } else {
-                $alert = $this->util->showMessage('danger', json_decode($result['message']));
-            }
+            $type = $result['success'] ? 'success' : 'danger';
+            $alert = $this->util->showMessage($type, $result['message']);
             echo $alert;
         } catch (\Throwable $e) {
             http_response_code(500);
             $alert = $this->util->showMessage('danger', 'Unhandled exception: ' . $e->getMessage());
-            echo $$alert;
+            echo $alert;
+        }
+    }
+
+    public function addOvenLog($data)
+    {
+        header('Content-Type: application/json');
+        try {
+            $result = $this->model->insertOvenLog($data);
+            $type = $result['success'] ? 'success' : 'danger';
+            $alertJson = $this->util->showMessage($type, $result['message']);
+            echo $alertJson;
+        } catch (\Throwable $e) {
+            http_response_code(500);
+            $alertJson = $this->util->showMessage('danger', 'Unhandled exception: ' . $e->getMessage());
+            echo $alertJson;
         }
     }
 

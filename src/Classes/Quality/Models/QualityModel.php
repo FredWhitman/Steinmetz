@@ -185,8 +185,8 @@ class QualityModel
         //get prodLogID but have to get prodDate first ????
         try {
             $sql = 'INSERT 
-                    INTO lotChange (prodLogID, MatrerialName, ProductID, ChangeDate, ChangeTime, OldLot, NewLot, Comments) 
-                    VALUES (:prodLogID, :MatrerialName, :productID, :ChangeDate, :ChangeTime, :OldLot, :NewLot, :Comments)';
+                    INTO lotChange (prodLogID, MaterialName, ProductID, ChangeDate, ChangeTime, OldLot, NewLot, Comments) 
+                    VALUES (:prodLogID, :MaterialName, :productID, :ChangeDate, :ChangeTime, :OldLot, :NewLot, :Comments)';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue('prodLogID', $prodLogID);
             $stmt->bindValue(':MaterialName', $data['lotChangeData']['MaterialName']);
@@ -210,9 +210,66 @@ class QualityModel
                 'message' => "Successfully added a lot change for {$data['lotChangeData']['MaterialName']}: old lot: {$data['lotChangeData']['OldLot']} and new lot:  {$data['lotChangeData']['NewLot']}."
             ];
         } catch (\Throwable $e) {
+            $this->log->error("Insert into lot change failed", [
+                        'errorInfo' => $e->getMessage(),
+                        'prodDate' => $prodDate,
+                        'prodLogID' => $prodLogID,
+                        'productID' => $productID,
+                        'ChangeDate' => $data['lotChangeData']['ChangeDate'],
+                        'MaterialName' => $data['lotChangeData']['MaterialName']
+                    ]);
             return [
                 'success' => false,
                 'message' => "Uncaught error during insert lot change! ERROR MESSAGE: {$e->getMessage()}"
+            ];
+        }
+    }
+
+    public function insertOvenLog($data)
+    {
+        try {
+            $sql = "INSERT 
+                    INTO ovenlogs (productID, inOvenDate, inOvenTime, inOvenTemp, inOvenInitials, ovenComments) 
+                    VALUES (:productID, :inOvenDate, :inOvenTime, :inOvenTemp, :inOvenInitials, :ovenComments)";
+            
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindValue(':productID', $data['ovenLogData']['productID']);
+            $stmt->bindValue(':inOvenDate', $data['ovenLogData']['inOvenDate']);
+            $stmt->bindValue(':inOvenTime', $data['ovenLogData']['inOvenTime']);
+            $stmt->bindValue(':inOvenTemp', $data['ovenLogData']['inOvenTemp']);
+            $stmt->bindParam(':inOvenInitials', $data['ovenLogData']['inOvenInitials'],\PDO::PARAM_STR);
+            $stmt->bindValue(':ovenComments', $data['ovenLogData']['ovenComments']);
+
+            $this->log->info("inOvenInitials: {$data['ovenLogData']['inOvenInitials']}");
+
+            foreach (['productID', 'inOvenDate', 'inOvenTime', 'inOvenTemp', 'inOvenInitials', 'ovenComments'] as $key) {
+                $this->log->info("Bound {$key}", ['value' => $data['ovenLogData'][$key], 'type' => gettype($data['ovenLogData'][$key])]);
+            }
+
+            if(!$stmt->execute()){
+                $error = $stmt->errorInfo();
+                $this->log->error("Failed to insert oven logs",[
+                    'success' => false,
+                    'error' => $error,
+                ]);
+                throw new \Exception();
+            }
+            return [
+                'success' => true,
+                'message' => "Successfully added an Oven log for {$data['ovenLogData']['inOvenDate']} at {$data['ovenLogData']['inOvenTime']}."
+
+            ];
+        } catch (\PDOException $e) {
+             $this->log->error("Insert into lot change failed", [
+                        'errorInfo' => $e->getMessage(),
+                        'productID' => $data['ovenLogData']['productID'],
+                        'inOvenDate' => $data['ovenLogData']['inOvenDate'],
+                        'inOvenTime' => $data['ovenLogData']['inOvenTime'],
+                        'inOvenInitials' => $data['ovenLogData']['inOvenInitials'],
+                    ]);
+            return [
+                'success' => false,
+                'message' => "Uncaught error during insert ovenLog! ERROR MESSAGE: {$e->getMessage()}"
             ];
         }
     }
@@ -401,8 +458,7 @@ class QualityModel
     public function getQARejectLogs()
     {
         $sql = 'SELECT * FROM qarejects
-                WHERE prodDate = NOW() - INTERVAL 4 WEEK Order By prodDate Desc';
-
+                WHERE prodDate >= DATE_SUB(NOW(), INTERVAL 12 WEEK)';
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute()) {
             $errorInfo = $stmt->errorInfo();
@@ -415,16 +471,19 @@ class QualityModel
     public function getLotChanges()
     {
         $sql = 'SELECT * FROM lotchange
-                WHERE ChangeDate = NOW() - INTERVAL 12 WEEK Order By ChangeDate Desc';
+                WHERE ChangeDate >= DATE_SUB(NOW(), INTERVAL 12 WEEK)
+                ORDER BY ChangeDate DESC;';
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute()) throw new \Exception("Failed to get Lot Changes logs.");
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $result;
     }
 
     public function getOvenLogs()
     {
         $sql = 'SELECT * FROM ovenlogs
-                WHERE inOvenDate = NOW() - INTERVAL 4 WEEK Order By inOvenDate Desc';
+                WHERE inOvenDate >= DATE_SUB(NOW(), INTERVAL 4 WEEK) 
+                Order By inOvenDate Desc';
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute()) throw new \Exception("Failed to get Oven Logs");
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
