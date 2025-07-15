@@ -23,21 +23,6 @@ export async function fetchQualityLogs() {
   }
 }
 
-//Fill a form for updating
-export async function fetchAndFillUpdateForm(id, table) {
-  const url = `${BASE_URL}?update${
-    table.charAt(0).toUpperCase() + table.slice(1)
-  }=1&id=${id}&table=${table}`;
-
-  console.log("FetchAndFillUpdateForm URL: ", url);
-  try {
-    const response = await fetch(url);
-    const rawText = await response.text();
-  } catch (error) {
-    console.error("Failed to parse JSON in FetchAndFill UpdateForm: ", error);
-  }
-}
-
 async function handleResponse(res) {
   //read raw text
   const text = await res.text();
@@ -95,8 +80,8 @@ export async function postLotChange(payload) {
   return handleResponse(res);
 }
 
-export async function postOvenLog(payload){
-  const res = await fetch(BASE_URL,{
+export async function postOvenLog(payload) {
+  const res = await fetch(BASE_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -106,24 +91,71 @@ export async function postOvenLog(payload){
 
 // Fill a form (GET request) for viewing
 export async function fetchAndFillViewForm(id, table) {
-  const url = `${BASE_URL}?action=getQaRejectLog&id=${id}&table=${table}`;
+  const tableKeyMap = {
+    qaRejectsLogs: "qaRejectLog",
+    ovenLogs: "ovenLog",
+    lotChangeLogs: "lotChangeLog",
+  };
+
+  const fieldMappings = {
+    qaRejectLog: {
+      prodDate: "v_logDate",
+      productID: "v_qaPartName",
+      rejects: "v_qaRejects",
+      comments: "v_comment-text",
+    },
+    ovenLog: {
+      productID: "v_olPartName",
+      inOvenDate: "v_olinOvenDate",
+      inOvenTime: "v_olinOvenTime",
+      inOvenTemp: "v_olinOvenTemp",
+      inOvenInitials: "v_olinOvenInitials",
+      outOvenDate: "v_olOutOvenDate",
+      outOvenTime: "v_olOutOvenTime",
+      outOvenTemp: "v_olOutOvenTemp",
+      outOvenInitials: "v_olOutOvenInitials",
+      ovenComments: "v_olComments",
+    },
+    lotChangeLog: {
+      ProductID: "v_lcPartName",
+      MaterialName: "v_lcMatName",
+      ChangeDate: "v_lclotDate",
+      ChangeTime: "v_lcLotTime",
+      OldLot: "v_lvOldLot",
+      NewLot: "v_lcNewLot",
+      Comments: "v_lcComments",
+    },
+  };
+
+  const lookupKey = tableKeyMap[table];
+  const fieldMap = fieldMappings[lookupKey];
+
+  if (!fieldMap) {
+    console.warn(`❌ No field mapping found for table: ${table}`);
+    return;
+  }
+
+  const url = `${BASE_URL}?action=get${
+    lookupKey.charAt(0).toUpperCase() + lookupKey.slice(1)
+  }&id=${id}&table=${table}`;
   console.log("fetchAndFillViewForm URL:", url);
   try {
     const response = await fetch(url);
     const rawText = await response.text();
     const responseData = JSON.parse(rawText);
+
     if (!responseData || responseData.error) {
       console.error("Error from server:", responseData?.error);
       return;
     }
+    console.log("responseData:", responseData);
     // Dynamically fill form fields based on table type.
-    const fieldMappings = {
-          
-    };
 
-    Object.keys(fieldMappings[table]).forEach((dbKey) => {
-      const formID = fieldMappings[table][dbKey];
+    console.log("Form field:", document.getElementById("v_qaPartName"));
+
+    Object.entries(fieldMap).forEach(([dbKey, formID]) => {
       const element = document.getElementById(formID);
+
       if (element) {
         element.value = responseData[dbKey] || "";
       } else {
@@ -132,5 +164,82 @@ export async function fetchAndFillViewForm(id, table) {
     });
   } catch (error) {
     console.error("Failed to parse JSON in fetchAndFillForm:", error);
+  }
+}
+
+//Fill a form for updating
+export async function fetchAndFillUpdateForm(id, table) {
+  const tableKeyMap = {
+    qaRejectsLogs: "qaRejectLog",
+    ovenLogs: "ovenLog",
+    lotChangeLogs: "lotChangeLog",
+  };
+
+  const fieldMappings = {
+    qaRejectLog: {
+      prodDate: "u_logDate",
+      productID: "u_qaPartName",
+      rejects: "u_qaRejects",
+      comments: "u_comment-text",
+    },
+    ovenLog: {
+      productID: "u_olPartName",
+      inOvenDate: "u_olinOvenDate",
+      inOvenTime: "u_olinOvenTime",
+      inOvenTemp: "u_olinOvenTemp",
+      inOvenInitials: "u_olinOvenInitials",
+      outOvenDate: "u_olOutOvenDate",
+      outOvenTime: "u_olOutOvenTime",
+      outOvenTemp: "u_olOutOvenTemp",
+      outOvenInitials: "u_olOutOvenInitials",
+      ovenComments: "u_olComments",
+    },
+    lotChangeLog: {
+      ProductID: "u_lcPartName",
+      MaterialName: "u_lcMatName",
+      ChangeDate: "u_lclotDate",
+      ChangeTime: "u_lcLotTime",
+      OldLot: "u_lvOldLot",
+      NewLot: "u_lcNewLot",
+      Comments: "u_lcComments",
+    },
+  };
+
+  const lookupKey = tableKeyMap[table];
+  const fieldMap = fieldMappings[lookupKey];
+
+  if (!fieldMap) {
+    console.warn(`❌ No field mapping found for table: ${table}`);
+    return;
+  }
+
+  const url = `${BASE_URL}?action = update${
+    lookupKey.charAt(0).toUpperCase() + lookupKey.slice(1)
+  }=1&id=${id}&table=${table}`;
+
+  console.log("FetchAndFillUpdateForm URL: ", url);
+  try {
+    const response = await fetch(url);
+    const rawText = await response.text();
+    const responseData = JSON.parse(rawText);
+
+    if (!responseData || responseData.error) {
+      console.error("Error from server:", responseData?.error);
+      return;
+    }
+    console.log("responseData:", responseData);
+    // Dynamically fill form fields based on table type.
+
+    Object.entries(fieldMap).forEach(([dbKey, formID]) => {
+      const element = document.getElementById(formID);
+
+      if (element) {
+        element.value = responseData[dbKey] || "";
+      } else {
+        console.warn(`Element with ID '${formID}' not found!`);
+      }
+    });
+  } catch (error) {
+    console.error("Failed to parse JSON in FetchAndFill UpdateForm: ", error);
   }
 }

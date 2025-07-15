@@ -90,7 +90,7 @@ class QualityModel
 
             try {
                 $success = $stmt->execute();
-                if(!$success){
+                if (!$success) {
                     $errorInfo = $stmt->errorInfo();
                     $this->log->error("Insert into qarejects failed", [
                         'errorInfo' => $errorInfo,
@@ -113,7 +113,7 @@ class QualityModel
                 ]);
                 throw $e;
             }
-            
+
 
             // insert transaction for QA rejects
             $this->insertTransactions($transProductData);
@@ -211,13 +211,13 @@ class QualityModel
             ];
         } catch (\Throwable $e) {
             $this->log->error("Insert into lot change failed", [
-                        'errorInfo' => $e->getMessage(),
-                        'prodDate' => $prodDate,
-                        'prodLogID' => $prodLogID,
-                        'productID' => $productID,
-                        'ChangeDate' => $data['lotChangeData']['ChangeDate'],
-                        'MaterialName' => $data['lotChangeData']['MaterialName']
-                    ]);
+                'errorInfo' => $e->getMessage(),
+                'prodDate' => $prodDate,
+                'prodLogID' => $prodLogID,
+                'productID' => $productID,
+                'ChangeDate' => $data['lotChangeData']['ChangeDate'],
+                'MaterialName' => $data['lotChangeData']['MaterialName']
+            ]);
             return [
                 'success' => false,
                 'message' => "Uncaught error during insert lot change! ERROR MESSAGE: {$e->getMessage()}"
@@ -231,13 +231,13 @@ class QualityModel
             $sql = "INSERT 
                     INTO ovenlogs (productID, inOvenDate, inOvenTime, inOvenTemp, inOvenInitials, ovenComments) 
                     VALUES (:productID, :inOvenDate, :inOvenTime, :inOvenTemp, :inOvenInitials, :ovenComments)";
-            
+
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(':productID', $data['ovenLogData']['productID']);
             $stmt->bindValue(':inOvenDate', $data['ovenLogData']['inOvenDate']);
             $stmt->bindValue(':inOvenTime', $data['ovenLogData']['inOvenTime']);
             $stmt->bindValue(':inOvenTemp', $data['ovenLogData']['inOvenTemp']);
-            $stmt->bindParam(':inOvenInitials', $data['ovenLogData']['inOvenInitials'],\PDO::PARAM_STR);
+            $stmt->bindParam(':inOvenInitials', $data['ovenLogData']['inOvenInitials'], \PDO::PARAM_STR);
             $stmt->bindValue(':ovenComments', $data['ovenLogData']['ovenComments']);
 
             $this->log->info("inOvenInitials: {$data['ovenLogData']['inOvenInitials']}");
@@ -246,9 +246,9 @@ class QualityModel
                 $this->log->info("Bound {$key}", ['value' => $data['ovenLogData'][$key], 'type' => gettype($data['ovenLogData'][$key])]);
             }
 
-            if(!$stmt->execute()){
+            if (!$stmt->execute()) {
                 $error = $stmt->errorInfo();
-                $this->log->error("Failed to insert oven logs",[
+                $this->log->error("Failed to insert oven logs", [
                     'success' => false,
                     'error' => $error,
                 ]);
@@ -260,13 +260,13 @@ class QualityModel
 
             ];
         } catch (\PDOException $e) {
-             $this->log->error("Insert into lot change failed", [
-                        'errorInfo' => $e->getMessage(),
-                        'productID' => $data['ovenLogData']['productID'],
-                        'inOvenDate' => $data['ovenLogData']['inOvenDate'],
-                        'inOvenTime' => $data['ovenLogData']['inOvenTime'],
-                        'inOvenInitials' => $data['ovenLogData']['inOvenInitials'],
-                    ]);
+            $this->log->error("Insert into lot change failed", [
+                'errorInfo' => $e->getMessage(),
+                'productID' => $data['ovenLogData']['productID'],
+                'inOvenDate' => $data['ovenLogData']['inOvenDate'],
+                'inOvenTime' => $data['ovenLogData']['inOvenTime'],
+                'inOvenInitials' => $data['ovenLogData']['inOvenInitials'],
+            ]);
             return [
                 'success' => false,
                 'message' => "Uncaught error during insert ovenLog! ERROR MESSAGE: {$e->getMessage()}"
@@ -305,11 +305,11 @@ class QualityModel
         if (!$stmt->execute()) {
             $error = $stmt->errorInfo();
             $this->log->error("Failed to update PFM: {$pfmID}'s qty. \n", [
-                                'errorInfo' => $error,
-                                'partNumber' => $pfmID,
-                                'partQty' => $copperPins,
-                                'operator' => $operator
-                            ]);
+                'errorInfo' => $error,
+                'partNumber' => $pfmID,
+                'partQty' => $copperPins,
+                'operator' => $operator
+            ]);
             throw new \Exception("Failed to update PFM: {$pfmID}'s qty. ERROR: {$error}");
         }
     }
@@ -326,11 +326,11 @@ class QualityModel
         if (!$stmt->execute()) {
             $error = $stmt->errorInfo();
             $this->log->error("Failed to update Product: {$productID}'s qty. \n", [
-                                'errorInfo' => $error,
-                                'productID' => $productID,
-                                'Qty' => $amount,
-                                'operator' => $operator
-                            ]);
+                'errorInfo' => $error,
+                'productID' => $productID,
+                'Qty' => $amount,
+                'operator' => $operator
+            ]);
             throw new \Exception("Failed to update Product: {$productID}'s qty. ERROR: {$error}");
         }
     }
@@ -455,32 +455,6 @@ class QualityModel
         }
     }
 
-    public function getQaRejectLog($id)
-    {
-        $this->log->info('QualityModel->getQaRejectLog has been called');
-        $sql = 'SELECT * FROM qarejects WHERE qaRejectID = :logID';
-        $stmt= $this->pdo->prepare($sql);
-        $stmt->bindValue(':logID', $id);
-
-        try {
-            if(!$stmt->execute()){
-                $errorInfo = $stmt->errorInfo();
-                $this->log->error('Failed to getQaRejectLog: ERROR-' . $errorInfo);
-                throw new \Exception("Failed to get QA Reject log. ERROR: {$errorInfo}");
-
-            }
-
-            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
-            $this->log->info('returned values: ' . print_r($result, true));
-            return $result;
-        } catch (\PDOException $e) {
-            $this->log->error('Failed to getQaRejectLog: ERROR-' . $e->getMessage());
-            return ["success" => false, "message" => "Failed to getQA Log: {$e}"];
-            
-        }
-        
-    }
-
     public function getQARejectLogs()
     {
         $sql = 'SELECT * FROM qarejects
@@ -514,5 +488,70 @@ class QualityModel
         if (!$stmt->execute()) throw new \Exception("Failed to get Oven Logs");
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         return $result;
+    }
+
+    public function getOvenLog($id)
+    {
+        $sql = 'SELECT * FROM ovenlogs WHERE ovenLogID = :ovenLogID';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':ovenLogID', $id);
+
+        try {
+            if (!$stmt->execute()) {
+                $errorInfo = $stmt->errorInfo();
+                $this->log->error('Failed to getOvenLog: ERROR-' . $errorInfo);
+                throw new \Exception("Failed to get Oven log. ERROR: {$errorInfo}");
+            }
+
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+            $this->log->info('returned values: ' . print_r($result, true));
+            return $result;
+        } catch (\PDOException $e) {
+            $this->log->error('Failed to getOvenLog: ERROR-' . $e->getMessage());
+            return ["success" => false, "message" => "Failed to getOvenLog: {$e}"];
+        }
+    }
+
+    public function getLotChange($id)
+    {
+
+        try {
+            $sql = 'SELECT * FROM lotchange WHERE LotChangeID = :lotchangeID';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindValue(':lotchangeID', $id);
+            if (!$stmt->execute()) {
+                $errorInfo = $stmt->errorInfo();
+                $this->log->error('Failed to getLotChangeLog: ERROR-' . $errorInfo);
+                throw new \Exception("Failed to get Lot Change log. ERROR: {$errorInfo}");
+            }
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+            return $result;
+        } catch (\PDOException $e) {
+            $this->log->error('Failed to getLotChangeLog: ERROR-' . $e->getMessage());
+            return ["success" => false, "message" => "Failed to getLotChangeLog: {$e}"];
+        }
+    }
+
+    public function getQaRejectLog($id)
+    {
+        $this->log->info('QualityModel->getQaRejectLog has been called');
+        $sql = 'SELECT * FROM qarejects WHERE qaRejectLogID = :logID';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':logID', $id);
+
+        try {
+            if (!$stmt->execute()) {
+                $errorInfo = $stmt->errorInfo();
+                $this->log->error('Failed to getQaRejectLog: ERROR-' . $errorInfo);
+                throw new \Exception("Failed to get QA Reject log. ERROR: {$errorInfo}");
+            }
+
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+            $this->log->info('returned values: ' . print_r($result, true));
+            return $result;
+        } catch (\PDOException $e) {
+            $this->log->error('Failed to getQaRejectLog: ERROR-' . $e->getMessage());
+            return ["success" => false, "message" => "Failed to getQA Log: {$e}"];
+        }
     }
 }

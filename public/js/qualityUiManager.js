@@ -16,7 +16,7 @@ export function buildQaRejectTable(qaRejectLogs) {
     html = `<tr><td colspan = "5" class="text-center">No records found</td></tr>`;
   } else {
     qaRejectLogs.forEach((row) => {
-      html += ` <tr data-id="${row.qaRejectID}">
+      html += ` <tr data-id="${row.qaRejectLogID}">
                     <td>${row.prodDate}</td>
                     <td>${row.prodLogID}</td>
                     <td>${row.productID}</td>
@@ -66,7 +66,7 @@ export function buildLotChangeTable(lotChangeLogs) {
   let html = "";
 
   if (!lotChangeLogs.length) {
-    html = `<tr><td colspan = "7" class="text-center">No records found</td></tr>`;
+    html = `<tr><td colspan = "8" class="text-center">No records found</td></tr>`;
   } else {
     lotChangeLogs.forEach((row) => {
       html += ` <tr data-id="${row.LotChangeID}">
@@ -78,10 +78,10 @@ export function buildLotChangeTable(lotChangeLogs) {
                   <td>${row.OldLot}</td>
                   <td>${row.NewLot}</td>
                   <td>
-                    <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 viewLink" title="view ovenLog" data-bs-toggle="modal" data-bs-target="#viewLotChangeModal">
+                    <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 viewLink" title="view lotchange" data-bs-toggle="modal" data-bs-target="#viewLotChangeModal">
                       <i class="bi bi-eye-fill"></i>
                     </a>
-                    <a href="#" class="btn btn-success btn-sm rounded-pill py-0 updateLink" title="update ovenLog" data-bs-toggle="modal" data-bs-target="#updateLotChangeModal">
+                    <a href="#" class="btn btn-success btn-sm rounded-pill py-0 updateLink" title="update ltochange" data-bs-toggle="modal" data-bs-target="#updateLotChangeModal">
                       <i class="bi bi-file-earmark-check"></i>
                     </a>
                   </td>
@@ -95,8 +95,15 @@ export function buildLotChangeTable(lotChangeLogs) {
 export function setupEventListener(elementId, table) {
   document.getElementById(elementId).addEventListener("click", (e) => {
     const viewLink = e.target.closest("a.viewLink");
+    const row = viewLink?.closest("tr");
+    const id = row?.getAttribute("data-id");
+
     const editLink = e.target.closest("a.editLink");
     const updateLink = e.target.closest("a.updateLink");
+
+    console.log("target:", e.target);
+    console.log("anchor:", e.target.closest("a.viewLink"));
+    console.log("row:", e.target.closest("tr"));
 
     if (editLink) {
       e.preventDefault();
@@ -119,15 +126,12 @@ export function setupEventListener(elementId, table) {
         });
       }
     }
-    if (viewLink) {
+    if (viewLink && id) {
       e.preventDefault();
-      const row = e.target.closest("tr");
-      const id = row ? row.getAttribute("data-id") : null;
-      if (id && id.trim()) {
-        import("./qualityApiClient.js").then(({ fetchAndFillViewForm }) => {
-          fetchAndFillViewForm(id.trim(), table);
-        });
-      }
+
+      import("./qualityApiClient.js").then(({ fetchAndFillViewForm }) => {
+        fetchAndFillViewForm(id.trim(), table);
+      });
     }
   });
 }

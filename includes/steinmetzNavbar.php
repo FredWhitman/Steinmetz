@@ -11,7 +11,7 @@
                     <a class="nav-link" a href=".\Inventory_1.php" role="button">Inventory</a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link" data-bs-auto-close="outside" a href="\quality.php" role="button">Quality</a>
+                    <a class="nav-link" data-bs-auto-close="outside" a href="\quality-new.php" role="button">Quality</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link" a href="\production.php" role="button">Production</a>

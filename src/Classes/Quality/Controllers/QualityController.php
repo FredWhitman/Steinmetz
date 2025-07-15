@@ -47,6 +47,33 @@ class QualityController
         }
     }
 
+    public function getOvenLog($id)
+    {
+        ob_clean();
+        header('Content-Type: applicatio/json');
+        try {
+            $this->log->info('Get Oven Log called from QualityController.');
+            $ovenLog = $this->model->getOvenLog($id);
+            echo json_encode($ovenLog);
+        } catch (\Throwable $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to fetch Oven Log', 'details' => $e->getMessage()]);
+        }
+    }
+
+    public function getLotChange($id)
+    {
+        ob_clean();
+        header('Content-Type: application/json');
+        try {
+            $this->log->info('Get Lot Change called from QualityController.');
+            $lotChange = $this->model->getLotChange($id);
+            echo json_encode($lotChange);
+        } catch (\Throwable $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to fetch Lot Change', 'details' => $e->getMessage()]);
+        }
+    }
     public function addQaRejects($data)
     {
         header('Content-Type: application/json');
@@ -55,7 +82,7 @@ class QualityController
             $type = $result['success'] ? 'success' : 'danger';
             $alert = $this->util->showMessage($type, $result['message']);
             echo $alert;
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             http_response_code(500);
             $alert = $this->util->showMessage('danger', 'Unhandled exception: ' . $e->getMessage());
             echo $alert;
