@@ -393,16 +393,15 @@
                     <div id="showAlert"></div>
                 </div>
             </div>
-            <div class="d-flex flex-column justify-content-around sm-3 p-2" style="height: 400px;">
-                <div class="p-2 table-container-scroll">
-                    <!-- <div class="table-responsive"> -->
+            <div class="d-flex flex-column justify-content-around sm-3 p-2">
+                <div class="table-responsive-md overflow-y-auto" style="height: 300px">
                     <!-- Table to display QA Reject Logs -->
-                    <table class="table table-striped table-bordered text-center">
-                        <thead class="sticky-header">
-                            <tr class="table-primary">
+                    <table class="table table-striped text-center w-100">
+                        <thead class="table-primary sticky-top">
+                            <tr">
                                 <th colspan="5">QA Reject Logs</th>
                             </tr>
-                            <tr class="table-primary">
+                            <tr>
                                 <th>Production Date</th>
                                 <th>Production Log</th>
                                 <th>Part Number</th>
@@ -411,10 +410,9 @@
                             </tr>
                         </thead>
                         <tbody id="qaRejectLogs">
-
+                            <!-- Dynamic data table here -->
                         </tbody>
                     </table>
-                    <!-- </div> -->
                 </div>
                 <div class="p-2 table-container-scroll">
                     <!--  Table to display Oven Logs-->
