@@ -36,6 +36,9 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET['action'])) {
         case 'getMaterials':
             $controller->getMaterialList();
             break;
+        case 'getQaRejectLog':
+            $controller->getQaRejectLog($_GET['id']);
+            break;
         default:
             http_response_code(400);
             echo json_encode(['error' => 'Invalid GET action.']);

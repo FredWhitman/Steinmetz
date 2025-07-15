@@ -22,7 +22,7 @@ export function buildQaRejectTable(qaRejectLogs) {
                     <td>${row.productID}</td>
                     <td>${row.rejects}</td>
                     <td>
-                      <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 viewLink" title="view qa reject" data-bs-toggle="modal" data-bs-target="#viewQaRejectLog"><i class="bi bi-eye-fill"></i></a>
+                      <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 viewLink" title="view qa reject" data-bs-toggle="modal" data-bs-target="#viewQaRejectsModal"><i class="bi bi-eye-fill"></i></a>
                     </td>
                 </tr>`;
     });
@@ -124,7 +124,7 @@ export function setupEventListener(elementId, table) {
       const row = e.target.closest("tr");
       const id = row ? row.getAttribute("data-id") : null;
       if (id && id.trim()) {
-        import(".qualityApiClient.js").then(({ fetchAndFillViewForm }) => {
+        import("./qualityApiClient.js").then(({ fetchAndFillViewForm }) => {
           fetchAndFillViewForm(id.trim(), table);
         });
       }

@@ -455,6 +455,32 @@ class QualityModel
         }
     }
 
+    public function getQaRejectLog($id)
+    {
+        $this->log->info('QualityModel->getQaRejectLog has been called');
+        $sql = 'SELECT * FROM qarejects WHERE qaRejectID = :logID';
+        $stmt= $this->pdo->prepare($sql);
+        $stmt->bindValue(':logID', $id);
+
+        try {
+            if(!$stmt->execute()){
+                $errorInfo = $stmt->errorInfo();
+                $this->log->error('Failed to getQaRejectLog: ERROR-' . $errorInfo);
+                throw new \Exception("Failed to get QA Reject log. ERROR: {$errorInfo}");
+
+            }
+
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+            $this->log->info('returned values: ' . print_r($result, true));
+            return $result;
+        } catch (\PDOException $e) {
+            $this->log->error('Failed to getQaRejectLog: ERROR-' . $e->getMessage());
+            return ["success" => false, "message" => "Failed to getQA Log: {$e}"];
+            
+        }
+        
+    }
+
     public function getQARejectLogs()
     {
         $sql = 'SELECT * FROM qarejects

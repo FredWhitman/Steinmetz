@@ -259,3 +259,8 @@
 [2025-07-10T20:29:09.907122+02:00] Production.INFO: read4wks called to fill table [] []
 [2025-07-11T00:09:09.931305+02:00] Production.INFO: read4wks called to fill table [] []
 [2025-07-11T22:30:06.309612+02:00] Production.INFO: read4wks called to fill table [] []
+[2025-07-15T12:46:16.215676+02:00] Production.INFO: read4wks called to fill table [] []
+[2025-07-15T12:46:36.109211+02:00] Production.INFO: prevLog ID: 137 [] []
+[2025-07-15T12:46:36.111037+02:00] Production.INFO: result of ReadPrevious() function: Array (     [logID] => 137     [matLogID] => 135     [prodLogID] => 137     [mat1] => 01623811     [matUsed1] => 5435.369     [mat2] => RV53631502     [matUsed2] => 148.254     [mat3] =>      [matUsed3] => 0     [mat4] => 02983811     [matUsed4] => 5435.359 )  [] []
+[2025-07-15T12:46:38.582054+02:00] Production.INFO: prevLog ID: 136 [] []
+[2025-07-15T12:46:38.583768+02:00] Production.INFO: result of ReadPrevious() function: Array (     [logID] => 136     [matLogID] => 134     [prodLogID] => 136     [mat1] => 01623811     [matUsed1] => 4823.03     [mat2] => RV53631502     [matUsed2] => 132.369     [mat3] =>      [matUsed3] => 0     [mat4] => 02983811     [matUsed4] => 4825.359 )  [] []

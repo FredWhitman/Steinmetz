@@ -1,48 +1,64 @@
-
-
-
-
-
-.table-container-scroll {
-  max-height: 400px;
-  overflow-y: auto;
+.table-container {
+    max-height: 225px;
+    border: 1px solid #ccc;
+    overflow-y: auto;
+    width: 100%;
 }
 
 table {
-  width: 100%;
-  border-collapse: collapse;
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+/* thead, tbody {
+    display: block;
+} */
+thead {
+    background-color: #f1f1f1;
+}
+tbody {
+    max-height: 150px;
+    overflow-y: auto;
+}
+th, td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #969696;
+    /* width: 24%;
+    box-sizing: border-box; */
 }
 
-/* Style for all sticky header cells */
-th {
-  position: sticky;
-  z-index: 2; /* Ensure headers appear above scrolling content */
-  background-color: var(--bs-table-bg, #f8f9fa); /* Default Bootstrap table background */
-  /* Or use a specific light blue if you know the exact shade */
-  /* background-color: #e1e9ff;  */
-}
-
-/* Specific styling for the first row (summary row) */
+/* First sticky row: summary */
 thead tr:first-child th {
   position: sticky;
   top: 0;
-  z-index: 3; /* Ensure it's above other sticky headers */
-  /* Apply Bootstrap primary color for the summary row */
-  background-color: #ffffff;
-  /* Or use a lighter variation of the primary color, if known */
-  /* background-color: #d1e7ff;  */
+  background-color: var(--bs-info-bg-subtle);
+  z-index: 3;
+    box-shadow: 0 2px 2px -2px rgba(0, 0, 0, 0.15);
 }
 
-/* Specific styling for the second row (column headers) */
+/* Second sticky row: column headers */
 thead tr:nth-child(2) th {
-  top: 40px; /* Adjust this value to match the height of your summary row */
+  position: sticky;
+  top: 42px; /* Adjust based on the height of the first row */
+  background-color: var(--bs-info-bg-subtle);
+  box-shadow: 0 2px 2px -2px rgba(0, 0, 0, 0.15);
   z-index: 2;
-  /* Apply Bootstrap primary color for the column headers */
-  background-color: #ffffff;
-  /* Or use a lighter variation of the primary color, if known */
-  /* background-color: #d1e7ff;  */
+  }
+
+  /* .sticky-summary th {
+  position: sticky;
+  top: 0;
+  background-color: var(--bs-info-bg-subtle);
+  z-index: 3;
 }
 
+.sticky-header th {
+  position: sticky;
+  top: 42;
+  background-color: var(--bs-info-bg-subtle);
+  z-index: 2;
+} */
 
 
 

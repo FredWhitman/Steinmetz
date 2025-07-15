@@ -33,6 +33,20 @@ class QualityController
         }
     }
 
+    public function getQaRejectLog($id)
+    {
+        ob_clean();
+        header('Content-Type: application/json');
+        try {
+            $this->log->info('getQaLog called to fill view log form');
+            $qaLog = $this->model->getQaRejectLog($id);
+            echo json_encode($qaLog);
+        } catch (\Throwable $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to fetch QA Log', 'details' => $e->getMessage()]);
+        }
+    }
+
     public function addQaRejects($data)
     {
         header('Content-Type: application/json');

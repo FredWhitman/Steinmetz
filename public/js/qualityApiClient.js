@@ -103,3 +103,34 @@ export async function postOvenLog(payload){
   });
   return handleResponse(res);
 }
+
+// Fill a form (GET request) for viewing
+export async function fetchAndFillViewForm(id, table) {
+  const url = `${BASE_URL}?action=getQaRejectLog&id=${id}&table=${table}`;
+  console.log("fetchAndFillViewForm URL:", url);
+  try {
+    const response = await fetch(url);
+    const rawText = await response.text();
+    const responseData = JSON.parse(rawText);
+    if (!responseData || responseData.error) {
+      console.error("Error from server:", responseData?.error);
+      return;
+    }
+    // Dynamically fill form fields based on table type.
+    const fieldMappings = {
+          
+    };
+
+    Object.keys(fieldMappings[table]).forEach((dbKey) => {
+      const formID = fieldMappings[table][dbKey];
+      const element = document.getElementById(formID);
+      if (element) {
+        element.value = responseData[dbKey] || "";
+      } else {
+        console.warn(`Element with ID '${formID}' not found!`);
+      }
+    });
+  } catch (error) {
+    console.error("Failed to parse JSON in fetchAndFillForm:", error);
+  }
+}
