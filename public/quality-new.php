@@ -549,13 +549,14 @@
                     <div id="showAlert"></div>
                 </div>
             </div>
-            <div class="d-flex flex-column justify-content-around sm-3 caption-top p-2">
-                <div class="table-container p-2">
+            <div class="d-flex flex-column justify-content-around sm-3 caption-top gap-1">
+                <div class="table-container">
                     <!-- Table to display QA Reject Logs -->
-                     <div class="d-flex">QA Reject Logs</div>
                     <table class="table caption-top table-striped table-bordered text-center w-100">
-                         
                         <thead class="table-primary">
+                            <tr>
+                                <th colspan="5">QA Reject Logs</th>
+                            </tr>
                             <tr>
                                 <th scope="col">Production Date</th>
                                 <th scope="col">Production Log</th>
@@ -569,13 +570,13 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="table-container p-2">
+                <div class="table-container">
                     <!--  Table to display Oven Logs-->
                     <table class="table table-striped table-bordered text-center w-100">
                         <thead class="table-primary">
-                            <tr">
+                            <tr>
                                 <th colspan="8">Oven Logs</th>
-                                </tr>
+                            </tr>
                                 <tr class="table-primary">
                                     <th>Part Number</th>
                                     <th>In Date</th>
@@ -592,7 +593,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="table-container p-2">
+                <div class="table-container">
                     <!-- Table to display Lot change logs -->
                     <table class="table table-striped table-bordered text-center">
                         <thead class="sticky-priamry">

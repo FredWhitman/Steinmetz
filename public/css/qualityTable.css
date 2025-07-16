@@ -6,9 +6,11 @@
 }
 
 table {
+
     border-top: 0 solid black;
     width: 100%;
     border-collapse: collapse;
+    border-right: 1px solid black;
     table-layout: fixed;
 }
 /* thead, tbody {
@@ -28,6 +30,7 @@ td {
 
 th {
     font-size: 14px;
+    border-top: 0;
     background: white;
     position: sticky;
     top: -1; /* Don't forget this, required for the stickiness */
@@ -36,9 +39,9 @@ th {
 
 th, td {
 
-    padding: 8px;
+    padding: 0px;
     text-align: center;
-    border: 1px solid #969696;
+    border: 0px solid #969696;
     /* width: 24%;
     box-sizing: border-box; */
 }
@@ -49,31 +52,20 @@ thead tr:first-child th {
   top: 0;
   background-color: var(--bs-info-bg-subtle);
   z-index: 3;
-    box-shadow: 0 2px 2px -2px rgba(0, 0, 0, 0.15);
+  /* box-shadow: 0 2px 2px -2px rgba(0, 0, 0, 0.15); */
+    box-shadow: 0 2px 2px .05em rgba(0, 0, 0, 0.15);
 }
 
 /* Second sticky row: column headers */
 thead tr:nth-child(2) th {
   position: sticky;
-  top: 42px; /* Adjust based on the height of the first row */
+  top: 36px; /* Adjust based on the height of the first row */
   background-color: var(--bs-info-bg-subtle);
   box-shadow: 0 2px 2px -2px rgba(0, 0, 0, 0.15);
   z-index: 2;
   }
 
-  /* .sticky-summary th {
-  position: sticky;
-  top: 0;
-  background-color: var(--bs-info-bg-subtle);
-  z-index: 3;
-}
-
-.sticky-header th {
-  position: sticky;
-  top: 42;
-  background-color: var(--bs-info-bg-subtle);
-  z-index: 2;
-} */
+  
 
 
 
