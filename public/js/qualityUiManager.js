@@ -71,8 +71,8 @@ export function buildLotChangeTable(lotChangeLogs) {
     lotChangeLogs.forEach((row) => {
       html += ` <tr data-id="${row.LotChangeID}">
                   <td>${row.prodLogID}</td>
-                  <td>${row.productID}</td>
-                  <td>${row.MaterialName}</td>
+                  <td>${row.ProductID}</td>
+                  <td>${row.matName}</td>
                   <td>${row.ChangeDate}</td>
                   <td>${row.ChangeTime}</td>
                   <td>${row.OldLot}</td>

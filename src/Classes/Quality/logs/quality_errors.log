@@ -1,7 +1,1 @@
-[2025-07-15T15:18:01.632324+02:00] Quality.ERROR: Logger alive check: about to try insert [] []
-[2025-07-15T15:19:35.361117+02:00] Quality.ERROR: Failed to getQaRejectLog: ERROR-SQLSTATE[42S22]: Column not found: 1054 Unknown column 'qaRejectID' in 'where clause' [] []
-[2025-07-15T15:28:34.939383+02:00] Quality.ERROR: Failed to getQaRejectLog: ERROR-SQLSTATE[42S22]: Column not found: 1054 Unknown column 'qaRejectID' in 'where clause' [] []
-[2025-07-15T15:33:15.517106+02:00] Quality.ERROR: Failed to getQaRejectLog: ERROR-SQLSTATE[42S22]: Column not found: 1054 Unknown column 'qaRejectID' in 'where clause' [] []
-[2025-07-15T15:37:10.513189+02:00] Quality.ERROR: Failed to getQaRejectLog: ERROR-SQLSTATE[42S22]: Column not found: 1054 Unknown column 'qaRejectID' in 'where clause' [] []
-[2025-07-15T15:38:20.840108+02:00] Quality.ERROR: Failed to getQaRejectLog: ERROR-SQLSTATE[42S22]: Column not found: 1054 Unknown column 'qaRejectID' in 'where clause' [] []
-[2025-07-15T17:57:49.826285+02:00] Quality.ERROR: Failed to getOvenLog: ERROR-SQLSTATE[HY093]: Invalid parameter number: parameter was not defined [] []
+[2025-07-16T03:46:46.094237+02:00] Quality.ERROR: Failed to getQaRejectLog: ERROR-SQLSTATE[42S22]: Column not found: 1054 Unknown column 'qaRejectLogID' in 'where clause' [] []

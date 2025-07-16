@@ -6,6 +6,7 @@
 }
 
 table {
+    border-top: 0 solid black;
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
@@ -14,14 +15,28 @@ table {
     display: block;
 } */
 thead {
-    background-color: #f1f1f1;
+    background-color: #ffffff;
 }
 tbody {
     max-height: 150px;
     overflow-y: auto;
 }
+
+td {
+    font-size: 12px;
+}
+
+th {
+    font-size: 14px;
+    background: white;
+    position: sticky;
+    top: -1; /* Don't forget this, required for the stickiness */
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+    }
+
 th, td {
-    padding: 10px;
+
+    padding: 8px;
     text-align: center;
     border: 1px solid #969696;
     /* width: 24%;

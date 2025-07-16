@@ -42,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET['action'])) {
         case 'getOvenLog':
             $controller->getOvenLog($_GET['id']);
             break;
-        case 'getLotChange':
+        case 'getLotChangeLog':
             $controller->getLotChange($_GET['id']);
             break;
         default:

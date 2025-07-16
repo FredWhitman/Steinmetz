@@ -470,9 +470,24 @@ class QualityModel
 
     public function getLotChanges()
     {
-        $sql = 'SELECT * FROM lotchange
+        $sql = 'SELECT 
+                    `material`.`matPartNumber`,
+                    `material`.`matName`,
+                    `lotchange`.`MaterialName`,
+                    `lotchange`.`LotChangeID`,
+                    `lotchange`.`prodLogID`,
+                    `lotchange`.`ProductID`,
+                    `lotchange`.`ChangeDate`,
+                    `lotchange`.`ChangeTime`,
+                    `lotchange`.`OldLot`,
+                    `lotchange`.`NewLot`,
+                    `lotchange`.`Comments`
+                FROM
+                `material`
+                INNER JOIN `lotchange` ON (`material`.`matPartNumber` = `lotchange`.`MaterialName`)
                 WHERE ChangeDate >= DATE_SUB(NOW(), INTERVAL 12 WEEK)
-                ORDER BY ChangeDate DESC;';
+                ORDER BY ChangeDate DESC';
+
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute()) throw new \Exception("Failed to get Lot Changes logs.");
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);

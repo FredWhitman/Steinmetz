@@ -527,7 +527,6 @@
     </div>
     <!-- Add Material Received end-->
 
-
     <!-- Table to hold the last 4 weeks of production  -->
     <div class="container-fluid">
         <div class="mt-5">
@@ -550,20 +549,19 @@
                     <div id="showAlert"></div>
                 </div>
             </div>
-            <div class="d-flex flex-column justify-content-around sm-3 p-2">
-                <div class="table-container">
+            <div class="d-flex flex-column justify-content-around sm-3 caption-top p-2">
+                <div class="table-container p-2">
                     <!-- Table to display QA Reject Logs -->
-                    <table class="table table-striped table-borderedtext-center w-100">
+                     <div class="d-flex">QA Reject Logs</div>
+                    <table class="table caption-top table-striped table-bordered text-center w-100">
+                         
                         <thead class="table-primary">
                             <tr>
-                                <th colspan="5">QA Reject Logs</th>
-                            </tr>
-                            <tr>
-                                <th>Production Date</th>
-                                <th>Production Log</th>
-                                <th>Part Number</th>
-                                <th>Rejects</th>
-                                <th>Actions</th>
+                                <th scope="col">Production Date</th>
+                                <th scope="col">Production Log</th>
+                                <th scope="col">Part Number</th>
+                                <th scope="col">Rejects</th>
+                                <th scope="col">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="qaRejectLogs">
@@ -571,7 +569,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="table-container">
+                <div class="table-container p-2">
                     <!--  Table to display Oven Logs-->
                     <table class="table table-striped table-bordered text-center w-100">
                         <thead class="table-primary">
@@ -594,7 +592,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="table-container">
+                <div class="table-container p-2">
                     <!-- Table to display Lot change logs -->
                     <table class="table table-striped table-bordered text-center">
                         <thead class="sticky-priamry">
