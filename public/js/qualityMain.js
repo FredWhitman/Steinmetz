@@ -173,6 +173,51 @@ function addOvenLogFormSubmission() {
   });
 }
 
+function updateOvenLogFormSubmission() {
+  const form = document.getElementById("update-ovenlog-form");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) {
+      form.classList.add("was-validated");
+      return;
+    }
+    const data = new FormData(form);
+    const payload = {
+      action: "updateOvenLog",
+      ovenlog: {
+        ovenLogID: data.get("u_olOvenLogID"),
+        outOvenDate: data.get("u_olOutOvenDate"),
+        outOvenTime: data.get("u_olOutOvenTime"),
+        outOvenTemp: data.get("u_olOutOvenTemp"),
+        outOvenInitials: data.get("u_olOutOvenInitials"),
+        ovenComments: data.get("u_olComments"),
+      },
+    };
+
+    console.log(JSON.stringify(payload, null, 2));
+    try {
+      const result = await postOvenLog(payload);
+      console.log("RAW result: ", result);
+      console.log("Alert HTML: ", result?.html);
+
+      if (result) {
+        const alertData = result;
+        document.getElementById("showAlert").innerHTML = alertData.html;
+        bootstrap.Modal.getInstance(
+          document.getElementById("updateOvenLogModal")
+        ).hide();
+      }
+      console.log("postUpdateOvenLog result: ", result);
+      const data = await fetchQualityLogs();
+      if (data) {
+        renderTables(data);
+      }
+    } catch (error) {
+      console.error("Failed to update oven log: ", error);
+    }
+  });
+}
+
 // 1) When the modal opens, load options
 async function onModalShow() {
   showLoader();
@@ -267,4 +312,5 @@ document.addEventListener("DOMContentLoaded", () => {
   addQaRejectsFormSubmision();
   addLotChangeFormSubmission();
   addOvenLogFormSubmission();
+  updateOvenLogFormSubmission();
 });

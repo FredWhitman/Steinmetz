@@ -335,6 +335,35 @@ class QualityModel
         }
     }
 
+    public function updateOvenLog($data)
+    {
+        $sql = "UPDATE ovenlog 
+                SET outOvenDate = :outOvenDate, 
+                    outOvenTime = :outOvenTime, 
+                    outOvenTemp = :outOvenTemp, 
+                    outInitials = :outOvenInitials,
+                    ovenComments = :ovenComments
+                WHERE ovenLogID = :ovenLogID";
+
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':outOvenDate', $data['ovenLog']['outOvenDate']);
+        $stmt->bindValue(':outOvenTime', $data['ovenLog']['outOvenTime']);
+        $stmt->bindValue(':outOvenTemp', $data['ovenLog']['outOvenTemp']);
+        $stmt->bindValue(':outOvenInitials', $data['ovenLog']['outInitials']);
+        $stmt->bindValue(':ovenComments', $data['ovenLog']['ovenComments']);
+
+        if (!$stmt->execute()) {
+            $error = $stmt->errorInfo();
+            $this->log->error("Failed to update Oven log. \n", [
+                'errorInfo' => $error,
+                'out oven date' => $data['ovenLog']['outOvenDate'],
+                'out oven time' => $data['ovenLog']['outOvenTime'],
+            ]);
+            throw new \Exception("Failed to update oven log: ERROR: {$error}");
+        }
+    }
+
     /*===========> GET FUNCTIONS <=========*/
 
     /**

@@ -89,6 +89,15 @@ export async function postOvenLog(payload) {
   return handleResponse(res);
 }
 
+export async function postUpdateOvenLog(payload) {
+  const res = await fetch(BASE_URL, {
+    method: "POST",
+    header: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse(res);
+}
+
 // Fill a form (GET request) for viewing
 export async function fetchAndFillViewForm(id, table) {
   const tableKeyMap = {
@@ -183,6 +192,7 @@ export async function fetchAndFillUpdateForm(id, table) {
       comments: "u_comment-text",
     },
     ovenLog: {
+      ovenLogID: "u_olOvenLogID",
       productID: "u_olPartName",
       inOvenDate: "u_olinOvenDate",
       inOvenTime: "u_olinOvenTime",
@@ -213,9 +223,9 @@ export async function fetchAndFillUpdateForm(id, table) {
     return;
   }
 
-  const url = `${BASE_URL}?action = update${
+  const url = `${BASE_URL}?action=get${
     lookupKey.charAt(0).toUpperCase() + lookupKey.slice(1)
-  }=1&id=${id}&table=${table}`;
+  }&id=${id}&table=${table}`;
 
   console.log("FetchAndFillUpdateForm URL: ", url);
   try {

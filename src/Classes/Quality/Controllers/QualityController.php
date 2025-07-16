@@ -104,6 +104,21 @@ class QualityController
         }
     }
 
+    public function updateOvenLog($data)
+    {
+        header('Content-Type: application/json');
+        try {
+            $result = $this->model->updateOvenLog($data);
+            $type = $result['success'] ? 'success' : 'danger';
+            $alert = $this->util->showMessage($type, $result['message']);
+            echo $alert;
+        } catch (\Throwable $e) {
+            http_response_code(500);
+            $alert = $this->util->showMessage('danger', 'Unhandled exception: ' . $e->getMessage());
+            echo $alert;
+        }
+    }
+
     public function addOvenLog($data)
     {
         header('Content-Type: application/json');

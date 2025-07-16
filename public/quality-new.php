@@ -422,11 +422,12 @@
                     <h1 class="modal-title fs-5">Oven Log</h1>
                 </div>
                 <div class="modal-body">
-                    <form id="view-ovenlog-form" class="needs-validation p-2" novalidate>
+                    <form id="update-ovenlog-form" class="needs-validation p-2" novalidate>
                         <div class="mb-3">
+                            <input type="hidden" id="u_olOvenLogID" name="u_olOvenLogID">
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="olPartName">Part Name</label><input type="text" tabindex="1" class="form-control form-control-sm" id="v_olPartName" name="v_olPartName" readonly></input></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="olPartName">Part Name</label><input type="text" tabindex="1" class="form-control form-control-sm" id="u_olPartName" name="u_olPartName" readonly></input></div>
                                     <div class="invalid-feedback">Part name is required!</div>
                                 </div>
                             </div>
@@ -460,7 +461,7 @@
                             </div>
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="lcaTime">In Oven Time</label><input class="form-control" type="time" id="v_olOutOvenTime" name="v_olOutOvenTime" value="09:00"></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="lcaTime">In Oven Time</label><input class="form-control" type="time" id="u_olOutOvenTime" name="u_olOutOvenTime" value="09:00"></div>
                                     <div class="invalid-feedback">In Oven time is required!</div>
                                 </div>
                             </div>
@@ -476,7 +477,7 @@
                             </div>
                         </div>
                         <div_v> <label for="message-text" class="col-form-label">Comments</label>
-                            <textarea class="form-control" type="text" id="v_olComments" name="u_olComments"></textarea>
+                            <textarea class="form-control" type="text" id="u_olComments" name="u_olComments"></textarea>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
@@ -577,16 +578,16 @@
                             <tr>
                                 <th colspan="8">Oven Logs</th>
                             </tr>
-                                <tr class="table-primary">
-                                    <th>Part Number</th>
-                                    <th>In Date</th>
-                                    <th>In Time</th>
-                                    <th>In Initials</th>
-                                    <th>Out Date</th>
-                                    <th>Out Time</th>
-                                    <th>Out Initials</th>
-                                    <th>Actions</th>
-                                </tr>
+                            <tr class="table-primary">
+                                <th>Part Number</th>
+                                <th>In Date</th>
+                                <th>In Time</th>
+                                <th>In Initials</th>
+                                <th>Out Date</th>
+                                <th>Out Time</th>
+                                <th>Out Initials</th>
+                                <th>Actions</th>
+                            </tr>
                         </thead>
                         <tbody id="ovenLogs">
 

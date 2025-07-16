@@ -1,2 +1,0 @@
-[2025-07-05T15:28:47.423610+02:00] Production.ERROR: PDO Rollback.  Error failed to insert Production log: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'qty' in 'field list' [] []
-[2025-07-07T04:23:59.442396+02:00] Production.ERROR: PDO Rollback.  Error failed to insert Production log: Error: productionDB_SQL->getMaterialTotals for prodRunID logID: 2025-07-15 [] []
