@@ -1,6 +1,6 @@
 <?php
-// File: src/Classes/production/routes/prodDispatcher.php
-$controller = require_once __DIR__ . '/../config/prodInit.php';
+// File: src/Classes/Production/Routes/prodDispatcher.php
+$controller = require_once __DIR__ . '/../Config/prodInit.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 

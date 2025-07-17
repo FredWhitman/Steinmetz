@@ -21,8 +21,6 @@
     <!--Navbar -->
     <?php require_once '../includes/steinmetzNavbar.php'; ?>
 
-
-
     <!--------------------------------------------------------------------------------------------------------------->
     <!-- New production log modal start-->
     <div class="modal fade" id="addProductionModal" tabindex="-1">
@@ -629,7 +627,7 @@
     </div>
     <!-- Add purge to production log end -->
     <!--------------------------------------------------------------------------------------------------------------->
-    
+
     <!-- Table to hold the last 4 weeks of production  -->
     <div class="container-fluid">
         <div class="mt-5">

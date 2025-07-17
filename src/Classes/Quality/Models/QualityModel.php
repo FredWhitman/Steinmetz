@@ -18,7 +18,7 @@ class QualityModel
     public function __construct(Connection $dbConnection, LoggerInterface $log, Utilities $util)
     {
         $this->util = $util;
-        $this->pdo = $dbConnection->getPdo();
+        $this->pdo = $dbConnection->getPDO();
         $this->log = $log;
     }
 
@@ -344,12 +344,13 @@ class QualityModel
                 SET outOvenDate = :outOvenDate, 
                     outOvenTime = :outOvenTime, 
                     outOvenTemp = :outOvenTemp, 
-                    outInitials = :outOvenInitials,
+                    outOvenInitials = :outOvenInitials,
                     ovenComments = :ovenComments
                 WHERE ovenLogID = :ovenLogID";
 
         try {
             $stmt = $this->pdo->prepare($sql);
+            $stmt->bindValue(':ovenLogID', $data['ovenlog']['ovenLogID']);
             $stmt->bindValue(':outOvenDate', $data['ovenlog']['outOvenDate']);
             $stmt->bindValue(':outOvenTime', $data['ovenlog']['outOvenTime']);
             $stmt->bindValue(':outOvenTemp', $data['ovenlog']['outOvenTemp']);
@@ -365,13 +366,19 @@ class QualityModel
                 ]);
                 throw new \Exception("Failed to update oven log: ERROR: {$error}");
             }
+
+            return [
+                'success' => true,
+                'message' => "Successfully updated an Oven log."
+
+            ];
         } catch (\PDOException $e) {
-           $this->log->error('Error during updateOvenLog. message: ' . $e->getMessage());
-           
+            $this->log->error('Error during updateOvenLog. message: ' . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => "Uncaught error during update ovenLog! ERROR MESSAGE: {$e->getMessage()}"
+            ];
         }
-        
-
-
     }
 
     /*===========> GET FUNCTIONS <=========*/
@@ -393,8 +400,17 @@ class QualityModel
             } else {
                 return 0;
             }
+
+            return [
+                'success' => true,
+                'message' => "Successfully updated oven log."
+            ];
         } catch (\PDOException $e) {
-            $this->log->error("ERROR: Failed to get product list: " . $e->getMessage());
+            $this->log->error("ERROR: Failed to update oven log: " . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'Update oven log failed: ' . $e->getMessage()
+            ];
         }
     }
 

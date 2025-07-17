@@ -1,28 +1,114 @@
-\Public
-	\api
-		dispatcher.php
-	\css
-		myCss.css
-	\js
-		inventoryApiClient.js
-		inventoryMain.js
-		inventoryUiManager.js
-	\lib //this folder holds bootstrap and jquery
-\src
-	\Classes
-		\inventory
-			\config
-				init.php
-				LogFactory.php
-			\controller
-				InventoryController.php
-			\logs
-			\models
-				InventoryModel.php
-			\routes
-				dispatcher.php
-			\utils
-				inventoryActions.php
-	inventory.php  //landing page for all things inventory related
-	production.php  //landing page for all things production related
-	index.php
+Steinmetz/
+├── composer.json
+├── composer.lock
+├── LoggerTester.php
+├── phpunit.xml
+├── README.md
+├── bin/
+├── config/
+├── docs/
+│   ├── add_production_log_workflow.md
+│   ├── PoductionLandingPageOverview.md
+│   ├── addProduction summary.txt
+│   ├── FileStructure.txt
+│   ├── updatingSelects_AddProduction.txt
+│   └── ...
+│   └── php files/
+│   └── sql files/
+├── includes/
+│   └── steinmetzNavbar.php
+├── public/
+│   ├── index.php
+│   ├── Inventory_1.php
+│   ├── Inventory.php
+│   ├── production_new.php
+│   ├── production.php
+│   ├── quality-new.php
+│   ├── quality.php
+│   ├── steinmetz.ico
+│   ├── steinmetz.png
+│   ├── test.php
+│   ├── api/
+│   │   ├── dispatcher.php
+│   │   ├── prodDispatcher.php
+│   │   └── qaDispatcher.php
+│   ├── css/
+│   │   ├── addProdLog.css
+│   │   ├── myCSS.css
+│   │   └── qualityTable.css
+│   ├── js/
+│   │   ├── inventoryApiClient.js
+│   │   ├── inventoryMain.js
+│   │   ├── inventoryUiManager.js
+│   │   ├── productionApiClient.js
+│   │   ├── productionMain.js
+│   │   ├── productionUiManager.js
+│   │   ├── qualityApiClient.js
+│   │   ├── qualityMain.js
+│   │   └── qualityUiManager.js
+│   └── lib/
+│       ├── CSS/
+│       └── JS/
+├── src/
+│   ├── Classes/
+│   │   ├── database.php
+│   │   ├── fetch_data.php
+│   │   ├── log-client-event.php
+│   │   ├── productionActions.php
+│   │   ├── productionDB_SQL.php
+│   │   ├── util.php
+│   │   ├── Inventory/
+│   │   │   ├── Config/
+│   │   │	│	├── init.php
+│   │   │	│	└── LogFactory.php
+│   │   │   ├── Controllers/
+│   │   │	│	└── InventoryController.php
+│   │   │   ├── logs/
+│   │   │   ├── Models/
+│   │   │	│	└── InventoryModel.php
+│   │   │   ├── Routes/
+│   │   │	│	└── dispatcher.php
+│   │   ├── Production/
+│   │   │   ├── Config/
+│   │   │	│	├── prodInit.php
+│   │   │	│	└── LogFactory.php
+│   │   │   ├── Controllers/
+│   │   │	│	└── ProductionController.php
+│   │   │   ├── logs/
+│   │   │   ├── Models/
+│   │   │	│	└── ProductionModel.php
+│   │   │   ├── Routes/
+│   │   │	│	└── prodDispatcher.php
+│   │   ├── Quality/
+│   │   │   ├── Config/
+│   │   │	│	├── qaInit.php
+│   │   │	│	└── LogFactory.php
+│   │   │   ├── Controllers/
+│   │   │	│	└── QualityController.php
+│   │   │   ├── logs/
+│   │   │	│	├── quality_info.log
+│   │   │	│	└── quality_error.log
+│   │   │   ├── Models/
+│   │   │	│	└── QualityModel.php
+│   │   │   ├── Routes/
+│   │   │	│	└── qaDispatcher.php
+│   │   ├── Database/
+│   │   │   └── Connection.php
+│   │   └── Util/
+│   │       └── Utilities.php
+├── tests/
+│   └── ProductionModelTest.php
+├── vendor/
+│   ├── autoload.php
+│   ├── bin/
+│   ├── composer/
+│   ├── monolog/
+│   ├── myclabs/
+│   ├── nikic/
+│   ├── phar-io/
+│   ├── phpunit/
+│   ├── psr/
+│   ├── sebastian/
+│   ├── theseer/
+│   └── twbs/
+└── ...

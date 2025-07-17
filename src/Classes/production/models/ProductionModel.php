@@ -1,21 +1,22 @@
 <?php
 // File: src/Classes/production/models/ProductionModel.php
+// src/Classes/production/models/ProductionModel.php
+// This file contains the ProductionModel class which interacts with the database for production-related operations.
+declare(strict_types=1);
+
 namespace Production\Models;
 
-require_once  __DIR__ . '/../../database.php';
-require_once __DIR__ . '/../utils/Util.php';
-
 use Psr\Log\LoggerInterface;
-use PDOException;
-use ErrorException;
-use Production\utils\Util;
-use Throwable;
+use Exception;
+use Util\Utilities;
+use Database\Connection;
+
 
 class ProductionModel
 {
 
-    private $con;
-    private $log;
+    private \PDO $pdo;
+    private LoggerInterface $log;
     private $util;
 
     /**
@@ -24,10 +25,10 @@ class ProductionModel
      * @param \PDO $dbConnection
      * @param LoggerInterface $log
      */
-    public function __construct(\PDO $dbConnection, LoggerInterface $log, Util $util)
+    public function __construct(Connection $dbConnection, LoggerInterface $log, Utilities $util)
     {
         error_log("✅ ProductionModel constructor reached");
-        $this->con = $dbConnection;
+        $this->pdo = $dbConnection->getPDO();
         $this->log = $log;
         $this->util = $util;
     }
@@ -39,7 +40,7 @@ class ProductionModel
      */
     public function getConnection()
     {
-        return $this->con;
+        return $this->pdo;
     }
 
     /**
@@ -57,16 +58,17 @@ class ProductionModel
      *
      * @return void
      */
+
     public function read4wks()
     {
         try {
             $sql = 'SELECT * FROM productionLogs WHERE prodDate >= NOW() - INTERVAL 4 WEEK Order By prodDate Desc';
-            $stmt = $this->con->prepare($sql);
+            $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
             $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
             return $results;
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             echo $e->getMessage();
         }
     }
@@ -83,7 +85,7 @@ class ProductionModel
         $sql = 'SELECT p.*, t.*, m.* FROM productionlogs AS p 
                 INNER JOIN templog AS t ON p.logID = t.prodLogID 
                 INNER JOIN materiallog AS m ON p.logID = m.prodLogID WHERE p.logID = :id';
-        $stmt = $this->con->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['id' => $id]);
 
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -104,14 +106,14 @@ class ProductionModel
             //this function returns the previous log of the viewed one
             $sql = 'SELECT p.logID, m.* FROM productionlogs AS p 
                     INNER JOIN materiallog AS m ON p.logID = m.prodLogID WHERE p.logID = :id';
-            $stmt = $this->con->prepare($sql);
+            $stmt = $this->pdo->prepare($sql);
             $stmt->execute(['id' => $id]);
 
             $result = $stmt->fetch(\PDO::FETCH_ASSOC);
             $this->log->info("result of ReadPrevious() function: " . print_r($result, true));
 
             return $result;
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             echo $e->getMessage();
         }
     }
@@ -190,7 +192,7 @@ class ProductionModel
                     throw new \InvalidArgumentException("Invalid runStatus: {$prodData['runStatus']}");
             }
 
-            $this->con->beginTransaction();
+            $this->pdo->beginTransaction();
 
             /* Insert materialLog & tempLog returnint their logIDs and add logID to each of their respective arrays */
             $matLogID = $this->insertMatLog($materialData);
@@ -226,7 +228,7 @@ class ProductionModel
                                     :purgeLbs,
                                     :comments)";
 
-            $stmtInsertProdLog = $this->con->prepare($sqlInsertProdLog);
+            $stmtInsertProdLog = $this->pdo->prepare($sqlInsertProdLog);
 
             $InsertParams = [
                 ':productID' => [$prodData['productID'],  \PDO::PARAM_STR],
@@ -249,7 +251,7 @@ class ProductionModel
                 $this->log->error('Production log insert failed: ' . print_r($stmtInsertProdLog->errorInfo(), true));
                 throw new \Exception("Production log insert failed.");
             }
-            $prodLogID = $this->con->lastInsertId();
+            $prodLogID = $this->pdo->lastInsertId();
             $this->log->info('prodLogID: ' . $prodLogID);
             if (!$prodLogID) throw new \Exception("Failed to get last production log for production run!");
 
@@ -288,13 +290,13 @@ class ProductionModel
 
             $this->updatePFMInventory('349-61A0', $copperPins, '-');
 
-            $this->con->commit();
+            $this->pdo->commit();
             $message = "Transaction completed successfully added {$parts} of {$productID} into product inventory and removed {$copperPins} copper pins from pfm inventory.";
             return ["success" => true, "message" => $message];
         } catch (\Throwable $e) {
             $message = "Failed to add prodcution log and a rollback was triggered by this error: {$e}";
 
-            $this->con->rollBack();
+            $this->pdo->rollBack();
             $this->log->error('PDO Rollback.  Error failed to insert Production log: ' . $e->getMessage());
 
             throw $e;
@@ -336,10 +338,10 @@ class ProductionModel
                                         :mat4,
                                         :matUsed4)";
 
-        $stmt = $this->con->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute($materialData);
 
-        $matLogID = $this->con->lastInsertId();
+        $matLogID = $this->pdo->lastInsertId();
         $this->log->info('matLogID: ' . $matLogID);
         if (!$matLogID) throw new \Exception("Failed to insert into materialLog or set matLogID.");
         return $matLogID;
@@ -393,9 +395,9 @@ class ProductionModel
                     :chillerTemp,
                     :moldTemp)";
 
-        $stmt = $this->con->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute($tempData);
-        $tempLogID = $this->con->lastInsertId();
+        $tempLogID = $this->pdo->lastInsertId();
         $this->log->info('tempLogID: ' . $tempLogID);
         if (!$tempLogID) throw new \Exception('Failed to insert tempLog and return tempLogID.');
         return $tempLogID;
@@ -417,13 +419,13 @@ class ProductionModel
                                 :productID, 
                                 :prodDate, 
                                 :runComplete)";
-        $stmt = $this->con->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             ':productID' => $productID,
             ':prodDate' => $prodDate,
             ':runComplete' => 'no'
         ]);
-        $prodRunID = $this->con->lastInsertId();
+        $prodRunID = $this->pdo->lastInsertId();
         if (!$prodRunID) throw new \Exception("failed to insert production run!");
         return $prodRunID;
     }
@@ -457,7 +459,7 @@ class ProductionModel
                     :transType,
                     :transComment)';
 
-        $stmt = $this->con->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
 
         $stmt->bindParam(':inventoryID', $data['inventoryID'], \PDO::PARAM_STR);
         $stmt->bindParam(':inventoryType', $data['inventoryType'], \PDO::PARAM_STR);
@@ -486,7 +488,7 @@ class ProductionModel
         $oldStock = $this->getPFMQty($partNumber);
         $sql = 'UPDATE pfmInventory SET qty = :newQty WHERE partNumber = :partNumber';
         ($operator === '+') ? $newQty = $amount + $oldStock : $newQty = $oldStock - $amount;
-        $stmt = $this->con->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':partNumber', $partNumber, \PDO::PARAM_STR);
         $stmt->bindParam(':newQty', $newQty, \PDO::PARAM_INT);
 
@@ -503,7 +505,7 @@ class ProductionModel
     {
 
         $sql = 'UPDATE materiallog SET prodLogID = :prodLogID WHERE matLogID = :logID';
-        $stmt = $this->con->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':prodLogID', $materialData['prodLogID'], \PDO::PARAM_INT);
         $stmt->bindParam(':logID', $materialData['logID'], \PDO::PARAM_INT);
 
@@ -522,7 +524,7 @@ class ProductionModel
     private function updateTempLogProdLogID($tempData)
     {
         $sql = 'UPDATE tempLog SET prodLogID = :prodLogID WHERE tempLogID = :logID';
-        $stmt = $this->con->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':logID', $tempData['logID'], \PDO::PARAM_INT);
         $stmt->bindParam(':prodLogID', $tempData['prodLogID'], \PDO::PARAM_INT);
 
@@ -557,7 +559,7 @@ class ProductionModel
                         runComplete = :runComplete 
                     WHERE logID = :prodRunID";
 
-        $stmt = $this->con->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
 
         $stmt->bindParam(':endDate', $totals['prodDate'], \PDO::PARAM_STR);
         $stmt->bindParam(':mat1Lbs', $totals['total_matUsed1'], \PDO::PARAM_STR);
@@ -588,7 +590,7 @@ class ProductionModel
     {
         $op = $op = ($operator === "+") ? '+' : '-';
         $sql = "UPDATE productInventory SET partQty = partQty {$op} :qty WHERE productID = :productID";
-        $stmt = $this->con->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':qty', $qty, \PDO::PARAM_INT);
         $stmt->bindParam(':productID', $productID, \PDO::PARAM_INT);
 
@@ -640,7 +642,7 @@ class ProductionModel
                     SET matLbs = matlbs {$op} :matLbs 
                     WHERE matPartNumber = :matPartNumber";
 
-            $stmt = $this->con->prepare($sql);
+            $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':matLbs', $used, \PDO::PARAM_STR);
             $stmt->bindParam(':matPartNumber', $matId, \PDO::PARAM_STR);
 
@@ -661,7 +663,7 @@ class ProductionModel
     private function getMaterialLbs($matPartNumber)
     {
         $sql = 'SELECT matLbs, matPartNumber FROM materialinventory WHERE matPartNumber = :matPartNumber';
-        $stmt = $this->con->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':matPartNumber', $matPartNumber, \PDO::PARAM_STR);
         $stmt->execute();
 
@@ -680,7 +682,7 @@ class ProductionModel
     private function getPFMQty($partNumber)
     {
         $sql = 'SELECT partNumber, qty FROM pfmInventory WHERE partNumber = :partNumber';
-        $stmt = $this->con->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':partNumber', $partNumber, \PDO::PARAM_STR);
         $stmt->execute();
         $result = $stmt->fetch();
@@ -699,7 +701,7 @@ class ProductionModel
     public function getInvQty($productID)
     {
         $sql = 'SELECT partQty FROM productInventory WHERE productID = :productID';
-        $stmt = $this->con->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $qty = $stmt->execute([':productID' => $productID]);
         if (!$qty) throw new \Exception("Failed to get qty for {$productID}.");
         return $qty;
@@ -717,7 +719,7 @@ class ProductionModel
     {
 
         $sql = 'SELECT logID, qaRejects,productID, prodDate FROM `productionlogs` WHERE productID = :productID AND prodDate = :prodDate';
-        $stmt = $this->con->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             'productID' => $productID,
             'prodDate' => $prodDate
@@ -739,7 +741,7 @@ class ProductionModel
     {
         $sqlGetPrevLog = "SELECT logID, runLogID FROM productionlogs WHERE runLogID  = :prodRunID ORDER BY logID DESC LIMIT 1";
 
-        $stmtGetPrevLog = $this->con->prepare($sqlGetPrevLog);
+        $stmtGetPrevLog = $this->pdo->prepare($sqlGetPrevLog);
         $stmtGetPrevLog->execute(['prodRunID' => $prodRunID]);
 
         $row = $stmtGetPrevLog->fetch(\PDO::FETCH_ASSOC);
@@ -760,7 +762,7 @@ class ProductionModel
         try {
             //get current prodRunID and set $prodRunID
             $sqlGetRunID = 'SELECT logID, productID, runComplete FROM prodrunlog WHERE  productID = :prodID AND runComplete  = "no" ';
-            $stmtGetRunID = $this->con->prepare($sqlGetRunID);
+            $stmtGetRunID = $this->pdo->prepare($sqlGetRunID);
             $result = $stmtGetRunID->execute(['prodID' => $productID]);
             if ($result) {
                 // Fetch data properly
@@ -770,7 +772,7 @@ class ProductionModel
             } else {
                 return 0;
             }
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             echo 'Error getting prod run ID: ' . $e->getMessage();
         }
     }
@@ -796,7 +798,7 @@ class ProductionModel
 
 
         $sql = 'SELECT * FROM materialLog WHERE prodLogID = :prodLogID';
-        $stmt = $this->con->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':prodLogID', $prodLogID,  \PDO::PARAM_STR);
         $stmt->execute();
 
@@ -835,7 +837,7 @@ class ProductionModel
                     WHERE p.runLogID = :prodRunID
                     GROUP BY p.runLogID";
 
-        $stmtGetTotals = $this->con->prepare($sqlGetTotals);
+        $stmtGetTotals = $this->pdo->prepare($sqlGetTotals);
         $stmtGetTotals->bindParam(':prodRunID', $prodRunID, \PDO::PARAM_INT);
         $stmtGetTotals->execute();
         $result = $stmtGetTotals->fetch(\PDO::FETCH_ASSOC);
@@ -856,7 +858,7 @@ class ProductionModel
     {
         error_log('productionDB_SQL->CheckProductionRuns Called');
         $sql = "SELECT logID, productID, runComplete FROM prodrunlog WHERE productID = :productID AND runComplete = :runComplete";
-        $stmt = $this->con->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $no = 'no';
         $stmt->bindParam(':productID', $productID, \PDO::PARAM_STR);
         $stmt->bindParam(':runComplete', $no, \PDO::PARAM_STR);
@@ -881,13 +883,13 @@ class ProductionModel
     {
         try {
             $sql = 'SELECT COUNT(*) FROM productionLogs WHERE productID = :productID AND prodDate = :prodDate';
-            $stmt = $this->con->prepare($sql);
+            $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':productID', $productID, \PDO::PARAM_STR);
             $stmt->bindParam(':prodDate', $prodDate);
             $stmt->execute();
             $count = $stmt->fetchColumn();
             return ($count > 0);
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             error_log("Error checking production date: " . $e->getMessage());
             return false;
         }
@@ -901,7 +903,7 @@ class ProductionModel
     {
         try {
             $sql = 'SELECT productID, partName from products';
-            $stmt = $this->con->prepare($sql);
+            $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -924,7 +926,7 @@ class ProductionModel
     {
         try {
             $sql = 'SELECT matPartNumber, matName from material';
-            $stmt = $this->con->prepare($sql);
+            $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 

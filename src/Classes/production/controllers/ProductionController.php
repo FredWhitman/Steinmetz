@@ -1,10 +1,10 @@
 <?php
-
+// File: controllers/ProductionController.php
 namespace Production\Controllers;
 
-// File: controllers/ProductionController.php
+use Production\Models\ProductionModel;
+use Util\Utilities;
 
-require_once __DIR__ . '/../models/ProductionModel.php';
 
 class ProductionController
 {
@@ -17,7 +17,6 @@ class ProductionController
         $this->model = $model;
         $this->util  = $util;
         $this->log   = $log;
-        //$this->log->info("Controller logger test", ['file' => __FILE__]);
     }
 
     public function read4wks()
