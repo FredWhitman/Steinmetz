@@ -90,6 +90,7 @@ export async function postOvenLog(payload) {
 }
 
 export async function postUpdateOvenLog(payload) {
+  console.log('postUpdateOvenLog called');
   const res = await fetch(BASE_URL, {
     method: "POST",
     header: { "Content-Type": "application/json" },

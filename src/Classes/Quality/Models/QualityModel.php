@@ -337,7 +337,10 @@ class QualityModel
 
     public function updateOvenLog($data)
     {
-        $sql = "UPDATE ovenlog 
+        $this->log->info('QualityModel->updateOveLog called');
+        $this->log->info('$data: ' . print_r($data, true));
+
+        $sql = "UPDATE ovenlogs 
                 SET outOvenDate = :outOvenDate, 
                     outOvenTime = :outOvenTime, 
                     outOvenTemp = :outOvenTemp, 
@@ -345,23 +348,30 @@ class QualityModel
                     ovenComments = :ovenComments
                 WHERE ovenLogID = :ovenLogID";
 
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindValue(':outOvenDate', $data['ovenlog']['outOvenDate']);
+            $stmt->bindValue(':outOvenTime', $data['ovenlog']['outOvenTime']);
+            $stmt->bindValue(':outOvenTemp', $data['ovenlog']['outOvenTemp']);
+            $stmt->bindValue(':outOvenInitials', $data['ovenlog']['outOvenInitials']);
+            $stmt->bindValue(':ovenComments', $data['ovenlog']['ovenComments']);
 
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(':outOvenDate', $data['ovenLog']['outOvenDate']);
-        $stmt->bindValue(':outOvenTime', $data['ovenLog']['outOvenTime']);
-        $stmt->bindValue(':outOvenTemp', $data['ovenLog']['outOvenTemp']);
-        $stmt->bindValue(':outOvenInitials', $data['ovenLog']['outInitials']);
-        $stmt->bindValue(':ovenComments', $data['ovenLog']['ovenComments']);
-
-        if (!$stmt->execute()) {
-            $error = $stmt->errorInfo();
-            $this->log->error("Failed to update Oven log. \n", [
-                'errorInfo' => $error,
-                'out oven date' => $data['ovenLog']['outOvenDate'],
-                'out oven time' => $data['ovenLog']['outOvenTime'],
-            ]);
-            throw new \Exception("Failed to update oven log: ERROR: {$error}");
+            if (!$stmt->execute()) {
+                $error = $stmt->errorInfo();
+                $this->log->error("Failed to update Oven log. \n", [
+                    'errorInfo' => $error,
+                    'out oven date' => $data['ovenlog']['outOvenDate'],
+                    'out oven time' => $data['ovenlog']['outOvenTime'],
+                ]);
+                throw new \Exception("Failed to update oven log: ERROR: {$error}");
+            }
+        } catch (\PDOException $e) {
+           $this->log->error('Error during updateOvenLog. message: ' . $e->getMessage());
+           
         }
+        
+
+
     }
 
     /*===========> GET FUNCTIONS <=========*/

@@ -16,6 +16,7 @@ import {
   postQaRejects,
   postLotChange,
   postOvenLog,
+  postUpdateOvenLog,
   fetchProductList,
   fetchMaterialList,
 } from "./qualityApiClient.js";
@@ -195,8 +196,9 @@ function updateOvenLogFormSubmission() {
     };
 
     console.log(JSON.stringify(payload, null, 2));
+    
     try {
-      const result = await postOvenLog(payload);
+      const result = await postUpdateOvenLog(payload);
       console.log("RAW result: ", result);
       console.log("Alert HTML: ", result?.html);
 

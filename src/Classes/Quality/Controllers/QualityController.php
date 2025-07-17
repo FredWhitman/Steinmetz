@@ -111,6 +111,7 @@ class QualityController
             $result = $this->model->updateOvenLog($data);
             $type = $result['success'] ? 'success' : 'danger';
             $alert = $this->util->showMessage($type, $result['message']);
+            $this->log->info('QualityController->updateOvenLog $alert: '. print_r($alert, true));
             echo $alert;
         } catch (\Throwable $e) {
             http_response_code(500);
