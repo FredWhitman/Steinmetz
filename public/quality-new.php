@@ -556,7 +556,7 @@
                     <table class="table caption-top table-striped table-bordered text-center w-100">
                         <thead class="table-primary">
                             <tr>
-                                <th colspan="7">QA Reject Logs</th>
+                                <th colspan="6">QA Reject Logs</th>
                             </tr>
                             <tr>
                                 <th scope="col">Production Date</th>

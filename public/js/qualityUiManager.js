@@ -13,7 +13,7 @@ export function hideLoader() {
 export function buildQaRejectTable(qaRejectLogs) {
   let html = "";
   if (!qaRejectLogs.length) {
-    html = `<tr><td colspan = "7" class="text-center">No records found</td></tr>`;
+    html = `<tr><td colspan = "6" class="text-center">No records found</td></tr>`;
   } else {
     qaRejectLogs.forEach((row) => {
       html += ` <tr data-id="${row.qaRejectLogID}">
