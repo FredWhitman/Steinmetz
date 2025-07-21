@@ -13,7 +13,7 @@ export function hideLoader() {
 export function buildQaRejectTable(qaRejectLogs) {
   let html = "";
   if (!qaRejectLogs.length) {
-    html = `<tr><td colspan = "5" class="text-center">No records found</td></tr>`;
+    html = `<tr><td colspan = "7" class="text-center">No records found</td></tr>`;
   } else {
     qaRejectLogs.forEach((row) => {
       html += ` <tr data-id="${row.qaRejectLogID}">
@@ -21,6 +21,7 @@ export function buildQaRejectTable(qaRejectLogs) {
                     <td>${row.prodLogID}</td>
                     <td>${row.productID}</td>
                     <td>${row.rejects}</td>
+                    <td>${row.comments}</td>
                     <td>
                       <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 viewLink" title="view qa reject" data-bs-toggle="modal" data-bs-target="#viewQaRejectsModal"><i class="bi bi-eye-fill"></i></a>
                     </td>
@@ -36,16 +37,18 @@ export function buildOvenLogsTable(ovenLogs) {
   let html = "";
 
   if (!ovenLogs.length) {
-    html = `<tr><td colspan = "8" class="text-center">No records found</td></tr>`;
+    html = `<tr><td colspan = "10" class="text-center">No records found</td></tr>`;
   } else {
     ovenLogs.forEach((row) => {
       html += ` <tr data-id="${row.ovenLogID}">
                 <td>${row.productID}</td>
                 <td>${row.inOvenDate}</td>
                 <td>${row.inOvenTime}</td>
+                <td>${row.inOvenTemp} °</td>
                 <td>${row.inOvenInitials}</td>
                 <td>${row.outOvenDate}</td>
                 <td>${row.outOvenTime}</td>
+                <td>${row.outOvenTemp} °</td>
                 <td>${row.outOvenInitials}</td>
                 <td>
                   <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 viewLink" title="view ovenLog" data-bs-toggle="modal" data-bs-target="#viewOvenLogModal">

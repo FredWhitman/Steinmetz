@@ -556,13 +556,14 @@
                     <table class="table caption-top table-striped table-bordered text-center w-100">
                         <thead class="table-primary">
                             <tr>
-                                <th colspan="5">QA Reject Logs</th>
+                                <th colspan="7">QA Reject Logs</th>
                             </tr>
                             <tr>
                                 <th scope="col">Production Date</th>
                                 <th scope="col">Production Log</th>
                                 <th scope="col">Part Number</th>
                                 <th scope="col">Rejects</th>
+                                <th scope="col">Comments</th>
                                 <th scope="col">Actions</th>
                             </tr>
                         </thead>
@@ -576,15 +577,17 @@
                     <table class="table table-striped table-bordered text-center w-100">
                         <thead class="table-primary">
                             <tr>
-                                <th colspan="8">Oven Logs</th>
+                                <th colspan="10">Oven Logs</th>
                             </tr>
                             <tr class="table-primary">
                                 <th>Part Number</th>
                                 <th>In Date</th>
                                 <th>In Time</th>
+                                <th>In Temp</th>
                                 <th>In Initials</th>
                                 <th>Out Date</th>
                                 <th>Out Time</th>
+                                <th>Out Temp</th>
                                 <th>Out Initials</th>
                                 <th>Actions</th>
                             </tr>
