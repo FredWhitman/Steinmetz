@@ -715,10 +715,24 @@ class ProductionModel
      * @param [type] $prodDate
      * @return void
      */
-    private function getProductionlog($productID, $prodDate)
+    public function getProductionlog($productID, $prodDate)
     {
-
-        $sql = 'SELECT logID, qaRejects,productID, prodDate FROM `productionlogs` WHERE productID = :productID AND prodDate = :prodDate';
+        $sql = "SELECT 
+  templog.*,
+  productionlogs.*,
+  materiallog.*,
+  'm1'.matName AS matName1,
+  'm2'.matName AS matName2,
+  'm3'.matName AS matName3,
+  'm4'.matName AS matName4
+FROM productionlogs
+LEFT JOIN templog ON 'templog'.prodLogID = 'productionlogs'.logID
+LEFT JOIN materiallog ON 'materiallog'.prodLogID = 'productionlogs'.logID
+LEFT JOIN material m1 ON 'materiallog'.mat1 = 'm1'.matPartNumber
+LEFT JOIN material m2 ON 'materiallog'.mat2 = 'm2'.matPartNumber
+LEFT JOIN material m3 ON 'materiallog'.mat3 = 'm3'.matPartNumber
+LEFT JOIN material m4 ON 'materiallog'.mat4 = 'm4'.matPartNumber
+WHERE 'productionlogs'.prodDate = :productID AND 'productionlogs'.productID = :prodDate";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             'productID' => $productID,

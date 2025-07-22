@@ -27,6 +27,9 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
         case isset($_GET['viewProdLogs'], $_GET['id']):
             $controller->viewProdLogs($_GET['id']);
             break;
+        case isset($_GET['action']) && $_GET['action'] === "viewLog":
+            $controller->viewLog($_GET['productID'], $_GET['date']);
+            break;
         case isset($_GET['action']) && $_GET['action'] === "getProducts":
             $controller->getProductList();
             break;

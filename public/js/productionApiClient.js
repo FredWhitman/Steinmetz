@@ -87,6 +87,16 @@ export async function checkIfRunExists(productID) {
   return handleResponse(res);
 }
 
+export async function fetchProductionLog(productID, date) {
+  const res = await fetch(
+    `${BASE_URL}?action=viewLog&productID=${encodeURIComponent(
+      productID
+    )}&date=${encodeURIComponent(date)}`
+  );
+
+  return handleResponse(res);
+}
+
 export async function fetchPreviousMatLogs(productID, type) {
   // type: "getLastLog" | "endRun"
   const res = await fetch(

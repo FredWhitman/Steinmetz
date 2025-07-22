@@ -398,3 +398,17 @@ export function initAddModalUI({ onRadioChange, onHopperBlur }) {
   const hop4 = document.getElementById("hop4Lbs");
   if (hop4 && onHopperBlur) hop4.addEventListener("blur", onHopperBlur);
 }
+
+export function fillViewLogPage(data) {
+  console.log("Filling view log page with data:", data);
+
+  document.getElementById("pl_PartName").textContent =
+    "Part Name: " + data.productID;
+  document.getElementById("pl_LogDate").innerHTML =
+    '<span class="fw-bold"> Date: </span>' + data.prodDate;
+
+  document.getElementById("pl_RunStatus").innerHTML =
+    '<span class="fw-bold"> Produciton Status: </span>' + data.runStatus;
+  document.getElementById("pl_Hop1Material").innerHTML =
+    '<span class="fw-bold"> Hop 1 Mat: </span>' + data.mat1;
+}

@@ -636,7 +636,7 @@
                     <div>
                         <h4 class="text-primary">Production Data</h4>
                     </div>
-                    <div>
+                    <div><a class="btn btn-primary" href="/forms/viewProductionLog.php" role="button">View log</a>
                         <button class="btn btn-primary" type="button" id="loadLotChangeForm" data-bs-toggle="modal" data-bs-target="#addLotChangeModal">Add Lot Change</button>
                         <button class="btn btn-primary" type="button" id="loadPurgeForm" data-bs-toggle="modal" data-bs-target="#addPurgeModal">Add Purge</button>
                         <button class="btn btn-primary" type="button" id="loadQARejectForm" data-bs-toggle="modal" data-bs-target="#addQARejectsModal">Add QA Rejects</button>

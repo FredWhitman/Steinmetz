@@ -103,6 +103,19 @@ class ProductionController
         }
     }
 
+    public function viewLog($productID, $date)
+    {
+        header('Content-Type: application/json');
+        try {
+            $this->log->info("viewLog called with these values: {$productID} and {$date}.");
+            $log = $this->model->getProductionlog($productID, $date);
+            echo json_encode($log);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to fetch production log', 'details' => $e->getMessage()]);
+        }
+    }
+
     public function checkRun($productID)
     {
         header('Content-Type: application/json');
