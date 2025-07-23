@@ -51,15 +51,15 @@
                 <table class="table w-75 table-bordered">
                     <tbody>
                         <tr>
-                            <td class="text-start" id="pl_PartName">Part Name</td>
-                            <td class="text-start" colspan="2" id="pl_LogDate">Production Date</td>
-                            <td class="text-start" colspan="2" id="pl_RunStatus">Production Run Status</td>
+                            <td class="text-start" id="pl_PartName"><span class="fw-bold">Part Name</span></td>
+                            <td class="text-start" colspan="2" id="pl_LogDate"><span class="fw-bold">Production Date</span></td>
+                            <td class="text-start" colspan="2" id="pl_RunStatus"><span class="fw-bold">Production Run Status</span></td>
                         </tr>
                         <tr>
-                            <td class="bg-dark-subtle">Material</td>
-                            <td class="bg-dark-subtle">lbs</td>
-                            <td class="bg-dark-subtle">Daily</td>
-                            <td class="bg-dark-subtle">%</td>
+                            <td class="bg-dark-subtle"><span class="fw-bold">Material</span></td>
+                            <td class="bg-dark-subtle"><span class="fw-bold">Total Run lbs</span></td>
+                            <td class="bg-dark-subtle"><span class="fw-bold">Daily Usage</span></td>
+                            <td class="bg-dark-subtle"><span class="fw-bold">%</span></td>
                             <td class="bg-dark-subtle"></td>
                         </tr>
                         <tr>
@@ -91,7 +91,7 @@
                             <td id="pl_purge">purge total:</td>
                         </tr>
                         <tr>
-                            <td class="text-end bg-dark-subtle">Material usage totals:</td>
+                            <td class="text-end bg-dark-subtle"><span class="fw-bold">Totals:<span></td>
                             <td id="pl_totalMatWeight">total mat lbs</td>
                             <td id="pl_totalDaily">daily total</td>
                             <td id="pl_totalPercent">total %</td>
@@ -133,7 +133,7 @@
                             <td class="" id="pl_MoldTemp">Mold Temp</td>
                         </tr>
                         <tr>
-                            <td class="bg-dark-subtle text-end">Press data</td>
+                            <td class="bg-dark-subtle text-end"><span class="fw-bold">Press data</span></td>
                             <td id="pl_barrelZones"> Z1: 000° Z9: 000°</td>
                             <td id="pl_maxMelt">Max Melt Press: 0000 psi</td>
                         </tr>
@@ -144,7 +144,7 @@
 
                         </tr>
                         <tr>
-                            <td class=" bg-dark-subtle text-start" colspan="5">Production Log Notes</td>
+                            <td class=" bg-dark-subtle text-start" colspan="5"><span class="fw-bold">Production Log Notes</span></td>
                         </tr>
                         <tr>
                             <td class="text-start" colspan="5" id="pl_comments">Log Notes</td>

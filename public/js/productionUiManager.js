@@ -402,13 +402,110 @@ export function initAddModalUI({ onRadioChange, onHopperBlur }) {
 export function fillViewLogPage(data) {
   console.log("Filling view log page with data:", data);
 
-  document.getElementById("pl_PartName").textContent =
-    "Part Name: " + data.productID;
+  document.getElementById("pl_PartName").innerHTML =
+    '<span class="fw-bold">Part Name: </span>' + data.productID;
   document.getElementById("pl_LogDate").innerHTML =
     '<span class="fw-bold"> Date: </span>' + data.prodDate;
-
   document.getElementById("pl_RunStatus").innerHTML =
     '<span class="fw-bold"> Produciton Status: </span>' + data.runStatus;
   document.getElementById("pl_Hop1Material").innerHTML =
     '<span class="fw-bold"> Hop 1 Mat: </span>' + data.mat1;
+  document.getElementById("pl_Hop2Material").innerHTML =
+    '<span class="fw-bold"> Hop 2 Mat: </span>' + data.mat2;
+  document.getElementById("pl_Hop3Material").innerHTML =
+    '<span class="fw-bold"> Hop 3 Mat: </span>' + data.mat3;
+  document.getElementById("pl_Hop4Material").innerHTML =
+    '<span class="fw-bold"> Hop 4 Mat: </span>' + data.mat4;
+  document.getElementById("pl_Hop1Weight").textContent = data.matUsed1;
+  document.getElementById("pl_Hop2Weight").textContent = data.matUsed2;
+  document.getElementById("pl_Hop3Weight").textContent = data.matUsed3;
+  document.getElementById("pl_Hop4Weight").textContent = data.matUsed4;
+
+  document.getElementById("pl_Hop1Daily").textContent = data.matDailyUsed1;
+  document.getElementById("pl_Hop2Daily").textContent = data.matDailyUsed2;
+  document.getElementById("pl_Hop3Daily").textContent = data.matDailyUsed3;
+  document.getElementById("pl_Hop4Daily").textContent = data.matDailyUsed4;
+
+  const blendertotal =
+    parseFloat(data.matUsed1) +
+      parseFloat(data.matUsed2) +
+      parseFloat(data.matUsed3) +
+      parseFloat(data.matUsed4) || 0;
+  const dailyTotal =
+    parseFloat(data.matDailyUsed1) +
+      parseFloat(data.matDailyUsed2) +
+      parseFloat(data.matDailyUsed3) +
+      parseFloat(data.matDailyUsed4) || 0;
+
+  const perHop1 = (parseFloat(data.matUsed1) / blendertotal) * 100 || 0;
+  const perHop2 = (parseFloat(data.matUsed2) / blendertotal) * 100 || 0;
+  const perHop3 = (parseFloat(data.matUsed3) / blendertotal) * 100 || 0;
+  const perHop4 = (parseFloat(data.matUsed4) / blendertotal) * 100 || 0;
+  const perTotal = perHop1 + perHop2 + perHop3 + perHop4 || 0;
+
+  document.getElementById("pl_totalDaily").textContent = dailyTotal.toFixed(3);
+  document.getElementById("pl_totalMatWeight").textContent =
+    blendertotal.toFixed(3);
+  document.getElementById("pl_BigDryerTemp").innerHTML =
+    '<span class="fw-bold">Big Dryer Temp: </span>' + data.bigDryerTemp + " °F";
+  document.getElementById("pl_BigDryerDew").innerHTML =
+    '<span class="fw-bold">Big Dryer Dew Point: </span>' + data.bigDryerDew;
+  document.getElementById("pl_PressDryerTemp").innerHTML =
+    '<span class="fw-bold">Press Dryer Temp: </span>' +
+    data.pressDryerTemp +
+    " °F";
+  document.getElementById("pl_PressDryerDew").innerHTML =
+    '<span class="fw-bold">Press Dryer Dew Point: </span>' + data.pressDryerDew;
+  document.getElementById("pl_ChillerTemp").innerHTML =
+    '<span class="fw-bold">Chiller Temp: </span>' + data.chillerTemp + " °F";
+  document.getElementById("pl_MoldTemp").innerHTML =
+    '<span class="fw-bold">Mold Temp: </span>' + data.moldTemp + " °F";
+  document.getElementById("t1").innerHTML =
+    '<span class="fw-bold">T1: </span>' + data.t1 + " °F";
+  document.getElementById("t2").innerHTML =
+    '<span class="fw-bold">T2: </span>' + data.t2 + " °F";
+  document.getElementById("t3").innerHTML =
+    '<span class="fw-bold">T3: </span>' + data.t3 + " °F";
+  document.getElementById("t4").innerHTML =
+    '<span class="fw-bold">T4: </span>' + data.t4 + " °F";
+  document.getElementById("m1").innerHTML =
+    '<span class="fw-bold">M1: </span>' + data.m1 + " °F";
+  document.getElementById("m2").innerHTML =
+    '<span class="fw-bold">M2: </span>' + data.m2 + " °F";
+  document.getElementById("m3").innerHTML =
+    '<span class="fw-bold">M3: </span>' + data.m3 + " °F";
+  document.getElementById("m4").innerHTML =
+    '<span class="fw-bold">M4: </span>' + data.m4 + " °F";
+  document.getElementById("m5").innerHTML =
+    '<span class="fw-bold">M5: </span>' + data.m5 + " °F";
+  document.getElementById("m6").innerHTML =
+    '<span class="fw-bold">M6: </span>' + data.m6 + " °F";
+  document.getElementById("m7").innerHTML =
+    '<span class="fw-bold">M7: </span>' + data.m7 + " °F";
+  document.getElementById("pl_Hop1Percent").innerHTML =
+    perHop1.toFixed(2) + " %";
+  document.getElementById("pl_Hop2Percent").innerHTML =
+    perHop2.toFixed(2) + " %";
+  document.getElementById("pl_Hop3Percent").innerHTML =
+    perHop3.toFixed(2) + " %";
+  document.getElementById("pl_Hop4Percent").innerHTML =
+    perHop4.toFixed(2) + " %";
+  document.getElementById("pl_totalPercent").innerHTML =
+    perTotal.toFixed(0) + " %";
+  document.getElementById("pl_PressCounter").innerHTML =
+    '<span class ="fw-bold">parts produced: </span>' + data.pressCounter;
+  document.getElementById("pl_startRejects").innerHTML =
+    '<span class ="fw-bold">Startup Rejects: </span>' + data.startUpRejects;
+  document.getElementById("pl_qaRejects").innerHTML =
+    '<span class ="fw-bold">QA Rejects: </span>' + data.qaRejects;
+  document.getElementById("pl_purge").innerHTML =
+    '<span class ="fw-bold">Purge Lbs: </span>' + data.purgeLbs;
+  document.getElementById("pl_comments").innerHTML =
+    '<span class ="fw-bold">Comments: </span>' + data.comments;
+  document.getElementById("pl_barrelZones").innerHTML =
+    '<span class="fw-bold"> Barrel Temps Z1: </span>' +
+    (data.z1 || "Z1: 000 °F") +
+    ' °F <span class="fw-bold"> Z9: </span>' +
+    (data.z9 || "Z9: 000 °F") +
+    " °F";
 }

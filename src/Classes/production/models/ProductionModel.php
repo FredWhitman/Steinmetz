@@ -718,21 +718,17 @@ class ProductionModel
     public function getProductionlog($productID, $prodDate)
     {
         $sql = "SELECT 
-  templog.*,
-  productionlogs.*,
-  materiallog.*,
-  'm1'.matName AS matName1,
-  'm2'.matName AS matName2,
-  'm3'.matName AS matName3,
-  'm4'.matName AS matName4
-FROM productionlogs
-LEFT JOIN templog ON 'templog'.prodLogID = 'productionlogs'.logID
-LEFT JOIN materiallog ON 'materiallog'.prodLogID = 'productionlogs'.logID
-LEFT JOIN material m1 ON 'materiallog'.mat1 = 'm1'.matPartNumber
-LEFT JOIN material m2 ON 'materiallog'.mat2 = 'm2'.matPartNumber
-LEFT JOIN material m3 ON 'materiallog'.mat3 = 'm3'.matPartNumber
-LEFT JOIN material m4 ON 'materiallog'.mat4 = 'm4'.matPartNumber
-WHERE 'productionlogs'.prodDate = :productID AND 'productionlogs'.productID = :prodDate";
+                    `productionlogs`.*,
+                    `materiallog`.*,
+                    `templog`.*
+                FROM
+                    `templog`
+                INNER JOIN `productionlogs` ON (`templog`.`prodLogID` = `productionlogs`.`logID`)
+                INNER JOIN `materiallog` ON (`productionlogs`.`logID` = `materiallog`.`prodLogID`)
+                WHERE
+                    `productionlogs`.`productID` = :productID AND 
+                    `productionlogs`.`prodDate` = :prodDate";
+
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             'productID' => $productID,
@@ -741,7 +737,33 @@ WHERE 'productionlogs'.prodDate = :productID AND 'productionlogs'.productID = :p
 
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
         if (!$result) throw new \Exception("Failed to get production log for {$productID} made on {$prodDate}.");
-        return $result;
+        $data = $result;
+        $mat1 = $data['mat1'];
+        $mat2 = $data['mat2'];
+        $mat3 = empty($data['mat3']) ? 'empty' : $data['mat3'];
+        $mat4 = empty($data['mat4']) ? 'empty' : $data['mat4'];
+
+        $mats = [$mat1, $mat2, $mat3, $mat4];
+
+        $this->log->info("mats: " . print_r($mats, true));
+        $matList = [];
+        $matList = $this->getMaterialList();
+        $matList = (array) $matList;
+
+        $this->log->info("matList: " . print_r($matList, true));
+
+        $lookupTable = array_column($matList, 'matName', 'matPartNumber');
+        $data['mat1'] = $lookupTable[$data['mat1']] ?? $data['mat1'];
+        $data['mat2'] = $lookupTable[$data['mat2']] ?? $data['mat2'];
+        $data['mat3'] = $lookupTable[$data['mat3']] ?? $data['mat3'];
+        $data['mat4'] = $lookupTable[$data['mat4']] ?? $data['mat4'];
+
+        $data['mat3'] = empty($data['mat3']) ? 'empty' : $data['mat3'];
+        $data['mat4'] = empty($data['mat4']) ? 'empty' : $data['mat4'];
+
+        $this->log->info("data after replacement: " . print_r($data, true));
+
+        return $data;
     }
 
     /**
