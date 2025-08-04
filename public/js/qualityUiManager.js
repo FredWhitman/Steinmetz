@@ -202,9 +202,14 @@ export function populateProductSelect(selectEl, products) {
   });
 }
 
-export function populateMaterialSelect(materials) {
-  const sel = document.getElementById("lc_MatName");
-  populateSelect(sel, materials, {
+export function populateMaterialSelect(selectEl, materials) {
+  if(!selectEl){
+     console.warn("🚨 Select element not found!");
+    return;
+  }
+  console.log("qualityUiManager.js->populateMaterialSelect() called")
+
+  populateSelect(selectEl, materials, {
     valueKey: "matPartNumber",
     labelKey: "matName",
   });

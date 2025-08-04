@@ -239,44 +239,44 @@
                         <div class="mb-3">
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="lcPartName">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="lc_PartName" name="lc_PartName" required></select></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="lcPartName">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="u_lcPartName" name="u_lcPartName" required></select></div>
                                     <div class="invalid-feedback">Part name is required!</div>
                                 </div>
                             </div>
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="lcPartName">Material Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="lc_MatName" name="lc_MatName" required></select></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="lcPartName">Material Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="u_lcMatName" name="u_lcMatName" required></select></div>
                                     <div class="invalid-feedback">Material is required!</div>
                                 </div>
                             </div>
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="lcLotDate">Production Date</label><input class="form-control" type="date" tabindex="2" id="lc_lotDate" name="lc_LotDate" required></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="lcLotDate">Production Date</label><input class="form-control" type="date" tabindex="2" id="u_lclotDate" name="u_lclotDate" required></div>
                                     <div class="invalid-feedback">Production date is required!</div>
                                 </div>
                             </div>
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="lcaTime">Time</label><input class="form-control" type="time" id="lc_lotTime" name="lc_LotTime" value="09:00" required></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="lcaTime">Time</label><input class="form-control" type="time" id="u_lcLotTime" name="u_lcLotTime" value="09:00" required></div>
                                     <div class="invalid-feedback">Change time is required!</div>
                                 </div>
                             </div>
                             <div class="row pb-2">
-                                <div class="input-group sm-3"><label class="input-group-text" for="lcOldLot">Old Lot</label><input type="text" tabindex="1" class="form-control form-control-sm" id="lc_OldLot" name="lc_OldLot" required></div>
+                                <div class="input-group sm-3"><label class="input-group-text" for="lcOldLot">Old Lot</label><input type="text" tabindex="1" class="form-control form-control-sm" id="u_lcOldLot" name="u_lcOldLot" required></div>
                                 <div class="invalid-feedback">Old lot number is required!</div>
                             </div>
                             <div class="row">
-                                <div class="input-group sm-3"><label class="input-group-text" for="lcNewLot">New Lot</label><input type="text" tabindex="1" class="form-control form-control-sm" id="lc_NewLot" name="lc_NewLot" required></div>
+                                <div class="input-group sm-3"><label class="input-group-text" for="lcNewLot">New Lot</label><input type="text" tabindex="1" class="form-control form-control-sm" id="u_lcNewLot" name="u_lcNewLot" required></div>
                                 <div class="invalid-feedback">New lot numger is required!</div>
                             </div>
                         </div>
                         <div>
                             <label for="message-text" class="col-form-label">Comments</label>
-                            <textarea class="form-control" type="text" id="lc_Comments" name="lc_Comments"></textarea>
+                            <textarea class="form-control" type="text" id="u_lcComments" name="u_lcComments"></textarea>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" value="Add Lot Change" class="btn btn-success" id="add-lotchange-btn">Add Lot Change</button>
+                            <button type="submit" value="Update Lot Change" class="btn btn-success" id="update-lotchange-btn">Update Lot Change</button>
                         </div>
                     </form>
                 </div>

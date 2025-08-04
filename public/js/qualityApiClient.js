@@ -210,7 +210,7 @@ export async function fetchAndFillUpdateForm(id, table) {
       MaterialName: "u_lcMatName",
       ChangeDate: "u_lclotDate",
       ChangeTime: "u_lcLotTime",
-      OldLot: "u_lvOldLot",
+      OldLot: "u_lcOldLot",
       NewLot: "u_lcNewLot",
       Comments: "u_lcComments",
     },

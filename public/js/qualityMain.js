@@ -300,6 +300,36 @@ async function onOvenLogModalShow() {
   }
 }
 
+async function onUpdateLotModalShow(){
+  showLoader();
+  try {
+    const [products, materials] = await Promise.all([
+      fetchProductList(),
+      fetchMaterialList(),
+    ]);
+
+    if (!Array.isArray(products) || !Array.isArray(materials)) {
+      showAlertMessage(
+        "⚠️ Product or material lists failed to load properly.",
+        "showAlert",
+        "danger"
+      );
+      console.error("products", products);
+      console.error("materials", materials);
+      return;
+    }  
+    const sel = document.getElementById("u_lcPartName");
+    const selectEl = document.getElementById("u_lcMatName");
+    populateProductSelect(sel, products);
+    populateMaterialSelect(selectEl, materials);
+
+  } catch (error) {
+    console.error(error);
+    showAlertMessage("Unable to load product list!", "showAlert", "danger");
+  }finally{
+    hideLoader();
+  }
+}
 document.addEventListener("DOMContentLoaded", () => {
   // Load data when modal shows
   const addModalEl = document.getElementById("addQARejectsModal");
@@ -310,6 +340,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const addOvenLogModalEl = document.getElementById("addOvenLogModal");
   addOvenLogModalEl.addEventListener("show.bs.modal", onOvenLogModalShow);
+
+  const updateLotModal = document.getElementById("updateLotChangeModal");
+  updateLotModal.addEventListener("show.bs.modal", onUpdateLotModalShow);
+
 
   addQaRejectsFormSubmision();
   addLotChangeFormSubmission();
