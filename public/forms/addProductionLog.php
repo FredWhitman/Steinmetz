@@ -341,7 +341,7 @@
     <!-- Bootstrap js -->
     <script type="text/javascript" src="/lib/js/bootstrap.bundle.min.js"></script>
     <!-- My custom js -->
-    <script type="module" src="/js/productionMain.js"></script>
+    <script type="module" src="/js/addProdLog.js"></script>
 </body>
 
 </html>
