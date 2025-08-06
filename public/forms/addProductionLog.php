@@ -18,11 +18,22 @@
 </head>
 
 <body>
+    <!--Navbar -->
+    <?php require_once '../../includes/steinmetzNavbar.php'; ?>
 
-    <div class="d-flex justify-content-lg-evenly">
+    <div class="row mt-5">
+        <div class="col-lg-12">
+            <div id="showAlert"></div>
+        </div>
+    </div>
+    <hr>
+
+    <div class="d-flex justify-content-lg-evenly ">
+
         <!--  Form for Production log start -->
         <form id="add-productionLog-form" class="needs-validation p-2" novalidate>
             <!-- Log Information -->
+
             <h3 class="text-center">Add Production Log</h3>
 
             <div class="d-flex justify-content-center">
