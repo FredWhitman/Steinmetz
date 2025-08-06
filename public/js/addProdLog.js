@@ -72,7 +72,11 @@ async function onHopperBlur() {
       ({ usage, percents } = computeUsageAndPercents(current, previous));
     } catch (err) {
       console.error(err);
-      showAlertMessage("Failed to fetch previous material usage.");
+      showAlertMessage(
+        "Failed to fetch previous material usage.",
+        "showAlert",
+        "danger"
+      );
       return;
     } finally {
       hideLoader();
