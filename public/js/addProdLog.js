@@ -1,6 +1,7 @@
 //FILE /js/addProdLog.js
 
 import {
+  fetchProdLogs,
   fetchProductList,
   fetchMaterialList,
   checkIfRunExists,
@@ -51,6 +52,8 @@ async function onHopperBlur() {
   clearAlert();
   updateBlenderTotal();
 
+  console.log("Hopper blur event triggered");
+
   // gather current hopper values
   const current = [1, 2, 3, 4].map(
     (i) => parseFloat(document.getElementById(`hop${i}Lbs`).value) || 0
@@ -73,6 +76,9 @@ async function onHopperBlur() {
         parseFloat(prevData.matUsed4) || 0,
       ];
       ({ usage, percents } = computeUsageAndPercents(current, previous));
+
+      console.log("Usage:", usage);
+      console.log("Percents:", percents);
     } catch (err) {
       console.error(err);
       showAlertMessage(
@@ -270,6 +276,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const hop4 = document.getElementById("hop4Lbs");
   if (hop4 && onHopperBlur) hop4.addEventListener("blur", onHopperBlur);
 
-   // Bind form submit
+  // Bind form submit
   wireFormSubmission();
 });

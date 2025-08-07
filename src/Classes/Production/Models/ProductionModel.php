@@ -179,6 +179,8 @@ class ProductionModel
                 case '2':
                     $prodData['runStatus'] = 'end';
                     $prodRunID = $this->getProdRunID($productID);
+                    $this->log->info('prodRunID: ' . $prodRunID);
+
                     if (!$prodRunID) throw new \RuntimeException("No active production run for product {$productID}");
 
                     $prevProdLogID = $this->getPrevProdLog($prodRunID);
@@ -285,7 +287,7 @@ class ProductionModel
 
                 $this->log->info('End of prodcution run detected aquiring run production totals');
 
-                $this->updateProductionRun($prodDate, 'yes');
+                $this->updateProductionRun($prodRunID, 'yes');
             }
 
             $this->updatePFMInventory('349-61A0', $copperPins, '-');
@@ -551,6 +553,7 @@ class ProductionModel
      */
     private function updateProductionRun($prodRunID, $runComplete)
     {
+        $this->log->info("updateProductionRun called with prodRunID: {$prodRunID} and runComplete: {$runComplete}");
         $totals = $this->getMaterialTotals($prodRunID);
         if (!$totals) throw new \Exception('Failed to get production run totals from getMaterialTotals');
         $sql = "UPDATE prodrunlog 
@@ -868,10 +871,10 @@ class ProductionModel
     private function getMaterialTotals($prodRunID)
     {
         $sqlGetTotals = "SELECT p.runLogID, p.prodDate, 
-                        SUM(m.matUsed1) AS total_matUsed1,
-                        SUM(m.matUsed2) AS total_matUsed2, 
-                        SUM(m.matUsed3) AS total_matUsed3, 
-                        SUM(m.matUsed4) AS total_matUsed4,
+                        SUM(m.matDailyUsed1) AS total_matUsed1,
+                        SUM(m.matDailyUsed2) AS total_matUsed2, 
+                        SUM(m.matDailyUsed3) AS total_matUsed3, 
+                        SUM(m.matDailyUsed4) AS total_matUsed4,
                         SUM(p.pressCounter) AS total_produced,
                         SUM(p.startUpRejects) AS total_startUpRejects,
                         SUM(p.qaRejects) AS total_qaRejects,

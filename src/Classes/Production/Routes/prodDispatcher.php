@@ -5,8 +5,6 @@ $controller = require_once __DIR__ . '/../Config/prodInit.php';
 $data = json_decode(file_get_contents('php://input'), true);
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
-
     switch (true) {
 
         case isset($data['action']) && $data['action'] === 'addLog':
