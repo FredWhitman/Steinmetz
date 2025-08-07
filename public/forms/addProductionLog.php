@@ -343,12 +343,6 @@
         </form>
     </div>
 
-
-
-
-
-
-
     <!-- Bootstrap js -->
     <script type="text/javascript" src="/lib/js/bootstrap.bundle.min.js"></script>
     <!-- My custom js -->

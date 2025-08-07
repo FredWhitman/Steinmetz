@@ -321,22 +321,30 @@ class ProductionModel
                                         prodLogID,
                                         mat1,
                                         matUsed1,
+                                        matDailyUsed1,
                                         mat2,
                                         matUsed2,
+                                        matDailyUsed2,
                                         mat3,
                                         matUsed3,
+                                        matDailyUsed3,
                                         mat4,
-                                        matUsed4) 
+                                        matUsed4,
+                                        matDailyUsed4) 
                                     VALUES (
                                         :prodLogID,
                                         :mat1,
                                         :matUsed1,
+                                        :matDailyUsed1,
                                         :mat2,
                                         :matUsed2,
+                                        :matDailyUsed2,
                                         :mat3,
                                         :matUsed3,
+                                        :matDailyUsed3,
                                         :mat4,
-                                        :matUsed4)";
+                                        :matUsed4,
+                                        :matDailyUsed4)";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($materialData);
@@ -629,7 +637,7 @@ class ProductionModel
         for ($i = 1; $i <= 4; $i++) {
 
             $matId = $matData["mat{$i}"];
-            $used = floatval($matData["matUsed{$i}"] ?? 0);
+            $used = floatval($matData["matDailyUsed{$i}"] ?? 0);
 
             if (!$matId || $used <= 0) continue;
 
