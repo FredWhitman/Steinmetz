@@ -238,16 +238,11 @@ function wireFormSubmission() {
     try {
       const result = await postProductionLog(payload);
 
-      /* //reload table data with new updated log entries
-      const data = await fetchProdLogs();
-      if (data) {
-        renderTables(data);
-      }
- */
-      // result.message = "Transaction completed successfully"
       showAlertMessage(result.message, "showAlert", "success");
 
-      window.location.href = '../production_new.php'
+      setTimeout(() => {
+        window.location.href = "../production_new.php";
+      }, 2500); // Redirect after 2.5 seconds
     } catch (err) {
       console.error(err);
       showAlertMessage(

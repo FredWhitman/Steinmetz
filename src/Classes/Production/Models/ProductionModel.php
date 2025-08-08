@@ -152,6 +152,7 @@ class ProductionModel
             */
             switch ($prodData['runStatus']) {
                 case '0':
+                    $this->log->info('Continuing production run for product: ' . $productID);
                     $prodData['runStatus'] = 'in progress';
                     //use productID to get production run id
                     $prodRunID = $this->getProdRunID($productID);
@@ -167,9 +168,11 @@ class ProductionModel
                     break;
 
                 case '1':
+                    $this->log->info('Creating new production run for product: ' . $productID);
                     $prodData['runStatus'] = 'start';
 
                     $prodRunID = $this->insertProductionRun($productID, $prodData['prodDate']);
+                    $this->log->info('prodRunID: ' . $prodRunID);
                     if (!$prodRunID) throw new \RuntimeException("Failed to create new production run for product {$productID}!");
 
                     $prodData['runLogID'] = $prodRunID;
@@ -177,6 +180,8 @@ class ProductionModel
                     break;
 
                 case '2':
+                    $this->log->info('Ending production run for product: ' . $productID);
+
                     $prodData['runStatus'] = 'end';
                     $prodRunID = $this->getProdRunID($productID);
                     $this->log->info('prodRunID: ' . $prodRunID);
@@ -298,11 +303,13 @@ class ProductionModel
         } catch (\Throwable $e) {
             $message = "Failed to add prodcution log and a rollback was triggered by this error: {$e}";
 
-            $this->pdo->rollBack();
-            $this->log->error('PDO Rollback.  Error failed to insert Production log: ' . $e->getMessage());
-            
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+                $this->log->error('PDO Rollback.  Error failed to insert Production log: ' . $e->getMessage());
+            }
+
             return [
-                'success' => false, 
+                'success' => false,
                 "message" => $message . " Error: " . $e->getMessage()
             ];
         }
@@ -423,9 +430,12 @@ class ProductionModel
      */
     private function insertProductionRun($productID, $prodDate)
     {
+        $this->log->info("insertProductionRun called with productID: {$productID} and prodDate: {$prodDate}");
+
         $sql = "INSERT into prodrunlog (
                                 productID,
-                                startDate) 
+                                startDate,
+                                runComplete) 
                             Values (
                                 :productID, 
                                 :prodDate, 
@@ -436,6 +446,7 @@ class ProductionModel
             ':prodDate' => $prodDate,
             ':runComplete' => 'no'
         ]);
+
         $prodRunID = $this->pdo->lastInsertId();
         if (!$prodRunID) throw new \Exception("failed to insert production run!");
         return $prodRunID;
@@ -554,6 +565,45 @@ class ProductionModel
      */
     private function updateProductionRun($prodRunID, $runComplete)
     {
+        /* SQL Query
+        SELECT
+            totals.totalPressCounter,
+            totals.totalStartUpRejects,
+            totals.totalQARejects,
+            totals.totalPurgeLbs,
+            lastRecord.matUsed1,
+            lastRecord.matUsed2,
+            lastRecord.matUsed3,
+            lastRecord.matUsed4,
+            lastRecord.prodDate AS lastProdDate
+        FROM
+        (
+            SELECT
+                SUM(pressCounter) AS totalPressCounter,
+                SUM(startUpRejects) AS totalStartUpRejects,
+                SUM(qaRejects) AS totalQARejects,
+                SUM(purgeLbs) AS totalPurgeLbs
+                FROM productionlogs
+                WHERE productID = '10601'
+                AND runLogID = '9'
+        ) AS totals
+        JOIN
+        (
+            SELECT
+                pl.prodDate,
+                ml.matUsed1,
+                ml.matUsed2,
+                ml.matUsed3,
+                ml.matUsed4
+                FROM productionlogs pl
+                JOIN materiallog ml ON pl.matLogID = ml.matLogID
+                WHERE pl.productID = '10601'
+                AND pl.runLogID = '9'
+                ORDER BY pl.prodDate DESC
+                LIMIT 1
+            ) AS lastRecord ON 1 = 1;
+        */
+
         $this->log->info("updateProductionRun called with prodRunID: {$prodRunID} and runComplete: {$runComplete}");
         $totals = $this->getMaterialTotals($prodRunID);
         if (!$totals) throw new \Exception('Failed to get production run totals from getMaterialTotals');
