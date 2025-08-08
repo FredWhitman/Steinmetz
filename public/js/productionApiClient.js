@@ -1,4 +1,4 @@
-//productionApiClient.js
+//FILE   js/productionApiClient.js
 
 import { showLoader, hideLoader } from "./productionUiManager.js";
 
@@ -51,14 +51,6 @@ async function handleResponse(res) {
 
   // all good: return parsed JSON (or plain text)
   return data ?? text;
-
-  /* if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const text = await res.text();
-  try {
-    return JSON.parse(text);
-  } catch {
-    return text;
-  } */
 }
 
 export async function fetchProductList() {

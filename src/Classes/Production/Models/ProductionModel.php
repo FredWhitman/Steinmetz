@@ -300,10 +300,11 @@ class ProductionModel
 
             $this->pdo->rollBack();
             $this->log->error('PDO Rollback.  Error failed to insert Production log: ' . $e->getMessage());
-
-            throw $e;
-
-            return ['success' => false, "message" => $message];
+            
+            return [
+                'success' => false, 
+                "message" => $message . " Error: " . $e->getMessage()
+            ];
         }
     }
 

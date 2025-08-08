@@ -8,7 +8,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     switch (true) {
 
         case isset($data['action']) && $data['action'] === 'addLog':
-            $controller->addLog($data);
+            $result = $controller->addLog($data);
+            echo json_encode($result);
             break;
         default:
             http_response_code(400);

@@ -146,11 +146,19 @@ class ProductionController
     {
         header('Content-Type: application/json');
         try {
-            $result = $this->model->insertProdLog($data["prodData"], $data["materialData"], $data["tempData"]);
-            echo json_encode($result);
+            return $this->model->insertProdLog(
+                $data["prodData"], 
+                $data["materialData"], 
+                $data["tempData"]
+            );
+           
         } catch (\Exception $e) {
             http_response_code(500);
-            echo json_encode(['error' => 'Failed to add production log.', 'details: ' => $e->getMessage()]);
+            return [
+                'success' => false,
+                'message' => 'Failed to add production log.',
+                'details' => $e->getMessage()
+            ];
         }
     }
 }
