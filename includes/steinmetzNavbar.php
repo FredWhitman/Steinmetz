@@ -16,6 +16,9 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link" a href="\production.php" role="button">Production</a>
                 </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link" a href="\maintenance.php" role="button">Maintenance</a>
+                </li>
             </ul>
         </div>
     </div>
