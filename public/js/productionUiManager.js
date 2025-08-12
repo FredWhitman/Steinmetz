@@ -54,15 +54,16 @@ export function buildProdLogsTable(prodLogs) {
                 <td>${row.purgeLbs}</td>
                 <td>${row.runStatus}</td>
                 <td>
-                    <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 viewLink" data-bs-toggle ="modal" role="button" data-bs-target="#viewProductionModal">View</a>
+                    <a href="/viewProductionLog.php?productID=${row.productID}&prodDate=${row.prodDate}" target="_blank" class="btn btn-primary btn-sm rounded-pill py-0">View</a>
                   </td>
             </tr>`;
   });
   return html;
 }
 /*  
-link to open new page log for table   
-<a href="/viewProductionLog.php?logID=${row.logID}" target="_blank" class="btn btn-primary btn-sm rounded-pill py-0">View</a>
+link to open new page log for table 
+<a href="#" class="btn btn-primary btn-sm rounded-pill py-0 viewLink" data-bs-toggle ="modal" role="button" data-bs-target="#viewProductionModal">View</a>  
+
 
 */
 

@@ -241,7 +241,7 @@ function wireFormSubmission() {
       showAlertMessage(result.message, "showAlert", "success");
 
       setTimeout(() => {
-        window.location.href = "../production_new.php";
+        window.location.href = "../production.php";
       }, 2500); // Redirect after 2.5 seconds
     } catch (err) {
       console.error(err);

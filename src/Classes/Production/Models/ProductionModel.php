@@ -565,45 +565,6 @@ class ProductionModel
      */
     private function updateProductionRun($prodRunID, $runComplete)
     {
-        /* SQL Query
-        SELECT
-            totals.totalPressCounter,
-            totals.totalStartUpRejects,
-            totals.totalQARejects,
-            totals.totalPurgeLbs,
-            lastRecord.matUsed1,
-            lastRecord.matUsed2,
-            lastRecord.matUsed3,
-            lastRecord.matUsed4,
-            lastRecord.prodDate AS lastProdDate
-        FROM
-        (
-            SELECT
-                SUM(pressCounter) AS totalPressCounter,
-                SUM(startUpRejects) AS totalStartUpRejects,
-                SUM(qaRejects) AS totalQARejects,
-                SUM(purgeLbs) AS totalPurgeLbs
-                FROM productionlogs
-                WHERE productID = '10601'
-                AND runLogID = '9'
-        ) AS totals
-        JOIN
-        (
-            SELECT
-                pl.prodDate,
-                ml.matUsed1,
-                ml.matUsed2,
-                ml.matUsed3,
-                ml.matUsed4
-                FROM productionlogs pl
-                JOIN materiallog ml ON pl.matLogID = ml.matLogID
-                WHERE pl.productID = '10601'
-                AND pl.runLogID = '9'
-                ORDER BY pl.prodDate DESC
-                LIMIT 1
-            ) AS lastRecord ON 1 = 1;
-        */
-
         $this->log->info("updateProductionRun called with prodRunID: {$prodRunID} and runComplete: {$runComplete}");
         $totals = $this->getMaterialTotals($prodRunID);
         if (!$totals) throw new \Exception('Failed to get production run totals from getMaterialTotals');
@@ -623,15 +584,15 @@ class ProductionModel
 
         $stmt = $this->pdo->prepare($sql);
 
-        $stmt->bindParam(':endDate', $totals['prodDate'], \PDO::PARAM_STR);
-        $stmt->bindParam(':mat1Lbs', $totals['total_matUsed1'], \PDO::PARAM_STR);
-        $stmt->bindParam(':mat2Lbs', $totals['total_matUsed2'], \PDO::PARAM_STR);
-        $stmt->bindParam(':mat3Lbs', $totals['total_matUsed3'], \PDO::PARAM_STR);
-        $stmt->bindParam(':mat4Lbs', $totals['total_matUsed4'], \PDO::PARAM_STR);
-        $stmt->bindParam(':produced', $totals['total_produced'], \PDO::PARAM_STR);
-        $stmt->bindParam(':startUpRejects', $totals['total_startUpRejects'], \PDO::PARAM_STR);
-        $stmt->bindParam(':qaRejects', $totals['total_qaRejects'], \PDO::PARAM_STR);
-        $stmt->bindParam(':purge', $totals['total_total_purgeLbs'], \PDO::PARAM_STR);
+        $stmt->bindParam(':endDate', $totals['lastProdDate'], \PDO::PARAM_STR);
+        $stmt->bindParam(':mat1Lbs', $totals['matUsed1'], \PDO::PARAM_STR);
+        $stmt->bindParam(':mat2Lbs', $totals['matUsed2'], \PDO::PARAM_STR);
+        $stmt->bindParam(':mat3Lbs', $totals['matUsed3'], \PDO::PARAM_STR);
+        $stmt->bindParam(':mat4Lbs', $totals['matUsed4'], \PDO::PARAM_STR);
+        $stmt->bindParam(':produced', $totals['totalPressCounter'], \PDO::PARAM_STR);
+        $stmt->bindParam(':startUpRejects', $totals['totalStartUpRejects'], \PDO::PARAM_STR);
+        $stmt->bindParam(':qaRejects', $totals['totalQARejects'], \PDO::PARAM_STR);
+        $stmt->bindParam(':purge', $totals['totalPurgeLbs'], \PDO::PARAM_STR);
         $stmt->bindParam(':prodRunID', $prodRunID, \PDO::PARAM_STR);
         $stmt->bindParam(':runComplete', $runComplete, \PDO::PARAM_STR);
 
@@ -921,24 +882,47 @@ class ProductionModel
      */
     private function getMaterialTotals($prodRunID)
     {
-        $sqlGetTotals = "SELECT p.runLogID, p.prodDate, 
-                        SUM(m.matDailyUsed1) AS total_matUsed1,
-                        SUM(m.matDailyUsed2) AS total_matUsed2, 
-                        SUM(m.matDailyUsed3) AS total_matUsed3, 
-                        SUM(m.matDailyUsed4) AS total_matUsed4,
-                        SUM(p.pressCounter) AS total_produced,
-                        SUM(p.startUpRejects) AS total_startUpRejects,
-                        SUM(p.qaRejects) AS total_qaRejects,
-                        SUM(p.purgeLbs) AS total_purgeLbs
-                    FROM productionlogs p
-                    LEFT JOIN materialLog m ON p.logID = m.prodLogID
-                    WHERE p.runLogID = :prodRunID
-                    GROUP BY p.runLogID";
 
-        $stmtGetTotals = $this->pdo->prepare($sqlGetTotals);
-        $stmtGetTotals->bindParam(':prodRunID', $prodRunID, \PDO::PARAM_INT);
-        $stmtGetTotals->execute();
-        $result = $stmtGetTotals->fetch(\PDO::FETCH_ASSOC);
+        $sql = "SELECT
+                    totals.totalPressCounter,
+                    totals.totalStartUpRejects,
+                    totals.totalQARejects,
+                    totals.totalPurgeLbs,
+                    lastRecord.matUsed1,
+                    lastRecord.matUsed2,
+                    lastRecord.matUsed3,
+                    lastRecord.matUsed4,
+                    lastRecord.prodDate AS lastProdDate
+                FROM
+                (
+                    SELECT
+                        SUM(pressCounter) AS totalPressCounter,
+                        SUM(startUpRejects) AS totalStartUpRejects,
+                        SUM(qaRejects) AS totalQARejects,
+                        SUM(purgeLbs) AS totalPurgeLbs
+                    FROM productionlogs
+                    WHERE runLogID = :prodRunID
+                ) AS totals
+                JOIN
+                (
+                    SELECT
+                    pl.prodDate,
+                    pl.productID,
+                    ml.matUsed1,
+                    ml.matUsed2,
+                    ml.matUsed3,
+                    ml.matUsed4
+                    FROM productionlogs pl
+                JOIN materiallog ml ON pl.matLogID = ml.matLogID
+                    WHERE pl.runLogID = :prodRunID
+                    ORDER BY pl.prodDate DESC
+                    LIMIT 1
+                ) AS lastRecord ON 1 = 1";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':prodRunID', $prodRunID, \PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if (!$result) throw new \Exception("Error: productionDB_SQL->getMaterialTotals for prodRunID logID: " . $prodRunID);
         $this->log->info("Retrieved production totals for end of run and passed to insert function.");

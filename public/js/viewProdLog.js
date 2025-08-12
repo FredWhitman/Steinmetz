@@ -35,7 +35,7 @@ function getLogFormSubmission() {
       console.error("Form is invalid");
       return;
     }
-    
+
     const data = new FormData(form);
 
     const payload = {
@@ -69,26 +69,22 @@ function getLogFormSubmission() {
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   // Initialize the product select dropdown
   init();
   getLogFormSubmission();
 
-  
-/*  Code to trigger fetch and fill the page
+  /*  Code to trigger fetch and fill the page */
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const productID = urlParams.get("productID");
-    const logDate = urlParams.get("ProdDate");
+  const urlParams = new URLSearchParams(window.location.search);
+  const productID = urlParams.get("productID");
+  const logDate = urlParams.get("ProdDate");
 
-    if (productID && prodDate) {
+  if (productID && prodDate) {
     showLoader();
     try {
-      const response = await fetchProductionLog(
-        productID,
-        logDate
+      const response = await fetchProductionLog(productID, logDate);
 
-      const response = await fetchProductionLogByID(logID); // You’ll define this next
       if (!response || response.error) {
         console.error("Error fetching production log by ID:", response?.error);
         return;
@@ -99,6 +95,5 @@ document.addEventListener("DOMContentLoaded", () => {
     } finally {
       hideLoader();
     }
-  } */
-
+  }
 });
