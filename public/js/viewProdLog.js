@@ -21,6 +21,7 @@ async function init() {
 }
 
 function getLogFormSubmission() {
+  showLoader();
   const form = document.getElementById("view-prodLog-form");
   if (!form) {
     console.error("Form not found");
@@ -34,7 +35,7 @@ function getLogFormSubmission() {
       console.error("Form is invalid");
       return;
     }
-    showLoader();
+    
     const data = new FormData(form);
 
     const payload = {
