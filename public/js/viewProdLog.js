@@ -21,7 +21,7 @@ async function init() {
 }
 
 function getLogFormSubmission() {
-  showLoader();
+  //showLoader();
   const form = document.getElementById("view-prodLog-form");
   if (!form) {
     console.error("Form not found");
@@ -70,6 +70,7 @@ function getLogFormSubmission() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  console.log("Script loaded");
   // Initialize the product select dropdown
   init();
   getLogFormSubmission();
@@ -78,11 +79,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const urlParams = new URLSearchParams(window.location.search);
   const productID = urlParams.get("productID");
-  const logDate = urlParams.get("ProdDate");
+  const logDate = urlParams.get("prodDate");
+  console.log("vars set to urlParams", productID);
 
-  if (productID && prodDate) {
+  if (productID && logDate) {
+    console.log("variables checked");
     showLoader();
     try {
+      console.log("Fetching Production Log");
       const response = await fetchProductionLog(productID, logDate);
 
       if (!response || response.error) {

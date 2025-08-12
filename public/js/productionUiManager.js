@@ -54,7 +54,7 @@ export function buildProdLogsTable(prodLogs) {
                 <td>${row.purgeLbs}</td>
                 <td>${row.runStatus}</td>
                 <td>
-                    <a href="/viewProductionLog.php?productID=${row.productID}&prodDate=${row.prodDate}" target="_blank" class="btn btn-primary btn-sm rounded-pill py-0">View</a>
+                    <a href="/forms/viewProductionLog.php?productID=${row.productID}&prodDate=${row.prodDate}" target="_blank" class="btn btn-primary btn-sm rounded-pill py-0">View</a>
                   </td>
             </tr>`;
   });
