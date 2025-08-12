@@ -55,11 +55,16 @@ export function buildProdLogsTable(prodLogs) {
                 <td>${row.runStatus}</td>
                 <td>
                     <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 viewLink" data-bs-toggle ="modal" role="button" data-bs-target="#viewProductionModal">View</a>
-                </td>
+                  </td>
             </tr>`;
   });
   return html;
 }
+/*  
+link to open new page log for table   
+<a href="/viewProductionLog.php?logID=${row.logID}" target="_blank" class="btn btn-primary btn-sm rounded-pill py-0">View</a>
+
+*/
 
 // Attach a shared event listener for table rows
 export function setupViewEventListener(elementId, table) {

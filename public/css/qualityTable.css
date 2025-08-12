@@ -50,7 +50,7 @@ th, td {
 thead tr:first-child th {
   position: sticky;
   top: 0;
-  background-color: var(--bs-info-bg-subtle);
+  background-color: var(--bs-light);
   z-index: 3;
   /* box-shadow: 0 2px 2px -2px rgba(0, 0, 0, 0.15); */
     box-shadow: 0 2px 2px .05em rgba(0, 0, 0, 0.15);
@@ -60,7 +60,7 @@ thead tr:first-child th {
 thead tr:nth-child(2) th {
   position: sticky;
   top: 36px; /* Adjust based on the height of the first row */
-  background-color: var(--bs-info-bg-subtle);
+  background-color: var(--bs-light);
   box-shadow: 0 2px 2px -2px rgba(0, 0, 0, 0.15);
   z-index: 2;
   }

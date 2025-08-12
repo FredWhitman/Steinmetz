@@ -1,4 +1,5 @@
 /vendor/
-src/Classes/Production/logs/production_Info.log
-src/Classes/Production/logs/production_Error.log
+/src/Classes/Production/logs
 /src/Classes/Quality/logs
+/src/Classes/Inventory/logs
+/src/Classes/Maintenance/logs
