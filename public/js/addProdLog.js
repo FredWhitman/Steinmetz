@@ -192,6 +192,7 @@ function wireFormSubmission() {
         startUpRejects: data.get("startUpRejects"),
         qaRejects: data.get("qaRejects") || "0",
         purgeLbs: data.get("purgeLbs") || "0",
+        maxMeltPressure: data.get("maxMeltPress") || "0",
         comments: data.get("commentText"),
       },
 
@@ -232,6 +233,8 @@ function wireFormSubmission() {
         m7: data.get("m7"),
         chillerTemp: data.get("chiller"),
         moldTemp: data.get("tcuTemp"),
+        z1: data.get("z1"),
+        z9: data.get("z9"),
       },
     };
 

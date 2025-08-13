@@ -220,6 +220,7 @@ class ProductionModel
                                     startUpRejects, 
                                     qaRejects,
                                     purgeLbs,
+                                    maxMeltPressure,
                                     Comments) 
                                 VALUES(
                                     :productID,
@@ -233,6 +234,7 @@ class ProductionModel
                                     :startUpRejects, 
                                     :qaRejects,
                                     :purgeLbs,
+                                    :maxMeltPressure,
                                     :comments)";
 
             $stmtInsertProdLog = $this->pdo->prepare($sqlInsertProdLog);
@@ -249,6 +251,7 @@ class ProductionModel
                 ':startUpRejects' => [$prodData['startUpRejects'],  \PDO::PARAM_INT],
                 ':qaRejects' => [$prodData['qaRejects'],  \PDO::PARAM_INT],
                 ':purgeLbs' => [$prodData['purgeLbs'],  \PDO::PARAM_STR],
+                ':maxMeltPressure' => [$prodData['maxMeltPressure'],  \PDO::PARAM_INT],
                 ':comments' => [$prodData['comments'],  \PDO::PARAM_STR],
             ];
             foreach ($InsertParams as $key => [$value, $type]) {
@@ -392,7 +395,9 @@ class ProductionModel
                     m6,
                     m7,
                     chillerTemp,
-                    moldTemp)
+                    moldTemp,
+                    z1,
+                    z9)
                 VALUES(
                     :prodLogID,
                     :bigDryerTemp,
@@ -411,7 +416,9 @@ class ProductionModel
                     :m6,
                     :m7,
                     :chillerTemp,
-                    :moldTemp)";
+                    :moldTemp,
+                    :z1,
+                    :z9)";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($tempData);
