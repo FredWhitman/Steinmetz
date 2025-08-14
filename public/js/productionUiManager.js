@@ -60,12 +60,21 @@ export function buildProdLogsTable(prodLogs) {
   });
   return html;
 }
-/*  
-link to open new page log for table 
-<a href="#" class="btn btn-primary btn-sm rounded-pill py-0 viewLink" data-bs-toggle ="modal" role="button" data-bs-target="#viewProductionModal">View</a>  
 
-
-*/
+export function buildRunsNotCompleteTable(prodRunLogs) {
+  let html = "";
+  prodRunLogs.forEach((row) => {
+    html += `<tr data-id='${row.logID}'>
+                <td>${row.productID}</td>
+                <td>${row.prodDate}</td>
+                <td>${row.pressCounter}</td>
+                <td>${row.startUpRejects}</td>
+                <td>${row.qaRejects}</td>
+                <td>${row.purgeLbs}</td>
+                <td>${row.runStatus}</td>
+                </tr>`;
+  });
+}
 
 // Attach a shared event listener for table rows
 export function setupViewEventListener(elementId, table) {
@@ -514,4 +523,8 @@ export function fillViewLogPage(data) {
     ' °F <span class="fw-bold"> Z9: </span>' +
     (data.z9 || "Z9: 000 °F") +
     " °F";
+  document.getElementById("pl_maxMelt").innerHTML =
+    '<span class="fw-bold">Max Melt Pressure: </span>' +
+    data.maxMeltPressure +
+    " psi";
 }

@@ -843,6 +843,27 @@ class ProductionModel
         }
     }
 
+    public function getCompletedProdRuns()
+    {
+        $sql = "SELECT * FROM prodrunlog WHERE runComplete = 'yes' ORDER BY startDate DESC";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
+    public function getActiveProdRuns()
+    {
+        $sql = "SELECT * FROM prodrunlog WHERE runComplete = 'no' ORDER BY startDate DESC";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
     /**
      * getLastMaterialLogForRun
      * 
