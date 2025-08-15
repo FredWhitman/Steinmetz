@@ -34,6 +34,36 @@ class ProductionController
         echo json_encode($production);
     }
 
+    public function getOpenRuns()
+    {
+        ob_clean();
+        header('Content-Type: application/json');
+        try {
+            $this->log->info('getOpenRuns called to fill table');
+            $prodRuns = $this->model->getActiveProdRuns();
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to fetch open runs', 'details' => $e->getMessage()]);
+        }
+
+        echo json_encode($prodRuns);
+    }
+
+    public function getCompletedRuns()
+    {
+        ob_clean();
+        header('Content-Type: application/json');
+        try {
+            $this->log->info('getCompletedRuns called to fill table');
+            $prodRuns = $this->model->getCompletedProdRuns();
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to fetch completed runs', 'details' => $e->getMessage()]);
+        }
+
+        echo json_encode($prodRuns);
+    }
+
     public function viewProdLogs($id)
     {
         header('Content-Type: application/json');
@@ -142,16 +172,16 @@ class ProductionController
         }
     }
 
+
     public function addLog($data)
     {
         header('Content-Type: application/json');
         try {
             return $this->model->insertProdLog(
-                $data["prodData"], 
-                $data["materialData"], 
+                $data["prodData"],
+                $data["materialData"],
                 $data["tempData"]
             );
-           
         } catch (\Exception $e) {
             http_response_code(500);
             return [

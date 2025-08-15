@@ -513,7 +513,7 @@ class QualityModel
     public function getQARejectLogs()
     {
         $sql = 'SELECT * FROM qarejects
-                WHERE prodDate >= DATE_SUB(NOW(), INTERVAL 12 WEEK)';
+                WHERE prodDate >= DATE_SUB(NOW(), INTERVAL 12 WEEK) ORDER BY prodDate DESC';
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute()) {
             $errorInfo = $stmt->errorInfo();

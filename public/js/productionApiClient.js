@@ -24,6 +24,44 @@ export async function fetchProdLogs() {
   }
 }
 
+export async function fetchProdRunsCompleted() {
+  showLoader();
+  try {
+    const response = await fetch("/api/prodDispatcher.php?getCompletedRuns=1");
+
+    if (!response.ok) {
+      console.error("API returned error:", response.statusText);
+      return;
+    }
+    const jsonData = await response.json();
+    console.log("parsed completed production runs data: ", jsonData);
+
+    hideLoader();
+    return jsonData;
+  } catch (error) {
+    console.error("Error getting completed production runs: ", error);
+  }
+}
+
+export async function fetchProdRunsNotComplete() {
+  showLoader();
+  try {
+    const response = await fetch("/api/prodDispatcher.php?getOpenRuns=1");
+
+    if (!response.ok) {
+      console.error("API returned error:", response.statusText);
+      return;
+    }
+    const jsonData = await response.json();
+    console.log("parsed not completed production runs data: ", jsonData);
+
+    hideLoader();
+    return jsonData;
+  } catch (error) {
+    console.error("Error getting not completed production runs: ", error);
+  }
+}
+
 async function handleResponse(res) {
   //read raw text
   const text = await res.text();

@@ -62,18 +62,51 @@ export function buildProdLogsTable(prodLogs) {
 }
 
 export function buildRunsNotCompleteTable(prodRunLogs) {
+  console.log("Building Runs Not Complete Table with data:", prodRunLogs);
+  let html = "";
+  if (prodRunLogs.length === 0) {
+    html = `<tr><td colspan="11" class="text-center text-muted">
+              There are currently no open production runs.
+            </td></tr>`;
+  } else {
+    prodRunLogs.forEach((row) => {
+      html += `<tr data-id='${row.logID}'>
+                <td>${row.productID}</td>
+                <td>${row.startDate}</td>
+                <td>${row.endDate}</td>
+                <td>${row.mat1Lbs}</td>
+                <td>${row.mat2Lbs}</td>
+                <td>${row.mat3Lbs}</td>
+                <td>${row.mat4Lbs}</td>
+                <td>${row.partsProduced}</td>
+                <td>${row.startupRejects}</td>
+                <td>${row.qaRejects}</td>
+                <td>${row.purgeLbs}</td>
+                </tr>`;
+    });
+  }
+  return html;
+}
+
+export function buildRunsCompleteTable(prodRunLogs) {
+  console.log("Building Runs Complete Table with data:", prodRunLogs);
   let html = "";
   prodRunLogs.forEach((row) => {
     html += `<tr data-id='${row.logID}'>
                 <td>${row.productID}</td>
-                <td>${row.prodDate}</td>
-                <td>${row.pressCounter}</td>
-                <td>${row.startUpRejects}</td>
+                <td>${row.startDate}</td>
+                <td>${row.endDate}</td>
+                <td>${row.mat1Lbs}</td>
+                <td>${row.mat2Lbs}</td>
+                <td>${row.mat3Lbs}</td>
+                <td>${row.mat4Lbs}</td>
+                <td>${row.partsProduced}</td>
+                <td>${row.startupRejects}</td>
                 <td>${row.qaRejects}</td>
                 <td>${row.purgeLbs}</td>
-                <td>${row.runStatus}</td>
                 </tr>`;
   });
+  return html;
 }
 
 // Attach a shared event listener for table rows
@@ -102,6 +135,18 @@ export function setupViewEventListener(elementId, table) {
 // Function to render tables into the DOM
 export function renderTables(prodLogs) {
   document.getElementById("last4wks").innerHTML = buildProdLogsTable(prodLogs);
+}
+
+export function renderRunsNotCompleteTable(prodRunLogs) {
+  console.log("Rendering Runs Not Complete Table with data:", prodRunLogs);
+  document.getElementById("runsNotComplete").innerHTML =
+    buildRunsNotCompleteTable(prodRunLogs);
+}
+
+export function renderRunsCompleteTable(prodRunLogs) {
+  console.log("Rendering Runs Complete Table with data:", prodRunLogs);
+  document.getElementById("runsFinished").innerHTML =
+    buildRunsCompleteTable(prodRunLogs);
 }
 
 function capitalize(str) {

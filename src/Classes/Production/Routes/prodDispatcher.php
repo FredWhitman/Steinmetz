@@ -23,6 +23,12 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
         case isset($_GET['read4wks']):
             $controller->read4wks();
             break;
+        case isset($_GET['getOpenRuns']):
+            $controller->getOpenRuns();
+            break;
+        case isset($_GET['getCompletedRuns']):
+            $controller->getCompletedRuns();
+            break;
         case isset($_GET['viewProdLogs'], $_GET['id']):
             $controller->viewProdLogs($_GET['id']);
             break;
