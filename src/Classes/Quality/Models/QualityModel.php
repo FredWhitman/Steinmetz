@@ -148,17 +148,33 @@ class QualityModel
 
     public function insertTransactions($data)
     {
+
         $sql = 'INSERT INTO 
                     inventorytrans (inventoryID, inventoryType, prodLogID, oldStockCount, transAmount, transType, transComment) 
                 VALUES (:inventoryID, :inventoryType, :prodLogID, :oldStockCount, :transAmount, :transType, :transComment)';
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindParam(':inventoryID', $data['inventoryID'], \PDO::PARAM_STR);
-        $stmt->bindParam(':inventoryType', $data['inventoryType'], \PDO::PARAM_STR);
-        $stmt->bindParam(':prodLogID', $data['prodLogID'], \PDO::PARAM_INT);
-        $stmt->bindParam(':oldStockCount', $data['oldStockCount'], \PDO::PARAM_INT);
-        $stmt->bindParam(':transAmount', $data['transAmount'], \PDO::PARAM_INT);
-        $stmt->bindParam(':transType', $data['transType'], \PDO::PARAM_STR);
-        $stmt->bindParam(':transComment', $data['transComment'], \PDO::PARAM_STR);
+
+        if($data['action'] == 'matReceived'){
+            $currentStock = $this->getMaterialInventory($data['matTransData']['inventoryID']);
+            
+            $stmt->bindParam(':inventoryID', $data['matTransData']['inventoryID'], \PDO::PARAM_STR);
+            $stmt->bindParam(':inventoryType', $data['matTransData']['inventoryType'], \PDO::PARAM_STR);
+            $stmt->bindParam(':prodLogID', $data['matTransData']['prodLogID'], \PDO::PARAM_INT);
+            $stmt->bindParam(':oldStockCount', $currentStock, \PDO::PARAM_STR);
+            $stmt->bindParam(':transAmount', $data['matTransData']['transAmount'], \PDO::PARAM_STR);
+            $stmt->bindParam(':transType', $data['matTransData']['transType'], \PDO::PARAM_STR);
+            $stmt->bindParam(':transComment', $data['matTransData']['transComment'], \PDO::PARAM_STR);
+        }else{
+            $stmt->bindParam(':inventoryID', $data['inventoryID'], \PDO::PARAM_STR);
+            $stmt->bindParam(':inventoryType', $data['inventoryType'], \PDO::PARAM_STR);
+            $stmt->bindParam(':prodLogID', $data['prodLogID'], \PDO::PARAM_INT);
+            $stmt->bindParam(':oldStockCount', $data['oldStockCount'], \PDO::PARAM_INT);
+            $stmt->bindParam(':transAmount', $data['transAmount'], \PDO::PARAM_INT);
+            $stmt->bindParam(':transType', $data['transType'], \PDO::PARAM_STR);
+            $stmt->bindParam(':transComment', $data['transComment'], \PDO::PARAM_STR);
+        }
+        
+       
 
         if (!$stmt->execute()) {
             $error = $stmt->errorInfo();
@@ -488,6 +504,19 @@ class QualityModel
         if (!$stmt->execute()) {
             $error = $stmt->errorInfo();
             throw new \Exception("Failed to get product: {$productID}'s qty. ERROR: {$error}");
+        }
+        $result = $stmt->fetch();
+        return $result;
+    }
+
+    private function getMaterialInventory($matPartNumber){
+        $sql = "SELECT matLbs FROM materialInventory WHERE matPartNumber - :matPartNumber";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':matPartNumber', $matPartNumber, \PDO::PARAM_STR);
+        if(!stmt->execute()){
+            $error = $stmt->errprInfo();
+            $this->log->error("Failed to get material Inventory for {$matPartNumber}. ERROR: " . $error);
+            throw new \Exception("Failed to get material Inventory for {$matPartNumber}");
         }
         $result = $stmt->fetch();
         return $result;

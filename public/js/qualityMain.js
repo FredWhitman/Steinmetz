@@ -17,6 +17,7 @@ import {
   postLotChange,
   postOvenLog,
   postUpdateOvenLog,
+  postMatReceived,
   fetchProductList,
   fetchMaterialList,
 } from "./qualityApiClient.js";
@@ -76,6 +77,48 @@ function addQaRejectsFormSubmision() {
       document.getElementById("showAlert").innerHtml;
     }
   });
+}
+
+function addMaterialReceived(){
+  const form = document.getElementById("add-matreceived-form");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    if(!form.checkValidity()){
+      form.classList.add("was-validated");
+      return;
+    }
+
+    const data = new FormData(form);
+    const payload = {
+      action: "matReceived",
+      matTransData:{
+        inventoryID: data.get("mr_matPartNumber"),
+        inventoryType: data.get("material"),
+        transDate: data.get("mr_matReceivedDate"),
+        inventoryLogID: "0",
+        oldStockCount: "0",
+        transAmount: data.get("mr_lbsReceived"),
+        transType: "received",
+        transComment: data.get("mr_Comments"),
+      }
+    }
+
+    try{
+      const result = await postMatReceived(payload);
+      if(result){
+        console.log("Raw result: ", result);
+        const alertData = result;
+        document.getElementById("showAlert").innerHTML = alertData.html;
+        bootstrap.Modal.getInstance(
+          document.getElementById("addMaterialReceivedModal")
+        ).hide();
+      }
+    }catch (error){
+      console.error("Failed to submit material transaction", error);
+      document.getElementById("showAlert").innerHtml;
+    }
+  })
 }
 
 function addLotChangeFormSubmission() {

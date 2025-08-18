@@ -19,6 +19,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         case isset($data['action']) && $data['action'] === 'updateOvenLog':
             $controller->updateOvenLog($data);
             break;
+        case isset($data['action']) && $data['action'] === 'matReceived':
+            $controller->addMatTransaction($data);
+            break;
         default:
             http_response_code(400);
             echo json_encode(['error' => "Invalid POST['action'] request."]);

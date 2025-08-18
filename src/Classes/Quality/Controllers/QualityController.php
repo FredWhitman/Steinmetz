@@ -135,6 +135,20 @@ class QualityController
         }
     }
 
+    public function addMatTransaction($data){
+        header('Content-Type: application/json');
+        try {
+            $result = $this->model->insertTransactions($data);
+            $type = $result['success'] ? 'success' : 'danger';
+            $alertJson = $this->util->showMessage($type, $result['message']);
+            echo $alertJson;
+        } catch (\Throwable $th) {
+            http_response_code(500);
+            $alertJson = $this->util->showMessage('danger', 'Unhandled exception: ' . $e->getMessage());
+            echo $alertJson;
+        }
+    }
+
     public function getProductList()
     {
         ob_clean();
@@ -148,6 +162,8 @@ class QualityController
             echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         }
     }
+
+
 
     public function getMaterialList()
     {

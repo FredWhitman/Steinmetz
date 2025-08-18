@@ -99,6 +99,15 @@ export async function postUpdateOvenLog(payload) {
   return handleResponse(res);
 }
 
+export async function postMatReceived(payload){
+  console.log("postMatReceived called!");
+  const res = await fetch(BASE_URL,{
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse(res);
+}
 // Fill a form (GET request) for viewing
 export async function fetchAndFillViewForm(id, table) {
   const tableKeyMap = {

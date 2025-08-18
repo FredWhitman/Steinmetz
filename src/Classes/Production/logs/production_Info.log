@@ -45,3 +45,7 @@
 [2025-08-15T17:35:04.848140+02:00] Production.INFO: getOpenRuns called to fill table [] []
 [2025-08-15T17:35:13.053128+02:00] Production.INFO: getCompletedRuns called to fill table [] []
 [2025-08-15T17:35:13.934689+02:00] Production.INFO: getOpenRuns called to fill table [] []
+[2025-08-16T12:09:11.222772+02:00] Production.INFO: read4wks called to fill table [] []
+[2025-08-16T12:13:34.072476+02:00] Production.INFO: read4wks called to fill table [] []
+[2025-08-16T12:13:39.356813+02:00] Production.INFO: getCompletedRuns called to fill table [] []
+[2025-08-16T12:13:41.845121+02:00] Production.INFO: getOpenRuns called to fill table [] []

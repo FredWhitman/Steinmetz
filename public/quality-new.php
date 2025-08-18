@@ -502,7 +502,7 @@
                         <div class="mb-3">
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="mr_MatPartNumber">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="mr_MatPartNumber" name="mr_MatPartNumber" required></select></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="mr_matPartNumber">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="mr_MatPartNumber" name="mr_MatPartNumber" required></select></div>
                                     <div class="invalid-feedback">Material Part Nnumber is required!</div>
                                 </div>
                             </div>
@@ -512,14 +512,27 @@
                                     <div class="invalid-feedback">Received date is required!</div>
                                 </div>
                             </div>
+                            <div class="d-flex flex-row justify-content-evenly mb-2 g-1">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="mr_lbsReceived">Lbs Received</label><input class="form-control" type="number" tabindex="2" id="mr_lbsReceived" name="mr_lbsReceived" required></div>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <label for="message-text" class="col-form-label">Comments</label>
-                            <textarea class="form-control" type="text" id="mr_Comments" name="mr_Comments"></textarea>
+                        <div class="d-flex flex-row justify-content-evenly mb-2">
+                            <textarea class="form-control" type="text" id="mr_Comments" name="mr_Comments">Comments</textarea>
+                        </div>
+                        <div class="d-flex justify-content-evenly mt-1 mb-2">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                                </div>
+                                <div class="col-sm-8">
+                                    <button type="submit" class="btn btn-success" id="add-matreceived-btn">Add Material</button>
+                                </div>
+                            </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" value="Add Mat Received" class="btn btn-success" id="add-matreceived-btn">Add Materiald Shipment</button>
+                            
                         </div>
                     </form>
                 </div>

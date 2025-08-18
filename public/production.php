@@ -582,6 +582,8 @@
     </div>
     <!-- View production log modal end -->
     <!--------------------------------------------------------------------------------------------------------------->
+    
+    <!-- Loader -->
     <div id="loader" class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75" style="z-index: 1050;">
         <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
             <span class="visually-hidden">Loading...</span>
@@ -636,7 +638,9 @@
                     <div>
                         <h4 class="text-primary">Production Data</h4>
                     </div>
-                    <div><a class="btn btn-primary" href="/forms/viewProductionLog.php" role="button">View log</a>
+                    <div>
+                        <a class="btn btn-primary" href="/forms/viewProductionRuns.php" role="button">View Production Runs</a>
+                        <a class="btn btn-primary" href="/forms/viewProductionLog.php" role="button">View log</a>
                         <button class="btn btn-primary" type="button" id="loadPurgeForm" data-bs-toggle="modal" data-bs-target="#addPurgeModal">Add Purge</button>
                         <a class="btn btn-primary" href="/forms/addProductionLog.php" role="button">Add Production Log</a>
                     </div>
