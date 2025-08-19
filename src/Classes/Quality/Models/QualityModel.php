@@ -154,9 +154,9 @@ class QualityModel
                 VALUES (:inventoryID, :inventoryType, :prodLogID, :oldStockCount, :transAmount, :transType, :transComment)';
         $stmt = $this->pdo->prepare($sql);
 
-        if($data['action'] == 'matReceived'){
+        if ($data['action'] == 'matReceived') {
             $currentStock = $this->getMaterialInventory($data['matTransData']['inventoryID']);
-            
+
             $stmt->bindParam(':inventoryID', $data['matTransData']['inventoryID'], \PDO::PARAM_STR);
             $stmt->bindParam(':inventoryType', $data['matTransData']['inventoryType'], \PDO::PARAM_STR);
             $stmt->bindParam(':prodLogID', $data['matTransData']['prodLogID'], \PDO::PARAM_INT);
@@ -164,7 +164,7 @@ class QualityModel
             $stmt->bindParam(':transAmount', $data['matTransData']['transAmount'], \PDO::PARAM_STR);
             $stmt->bindParam(':transType', $data['matTransData']['transType'], \PDO::PARAM_STR);
             $stmt->bindParam(':transComment', $data['matTransData']['transComment'], \PDO::PARAM_STR);
-        }else{
+        } else {
             $stmt->bindParam(':inventoryID', $data['inventoryID'], \PDO::PARAM_STR);
             $stmt->bindParam(':inventoryType', $data['inventoryType'], \PDO::PARAM_STR);
             $stmt->bindParam(':prodLogID', $data['prodLogID'], \PDO::PARAM_INT);
@@ -173,8 +173,8 @@ class QualityModel
             $stmt->bindParam(':transType', $data['transType'], \PDO::PARAM_STR);
             $stmt->bindParam(':transComment', $data['transComment'], \PDO::PARAM_STR);
         }
-        
-       
+
+
 
         if (!$stmt->execute()) {
             $error = $stmt->errorInfo();
@@ -509,12 +509,13 @@ class QualityModel
         return $result;
     }
 
-    private function getMaterialInventory($matPartNumber){
+    private function getMaterialInventory($matPartNumber)
+    {
         $sql = "SELECT matLbs FROM materialInventory WHERE matPartNumber - :matPartNumber";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':matPartNumber', $matPartNumber, \PDO::PARAM_STR);
-        if(!stmt->execute()){
-            $error = $stmt->errprInfo();
+        if (!$stmt->execute()) {
+            $error = $stmt->errorInfo();
             $this->log->error("Failed to get material Inventory for {$matPartNumber}. ERROR: " . $error);
             throw new \Exception("Failed to get material Inventory for {$matPartNumber}");
         }

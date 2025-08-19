@@ -368,6 +368,31 @@ class ProductionModel
         return $matLogID;
     }
 
+    public function addPurge($productID, $prodDate, $purgeLbs)
+    {
+        $this->log->info("addPurge called with productID: {$productID}, prodDate: {$prodDate}, purgeLbs: {$purgeLbs}.");
+
+        $prodLogID = $this->getProdLogID($productID, $prodDate);
+        if (!$prodLogID) {
+            throw new \Exception("No production log found for product {$productID} on date {$prodDate}.");
+        }
+
+        $sql = "UPDATE productionlogs 
+                SET purgeLbs = purgeLbs + :purgeLbs 
+                WHERE productID = :productID 
+                AND prodDate = :prodDate";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':productID', $productID, \PDO::PARAM_STR);
+        $stmt->bindParam(':prodDate', $prodDate, \PDO::PARAM_STR);
+        $stmt->bindParam(':purgeLbs', $purgeLbs, \PDO::PARAM_STR);
+
+        if (!$stmt->execute()) {
+            throw new \Exception("Failed to insert purge log for product {$productID}.");
+        }
+        return ['success' => true, 'message' => 'Purge log added successfully.'];
+    }
+
     /**
      * insertTempLog
      *
@@ -458,6 +483,7 @@ class ProductionModel
         if (!$prodRunID) throw new \Exception("failed to insert production run!");
         return $prodRunID;
     }
+
 
     /**
      * insertTrans 
@@ -735,6 +761,19 @@ class ProductionModel
         $qty = $stmt->execute([':productID' => $productID]);
         if (!$qty) throw new \Exception("Failed to get qty for {$productID}.");
         return $qty;
+    }
+
+    private function getProdLogID($productID, $prodDate)
+    {
+        $sql = "SELECT logID FROM productionlogs WHERE productID = :productID AND prodDate = :prodDate";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'productID' => $productID,
+            'prodDate' => $prodDate
+        ]);
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (!$result) throw new \Exception("Failed to get production log ID for {$productID} made on {$prodDate}.");
+        return $result['logID'];
     }
 
     /**

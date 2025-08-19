@@ -2,7 +2,7 @@
 
 import { showLoader, hideLoader } from "./productionUiManager.js";
 
-const BASE_URL = "/api/prodDispatcher.php";
+const BASE_URL = "../api/prodDispatcher.php";
 
 // Fetch last4wks production log data (GET request)
 export async function fetchProdLogs() {
@@ -136,6 +136,15 @@ export async function fetchPreviousMatLogs(productID, type) {
 }
 
 export async function postProductionLog(payload) {
+  const res = await fetch(BASE_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse(res);
+}
+
+export async function postPurge(payload) {
   const res = await fetch(BASE_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

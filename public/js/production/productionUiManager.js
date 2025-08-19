@@ -1,7 +1,7 @@
 // FILE: /js/productionUiManager.js
 //
 //This will hold function for building tables for the production Landing page
-const BASE_URL = "/api/prodDispatcher.php";
+const BASE_URL = "/../api/prodDispatcher.php";
 const showAlert = document.getElementById("showAlert");
 
 const fieldMappings = {
@@ -51,7 +51,7 @@ export function buildProdLogsTable(prodLogs) {
                 <td>${row.pressCounter}</td>
                 <td>${row.startUpRejects}</td>
                 <td>${row.qaRejects}</td>
-                <td>${row.purgeLbs}</td>
+                <td>${row.purgeLbs} lbs</td>
                 <td>${row.runStatus}</td>
                 <td>
                     <a href="/forms/viewProductionLog.php?productID=${row.productID}&prodDate=${row.prodDate}" target="_blank" class="btn btn-primary btn-sm rounded-pill py-0">View</a>
@@ -343,9 +343,14 @@ function populateSelect(
   });
 }
 
-export function populateProductSelect(products) {
-  const sel = document.getElementById("partName");
-  populateSelect(sel, products, {
+export function populateProductSelect(selectEl, products) {
+  if (!selectEl) {
+    console.warn("🚨 Select element not found!");
+    return;
+  }
+  console.log("productionUiManager.js->populateProductSelect(products) called");
+
+  populateSelect(selectEl, products, {
     valueKey: "productID",
     labelKey: "partName",
   });

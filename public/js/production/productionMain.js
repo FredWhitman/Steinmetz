@@ -25,6 +25,7 @@ import {
   checkIfLogExists,
   fetchPreviousMatLogs,
   postProductionLog,
+  postPurge,
 } from "./productionApiClient.js";
 
 async function init() {
@@ -71,11 +72,35 @@ async function onModalShow() {
     console.log("🧪 products:", products);
     console.log("🧪 materials:", materials);
 
-    populateProductSelect(products);
+    const selEl = document.getElementById("partName");
+
+    populateProductSelect(selEl, products);
     populateMaterialSelects(materials);
   } catch (err) {
     console.error(err);
     showAlertMessage("Unable to load products or materials.");
+  } finally {
+    hideLoader();
+  }
+}
+
+async function onPurgeModalShow() {
+  showLoader();
+  clearAlert();
+  try {
+    const products = await fetchProductList();
+    if (!Array.isArray(products)) {
+      showAlertMessage("⚠️ Product list failed to load properly.");
+      console.error("products", products);
+      return;
+    }
+    console.log("🧪 products:", products);
+
+    const selEl1 = document.getElementById("p_PartName");
+    populateProductSelect(selEl1, products);
+  } catch (error) {
+    console.error("Error loading purge modal:", error);
+    showAlertMessage("Failed to load purge data.");
   } finally {
     hideLoader();
   }
@@ -282,6 +307,45 @@ function wireFormSubmission() {
   });
 }
 
+function addPurgeFormSubmission() {
+  const form = document.getElementById("add-purge-form");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    clearAlert();
+
+    if (!form.checkValidity()) {
+      form.classList.add("was-validated");
+      return;
+    }
+
+    showLoader();
+    const data = new FormData(form);
+    const payload = {
+      action: "addPurge",
+      productID: data.get("p_PartName"),
+      prodDate: data.get("p_LogDate"),
+      purgeLbs: data.get("p_purgeLbs"),
+    };
+
+    try {
+      const result = await postPurge(payload);
+      bootstrap.Modal.getInstance(
+        document.getElementById("addPurgeModal")
+      ).hide();
+
+      showAlertMessage(result.message, "showAlert");
+    } catch (err) {
+      console.error(err);
+      showAlertMessage(
+        "Failed to save purge log. Try again.",
+        "showAlert",
+        "danger"
+      );
+    } finally {
+      hideLoader();
+    }
+  });
+}
 // 5) Bootstrap everything on page load
 document.addEventListener("DOMContentLoaded", () => {
   // Initialize UI bindings
@@ -300,6 +364,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const addModalEl = document.getElementById("addProductionModal");
   addModalEl.addEventListener("show.bs.modal", onModalShow);
 
+  const addPurgeEl = document.getElementById("addPurgeModal");
+  addPurgeEl.addEventListener("show.bs.modal", onPurgeModalShow);
+
   // Bind form submit
   wireFormSubmission();
+  addPurgeFormSubmission();
 });

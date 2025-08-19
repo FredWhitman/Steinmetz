@@ -79,12 +79,12 @@ function addQaRejectsFormSubmision() {
   });
 }
 
-function addMaterialReceived(){
+function addMaterialReceived() {
   const form = document.getElementById("add-matreceived-form");
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    if(!form.checkValidity()){
+    if (!form.checkValidity()) {
       form.classList.add("was-validated");
       return;
     }
@@ -92,7 +92,7 @@ function addMaterialReceived(){
     const data = new FormData(form);
     const payload = {
       action: "matReceived",
-      matTransData:{
+      matTransData: {
         inventoryID: data.get("mr_matPartNumber"),
         inventoryType: data.get("material"),
         transDate: data.get("mr_matReceivedDate"),
@@ -101,12 +101,12 @@ function addMaterialReceived(){
         transAmount: data.get("mr_lbsReceived"),
         transType: "received",
         transComment: data.get("mr_Comments"),
-      }
-    }
+      },
+    };
 
-    try{
+    try {
       const result = await postMatReceived(payload);
-      if(result){
+      if (result) {
         console.log("Raw result: ", result);
         const alertData = result;
         document.getElementById("showAlert").innerHTML = alertData.html;
@@ -114,11 +114,11 @@ function addMaterialReceived(){
           document.getElementById("addMaterialReceivedModal")
         ).hide();
       }
-    }catch (error){
+    } catch (error) {
       console.error("Failed to submit material transaction", error);
       document.getElementById("showAlert").innerHtml;
     }
-  })
+  });
 }
 
 function addLotChangeFormSubmission() {
@@ -239,7 +239,7 @@ function updateOvenLogFormSubmission() {
     };
 
     console.log(JSON.stringify(payload, null, 2));
-    
+
     try {
       const result = await postUpdateOvenLog(payload);
       console.log("RAW result: ", result);
@@ -343,7 +343,7 @@ async function onOvenLogModalShow() {
   }
 }
 
-async function onUpdateLotModalShow(){
+async function onUpdateLotModalShow() {
   showLoader();
   try {
     const [products, materials] = await Promise.all([
@@ -360,19 +360,48 @@ async function onUpdateLotModalShow(){
       console.error("products", products);
       console.error("materials", materials);
       return;
-    }  
+    }
     const sel = document.getElementById("u_lcPartName");
     const selectEl = document.getElementById("u_lcMatName");
     populateProductSelect(sel, products);
     populateMaterialSelect(selectEl, materials);
-
   } catch (error) {
     console.error(error);
     showAlertMessage("Unable to load product list!", "showAlert", "danger");
-  }finally{
+  } finally {
     hideLoader();
   }
 }
+
+async function onMatReceivedModalShow() {
+  showLoader();
+  clearAlert();
+
+  try {
+    const materials = await fetchMaterialList();
+
+    if (!Array.isArray(materials)) {
+      showAlertMessage(
+        "⚠️ Material lists failed to load properly.",
+        "showAlert",
+        "danger"
+      );
+      console.error("materials", materials);
+      return;
+    }
+
+    console.log("materials", materials);
+
+    const sel = document.getElementById("mr_matPartNumber");
+    populateMaterialSelect(sel, materials);
+  } catch (error) {
+    console.error(error);
+    showAlertMessage("Unable to load material list!", "showAlert", "danger");
+  } finally {
+    hideLoader();
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   // Load data when modal shows
   const addModalEl = document.getElementById("addQARejectsModal");
@@ -387,9 +416,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const updateLotModal = document.getElementById("updateLotChangeModal");
   updateLotModal.addEventListener("show.bs.modal", onUpdateLotModalShow);
 
+  const addMatReceivedModal = document.getElementById(
+    "addMaterialReceivedModal"
+  );
+  addMatReceivedModal.addEventListener("show.bs.modal", onMatReceivedModalShow);
 
   addQaRejectsFormSubmision();
   addLotChangeFormSubmission();
   addOvenLogFormSubmission();
   updateOvenLogFormSubmission();
+  addMaterialReceived();
 });

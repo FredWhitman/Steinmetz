@@ -109,7 +109,7 @@
     <script type="text/javascript" src="/lib/js/bootstrap.bundle.min.js"></script>
 
     <!-- My custom js -->
-    <script type="module" src="/js/viewProdRuns.js"></script>
+    <script type="module" src="/js/production/viewProdRuns.js"></script>
 </body>
 
 </html>

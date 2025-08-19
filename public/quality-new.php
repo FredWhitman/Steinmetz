@@ -502,7 +502,7 @@
                         <div class="mb-3">
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="mr_matPartNumber">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="mr_MatPartNumber" name="mr_MatPartNumber" required></select></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="mr_matPartNumber">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="mr_matPartNumber" name="mr_matPartNumber" required></select></div>
                                     <div class="invalid-feedback">Material Part Nnumber is required!</div>
                                 </div>
                             </div>
@@ -532,7 +532,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            
+
                         </div>
                     </form>
                 </div>

@@ -582,7 +582,7 @@
     </div>
     <!-- View production log modal end -->
     <!--------------------------------------------------------------------------------------------------------------->
-    
+
     <!-- Loader -->
     <div id="loader" class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75" style="z-index: 1050;">
         <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
@@ -603,7 +603,7 @@
                         <div class="mb-3">
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="p_aPartName">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="p_PartName" name="p_Part" required></select></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="p_PartName">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="p_PartName" name="p_PartName" required></select></div>
                                     <div class="invalid-feedback">Part name is required!</div>
                                 </div>
                             </div>
@@ -614,7 +614,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="input-group sm-3"><label class="input-group-text" for="p_purge">Lbs of purge</label><input type="number" step="0.001" tabindex="1" class="form-control form-control-sm" id="p_purge" name="p_purge" required></div>
+                                <div class="input-group sm-3"><label class="input-group-text" for="p_purge">Lbs of purge</label><input type="number" step="0.001" tabindex="1" class="form-control form-control-sm" id="p_purgeLbs" name="p_purgeLbs" required></div>
                                 <div class="invalid-feedback">Lbs of purge is required!</div>
                             </div>
                         </div>
@@ -684,7 +684,7 @@
     <!-- Bootstrap js -->
     <script type="text/javascript" src="/lib/js/bootstrap.bundle.min.js"></script>
     <!-- My custom js -->
-    <script type="module" src="/js/productionMain.js"></script>
+    <script type="module" src="/js/production/productionMain.js"></script>
 </body>
 
 </html>

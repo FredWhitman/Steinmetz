@@ -191,4 +191,24 @@ class ProductionController
             ];
         }
     }
+
+    public function addPurge($data)
+    {
+        header('Content-Type: application/json');
+        try {
+            $this->log->info("addPurge called with these values: {$data['productID']} and {$data['purgeLbs']}.");
+            return $this->model->addPurge(
+                $data["productID"],
+                $data["prodDate"],
+                $data["purgeLbs"]
+            );
+        } catch (\Exception $e) {
+            http_response_code(500);
+            return [
+                'success' => false,
+                'message' => 'Failed to add purge log.',
+                'details' => $e->getMessage()
+            ];
+        }
+    }
 }

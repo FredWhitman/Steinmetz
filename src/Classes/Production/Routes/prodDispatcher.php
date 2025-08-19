@@ -11,6 +11,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $result = $controller->addLog($data);
             echo json_encode($result);
             break;
+        case isset($data['action']) && $data['action'] === 'addPurge':
+            $result = $controller->addPurge($data);
+            echo json_encode($result);
+            break;
         default:
             http_response_code(400);
             echo json_encode(['error' => 'Invalid POST request']);
