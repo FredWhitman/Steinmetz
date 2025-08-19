@@ -3,7 +3,7 @@
 namespace Inventory\Controllers;
 
 // File: controllers/InventoryController.php
-require_once __DIR__ . '/../models/InventoryModel.php';
+//require_once __DIR__ . '/../models/InventoryModel.php';
 
 class InventoryController
 {
@@ -52,40 +52,41 @@ class InventoryController
     }
 
     //GET: retrieve single record of joined tables for update (e.g. updateProducts, updateMaterials, updatePfms)
-    public function getInventoryRecord(){
+    public function getInventoryRecord()
+    {
         header('Content-Type: application/json');
         $id = $_GET['id'] ?? null;
         $table = $_GET['table'] ?? null;
 
-        if(!$id || !$table){
+        if (!$id || !$table) {
             http_response_code(400);
             echo json_encode(["error" => "Missing required paramaters"]);
             $this->log->warning("Missing parameters for getInventoryRecord");
             exit();
         }
-        
+
         $this->log->info("getInventoryRecord called with: {$id}, {$table}");
 
-        switch ($table){
+        switch ($table) {
             case 'products':
-                $record = $this->model->getInventoryRecord($id,$table);
+                $record = $this->model->getInventoryRecord($id, $table);
                 break;
             case 'materials':
-                $record = $this->model->getInventoryRecord($id,$table);
+                $record = $this->model->getInventoryRecord($id, $table);
                 break;
             case 'pfms':
-                $record = $this->model->getInventoryRecord($id,$table);
+                $record = $this->model->getInventoryRecord($id, $table);
                 break;
             default:
-            http_response_code(400);
-            echo json_encode(['error' => 'Invalid table type']);
+                http_response_code(400);
+                echo json_encode(['error' => 'Invalid table type']);
         }
-        
-        if(!$record){
+
+        if (!$record) {
             echo json_encode(["error" => "Record not found!"]);
             exit();
         }
-        echo json_encode($record , JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+        echo json_encode($record, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
         exit();
     }
 
@@ -139,42 +140,45 @@ class InventoryController
             echo $this->util->showMessage('danger', $result['message'] . ' ' . $result['error']);
         }
     }
-    
-    public function updateProduct($data){
+
+    public function updateProduct($data)
+    {
         $this->log->info("POST Data Received by controller:\n" . print_r($data, true));
-        if(!isset($data['action'])){
+        if (!isset($data['action'])) {
             http_response_code(400);
             echo "Missing UpdateProduct Data!";
             return;
         }
 
         $result = $this->model->updateInvQty($data);
-        if(!$result['success']){
+        if (!$result['success']) {
             echo $this->util->showMessage('danger', $result['message'] . " updateInvqty: {$data['action']} failed to be updated!");
-        }else{
+        } else {
             echo $this->util->showMessage('success', $result['message'] . " updateInvQty: {$data['action']} was successful");
         }
     }
 
-    public function updateMaterial($data){
+    public function updateMaterial($data)
+    {
         $this->log->info("POST Data Received by controller:\n" . print_r($data, true));
-        if(!isset($data['action'])){
+        if (!isset($data['action'])) {
             http_response_code(400);
             echo "Missing UpdateMaterial Data!";
             return;
         }
 
         $result = $this->model->updateInvQty($data);
-        if(!$result['success']){
+        if (!$result['success']) {
             echo $this->util->showMessage('danger', $result['message'] . " updateInvqty: {$data['action']} failed to be updated!");
-        }else{
+        } else {
             echo $this->util->showMessage('success', $result['message'] . " updateInvQty: {$data['action']} was successful");
         }
     }
 
-    public function updatePfm($data){
+    public function updatePfm($data)
+    {
         $this->log->info("POST Data Received by controller:\n" . print_r($data, true));
-        if(!isset($data['action'])){
+        if (!isset($data['action'])) {
             http_response_code(400);
             echo "Missing UpdatePfm Data!";
             return;
@@ -183,7 +187,7 @@ class InventoryController
         $result = $this->model->updateInvQty($data);
         if (!$result['success']) {
             echo $this->util->showMessage('danger', $result['message'] . " updateInvqty: {$data['action']} failed to be updated!");
-        }else{
+        } else {
             echo $this->util->showMessage('success', $result['message'] . " updateInvQty: {$data['action']} was successful");
         }
     }

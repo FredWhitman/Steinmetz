@@ -1,7 +1,9 @@
 <?php
 // File: routes/dispatcher.php
-require_once __DIR__ . '/../config/init.php';
-require_once __DIR__ . '/../controllers/InventoryController.php';
+$controller = require_once __DIR__ . '/../Config/init.php';
+/* require_once __DIR__ . '/../controllers/InventoryController.php'; */
+
+$data = json_decode(file_get_contents('php://input'), true);
 
 // Assuming $db, $util, and $log have been initialized in inventoryActions.php
 //$controller = new InventoryController($db, $util, $log);
@@ -38,9 +40,9 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
         $controller->getInventory();
     } elseif (isset($_GET['editProducts']) || isset($_GET['editMaterials']) || isset($_GET['editPfms'])) {
         $controller->getRecord();
-    } elseif(isset($_GET['updateProducts']) || isset($_GET['updateMaterials']) || isset($_GET['updatePfms'])) {
+    } elseif (isset($_GET['updateProducts']) || isset($_GET['updateMaterials']) || isset($_GET['updatePfms'])) {
         $controller->getInventoryRecord();
-    }else{
+    } else {
         http_response_code(400);
         echo json_encode(['error' => 'Invalid GET request']);
     }

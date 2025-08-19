@@ -1,19 +1,22 @@
 <?php
 // File: src/Classes/inventory/models/InventoryModel.php
+declare(strict_types=1);
+
 namespace Inventory\Models;
 
-require_once  __DIR__ . '/../../database.php';
-require_once __DIR__ . '/../utils/Util.php';
+//require_once  __DIR__ . '/../../database.php';
+//require_once __DIR__ . '/../utils/Util.php';
 
 use Psr\Log\LoggerInterface;
 use PDOException;
 use ErrorException;
-use Inventory\utils\Util;
+use Util\Utilities;
+use Database\Connection;
 
 class InventoryModel
 {
-    private $con;
-    private $log;
+    private \PDO $pdo;
+    private LoggerInterface $log;
     private $util;
 
     /**
@@ -22,9 +25,9 @@ class InventoryModel
      * @param \PDO $dbConnection
      * @param LoggerInterface $log
      */
-    public function __construct(\PDO $dbConnection, LoggerInterface $log, Util $util)
+    public function __construct(Connection $dbConnection, LoggerInterface $log, Utilities $util)
     {
-        $this->con = $dbConnection;
+        $this->pdo = $dbConnection->getPDO();
         $this->log = $log;
         $this->util = $util;
     }
@@ -70,7 +73,7 @@ class InventoryModel
                                 products ON (productinventory.productID = products.productID)
                             ORDER BY displayOrder';
 
-            $stmtProduct = $this->con->prepare($sqlProduct);
+            $stmtProduct = $this->pdo->prepare($sqlProduct);
 
             $stmtProduct->execute();
 
@@ -96,7 +99,7 @@ class InventoryModel
                             INNER JOIN `material` ON (`materialinventory`.`matPartNumber` = `material`.`matPartNumber`)
                             ORDER BY
                             `material`.`displayOrder`';
-            $stmtMaterial = $this->con->prepare($sqlMaterial);
+            $stmtMaterial = $this->pdo->prepare($sqlMaterial);
             $stmtMaterial->execute();
             $materials = $stmtMaterial->fetchALL(\PDO::FETCH_ASSOC);
             $mCount = count($materials);
@@ -130,7 +133,7 @@ class InventoryModel
                 ORDER BY
                 `pfm`.`displayOrder`';
 
-            $stmtPFM = $this->con->prepare($sqlPFM);
+            $stmtPFM = $this->pdo->prepare($sqlPFM);
             $stmtPFM->execute();
             $pfm = $stmtPFM->fetchAll(\PDO::FETCH_ASSOC);
             $pCount = count($pfm);
@@ -181,7 +184,7 @@ class InventoryModel
                         FROM products 
                         WHERE productID = :productID';
 
-                    $stmt = $this->con->prepare($sql);
+                    $stmt = $this->pdo->prepare($sql);
                     $stmt->execute([':productID' => $id]);
                     $result = $stmt->fetch();
 
@@ -197,7 +200,7 @@ class InventoryModel
                 $sql = 'SELECT * FROM material WHERE matPartNumber = :matPartNumber';
 
                 try {
-                    $stmt = $this->con->prepare($sql);
+                    $stmt = $this->pdo->prepare($sql);
                     $stmt->execute([':matPartNumber' => $id]);
                     $result = $stmt->fetch(\PDO::FETCH_ASSOC);
                     if (!$result) {
@@ -212,7 +215,7 @@ class InventoryModel
             case 'pfms':
                 try {
                     $sql = 'SELECT * FROM pfm WHERE pfmID = :pfmID';
-                    $stmt = $this->con->prepare($sql);
+                    $stmt = $this->pdo->prepare($sql);
                     $stmt->execute([':pfmID' => $id]);
                     $result = $stmt->fetch();
                     if (!$result) {
@@ -259,7 +262,7 @@ class InventoryModel
                             productionType = :productionType 
                         WHERE productID = :productID";
 
-            $stmt = $this->con->prepare($sql);
+            $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':productID', $data['products']['productID'], \PDO::PARAM_STR);
             $stmt->bindParam(':partName', $data['products']['partName'], \PDO::PARAM_STR);
             $stmt->bindParam(':minQty', $data['products']['minQty'], \PDO::PARAM_INT);
@@ -300,7 +303,7 @@ class InventoryModel
                             matCustomer = :matCustomer, 
                             displayOrder = :displayOrder
                         WHERE matPartNumber = :matPartNumber';
-            $stmt = $this->con->prepare($sql);
+            $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':matPartNumber', $data['materials']['matPartNumber'], \PDO::PARAM_STR);
             $stmt->bindParam(':matName', $data['materials']['matName'], \PDO::PARAM_STR);
             $stmt->bindParam(':productID', $data['materials']['productID'], \PDO::PARAM_STR);
@@ -337,7 +340,7 @@ class InventoryModel
                         displayOrder = :displayOrder
                     WHERE pfmID = :pfmID';
 
-            $stmt = $this->con->prepare($sql);
+            $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':pfmID', $data['pfm']['pfmID'], \PDO::PARAM_STR);
             $stmt->bindParam(':partNumber', $data['pfm']['partNumber'], \PDO::PARAM_STR);
             $stmt->bindParam(':partName', $data['pfm']['partName'], \PDO::PARAM_STR);
@@ -392,7 +395,7 @@ class InventoryModel
                     WHERE
                     `productinventory`.`productID` = :productID';
 
-                    $stmt = $this->con->prepare($sql);
+                    $stmt = $this->pdo->prepare($sql);
                     $stmt->execute([':productID' => $id]);
 
                     break;
@@ -410,7 +413,7 @@ class InventoryModel
                             WHERE
                                 `materialinventory`.`matPartNumber` = :matPartNumber';
 
-                    $stmt = $this->con->prepare($sql);
+                    $stmt = $this->pdo->prepare($sql);
                     $stmt->execute([':matPartNumber' => $id]);
                     break;
                 case 'pfms':
@@ -426,7 +429,7 @@ class InventoryModel
                             WHERE
                                 `pfm`.`pfmID` = :pfmID';
 
-                    $stmt = $this->con->prepare($sql);
+                    $stmt = $this->pdo->prepare($sql);
                     $stmt->execute([':pfmID' => $id]);
                     break;
                 default:
@@ -469,7 +472,7 @@ class InventoryModel
         }
 
         try {
-            $this->con->beginTransaction();
+            $this->pdo->beginTransaction();
 
             //creating transArray to fill with transData for insert after the update
             $transData = array(
@@ -495,7 +498,7 @@ class InventoryModel
                     $newStockQty = $this->util->getNewInvQty($stockQty, $data['operator'], $amount);
 
                     $sql = 'UPDATE productInventory SET partQty = :qty WHERE productID = :productID';
-                    $stmt = $this->con->prepare($sql);
+                    $stmt = $this->pdo->prepare($sql);
                     $stmt->execute([
                         ':productID' => $data['productID'],
                         ':qty' => $newStockQty
@@ -518,7 +521,7 @@ class InventoryModel
                                 matLbs = :matLbs
                             WHERE matPartNumber = :matPartNumber';
 
-                    $stmt = $this->con->prepare($sql);
+                    $stmt = $this->pdo->prepare($sql);
                     $stmt->execute([
                         ':matPartNumber' => $data['matPartNumber'],
                         ':matLbs' => $newStockQty
@@ -541,7 +544,7 @@ class InventoryModel
                                 Qty = :qty
                             WHERE
                                 PartNumber = :partNumber';
-                    $stmt = $this->con->prepare($sql);
+                    $stmt = $this->pdo->prepare($sql);
                     $stmt->execute([
                         ':qty' => $newStockQty,
                         ':partNumber' => $data['partNumber']
@@ -549,7 +552,7 @@ class InventoryModel
 
                     break;
                 default:
-                    $this->con->rollBack();
+                    $this->pdo->rollBack();
                     $this->log->warning("Invalid table type requested: {$data['action']}");
                     return ["success" => false, "message" => "Invalid type requested: {$data['action']}"];
             }
@@ -557,7 +560,7 @@ class InventoryModel
             $affected = $stmt->rowCount();
 
             if (!$affected === 0) {
-                $this->con->rollBack();
+                $this->pdo->rollBack();
                 $errorInfo = $stmt->errorInfo();
                 $this->log->warning("no rows updated for {$data['action']}.");
                 return ["success" => false, "message" => "Database failed to update.", "error" => $errorInfo];
@@ -566,15 +569,15 @@ class InventoryModel
                 $insertResult = $this->insertTrans($transData);
 
                 if (!$insertResult) {
-                    $this->con->rollBack();
+                    $this->pdo->rollBack();
                     $this->log->warning("Transaction insert into inventorytrans failed: {$data['action']}");
                     return ['success' => false, "message" => "Failed to insert transaction for {$data['action']}"];
                 }
-                $this->con->commit();
+                $this->pdo->commit();
                 return ["success" => true, "message" => "{$data['action']} successful!"];
             }
         } catch (\PDOException $e) {
-            $this->con->rollBack();
+            $this->pdo->rollBack();
             $this->log->error("ERROR updating inventory: " . $e->getMessage());
             return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
         }
@@ -609,7 +612,7 @@ class InventoryModel
                     :transType,
                     :transComment)';
 
-        $stmt = $this->con->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $result = $stmt->execute([
             ':inventoryID' => $data['inventoryID'],
             ':inventoryType' => $data['inventoryType'],

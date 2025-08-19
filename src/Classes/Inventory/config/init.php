@@ -2,25 +2,29 @@
 //File: src/Classes/inventory/config/init.php
 
 require_once __DIR__ . '/../../../../vendor/autoload.php';
-require_once __DIR__ . '/../models/InventoryModel.php';
-require_once __DIR__ . '/../utils/Util.php';
-require_once __DIR__ . '/../controllers/InventoryController.php';
-require_once __DIR__ . '/LogFactory.php';
 
+use Database\Connection;
 use Inventory\Config\LogFactory;
 use Inventory\Models\InventoryModel;
 use Inventory\Controllers\InventoryController;
-use Inventory\utils\Util;
+use Util\Utilities;
 
 $logger = LogFactory::getLogger('Inventory');
+error_log("✅ Logger initialized");
 
 //create db connection
-$database = new database();
-$db = $database->dbConnection();
+$dbConn = new Connection();
+error_log("✅ DB connected");
+
 //create util
-$util = new Util();
+$util = new Utilities;
+error_log("✅ Util ready");
 
 //initialize InventoryModel (creates DB and logger)
-$model = new InventoryModel($db, $logger, $util);
+$model = new InventoryModel($dbConn, $logger, $util);
+error_log("✅ Model ready");
 
 $controller = new InventoryController($model, $util, $logger);
+error_log("✅ Controller created");
+
+return $controller;

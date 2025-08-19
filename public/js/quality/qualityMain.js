@@ -307,8 +307,10 @@ async function onLotChangeModalShow() {
     }
 
     const sel = document.getElementById("lc_PartName");
+    const selectEl = document.getElementById("lc_MatName");
+
     populateProductSelect(sel, products);
-    populateMaterialSelect(materials);
+    populateMaterialSelect(selectEl, materials);
   } catch (err) {
     console.error(err);
     showAlertMessage("Unable to load products or materials.");

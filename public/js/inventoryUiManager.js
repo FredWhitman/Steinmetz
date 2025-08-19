@@ -1,31 +1,5 @@
 // uiManager.js
 
-// DOM elements
-/* const tbodyProducts = document.getElementById("products");
-const editProductForm = document.getElementById("edit-product-form");
-const editProductModal = new bootstrap.Modal(
-  document.getElementById("editProductModal")
-);
-const editMaterialForm = document.getElementById("edit-material-form");
-const editMaterialModal = new bootstrap.Modal(
-  document.getElementById("editMaterialModal")
-);
-const editPFMForm = document.getElementById("edit-pfm-form");
-const editPFMModal = new bootstrap.Modal(
-  document.getElementById("editPFMModal")
-);
-const updateProductForm = document.getElementById("update-product-form");
-const updateProductModal = new bootstrap.Modal(
-  document.getElementById("updateProductModal")
-);
-const updateMaterialForm = document.getElementById("update-material-form");
-const updateMaterialModal = new bootstrap.Modal(
-  document.getElementById("updateMaterialModal")
-);
-const updatePFMForm = document.getElementById("update-pfm-form");
-const updatePFMModal = new bootstrap.Modal(
-  document.getElementById("updatePfmModal")
-); */
 const showAlert = document.getElementById("showAlert");
 
 // Loader functions

@@ -285,7 +285,6 @@
     </div>
     <!-- Update Lot Changes end-->
 
-
     <!-- Add Oven Logs start-->
     <div class="modal fade" id="addOvenLogModal" tabindex="-1" aria-labelledby="addOvenLogModal">
         <div class="modal-dialog modal-sm">
@@ -641,7 +640,7 @@
     <!-- Bootstrap js -->
     <script type="text/javascript" src="/lib/js/bootstrap.bundle.min.js"></script>
     <!-- Custom javascript -->
-    <script type="module" src="/js/qualityMain.js"></script>
+    <script type="module" src="/js/quality/qualityMain.js"></script>
 </body>
 
 </html>
