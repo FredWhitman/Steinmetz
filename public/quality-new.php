@@ -21,7 +21,6 @@
     <!--Navbar -->
     <?php require_once '../includes/steinmetzNavbar.php'; ?>
 
-
     <!-- LOADER -->
     <div id="loader" class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75" style="z-index: 1050;">
         <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">

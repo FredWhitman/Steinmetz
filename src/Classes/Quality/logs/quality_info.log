@@ -202,3 +202,4 @@
 [2025-08-19T20:16:39.908178+02:00] Quality.INFO: product List for select [] []
 [2025-08-19T20:16:46.361511+02:00] Quality.INFO: getProducts called from qaDispatcher. {"source":"QualityController.php"} []
 [2025-08-19T20:16:46.364568+02:00] Quality.INFO: product List for select [] []
+[2025-08-20T02:52:05.365188+02:00] Quality.INFO: getQALogs called to fill tables. [] []

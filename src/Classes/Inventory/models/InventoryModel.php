@@ -39,7 +39,7 @@ class InventoryModel
      */
     public function getConnection()
     {
-        return $this->con;
+        return $this->pdo;
     }
 
     /**
@@ -98,7 +98,7 @@ class InventoryModel
                             `materialinventory`
                             INNER JOIN `material` ON (`materialinventory`.`matPartNumber` = `material`.`matPartNumber`)
                             ORDER BY
-                            `material`.`displayOrder`';
+                            `material`.`displayOrder` ASC';
             $stmtMaterial = $this->pdo->prepare($sqlMaterial);
             $stmtMaterial->execute();
             $materials = $stmtMaterial->fetchALL(\PDO::FETCH_ASSOC);
@@ -163,6 +163,27 @@ class InventoryModel
         }
     }
 
+    public function getProductInventory(){
+        $sql = 
+            'SELECT 
+                products.productID AS productID,
+                productinventory.partQty AS partQty,
+                products.minQty AS minQty,
+                products.displayOrder AS displayOrder
+            FROM
+                productinventory
+            INNER JOIN
+                products ON (productinventory.productID = products.productID)
+            ORDER BY displayOrder';
+
+        $stmt = $this->pdo->prepare($sql);
+        if(!$stmt->execute()){
+
+        }
+            $products = $stmt->fetchALL(\PDO::FETCH_ASSOC);
+            return $products;
+    }
+    
 
     /**
      * get single record based on table and id
