@@ -132,13 +132,14 @@ class InventoryController
             echo "Missing PFM data!";
             return;
         }
+
         $result = $this->model->editInventory($data);
         $this->log->info("editPFM result: " . print_r($result, true));
-        if ($result["success"]) {
-            echo $this->util->showMessage('success', $result['message'] . " PFM: {$result['pfm']} updated!");
-        } else {
-            echo $this->util->showMessage('danger', $result['message'] . ' ' . $result['error']);
-        }
+        $message = json_decode($this->util->showMessage(
+            $result['success'] ? 'success' : 'danger',
+            $result['message'] . " PFM: {$result['pfm']} " . ($result['success'] ? "updated!" : "failed to be updated!")
+        ), true);
+        echo $message['html'];
     }
 
     public function updateProduct($data)
@@ -186,11 +187,11 @@ class InventoryController
         }
 
         $result = $this->model->updateInvQty($data);
-        if (!$result['success']) {
-            echo $this->util->showMessage('danger', $result['message'] . " updateInvqty: {$data['action']} failed to be updated!");
-        } else {
-            echo $this->util->showMessage('success', $result['message'] . " updateInvQty: {$data['action']} was successful");
-        }
+        $message = json_decode($this->util->showMessage(
+            $result['success'] ? 'success' : 'danger',
+            $result['message']  . ($result['success'] ? "was successful" : "failed to be updated!")
+        ), true);
+        echo $message['html'];
     }
     // Additional methods (e.g., updateProduct or deleteItem) go here...
 }

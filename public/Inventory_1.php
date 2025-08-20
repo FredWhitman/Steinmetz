@@ -13,6 +13,7 @@
     <link href="/css/myCSS.css" rel="stylesheet">
     <link rel="stylesheet" href="https://www.devwares.com/docs/contrast/javascript/sections/timepicker/">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="icon" href="steinmetz.ico" type="image/x-icon">
 
 </head>
 
@@ -118,6 +119,12 @@
                                 <div class="invalid-feedback">qauntity required!</div>
                             </div>
                             <div class="row pb-2">
+                                <div class="input-group sm-3"><label class="input-group-text" for="matSupplier">Mat. Supplier</label><input type="text" class="form-control form-control-sm" id="m_matSupplier" name="m_matSupplier" required></div>
+                                <div class="invalid-feedback">type required!</div>
+                                <div class="input-group sm-3"><label class="input-group-text" for="minLbs">Price/Lbs</label><input type="number" step=".01" class="form-control form-control-sm" id="m_priceLbs" name="m_priceLbs" required></div>
+                                <div class="invalid-feedback">qauntity required!</div>
+                            </div>
+                            <div class="row pb-2">
                                 <div class="input-group sm-3"><label class="input-group-text" for="customer">Customer</label><input type="text" class="form-control form-control-sm" id="mCustomer" name="m_customer" required></div>
                                 <div class="invalid-feedback">customer required!</div>
                             </div>
@@ -125,6 +132,7 @@
                                 <div class="input-group sm-3"><label class="input-group-text" for="displayOrder">Display Order</label><input type="number" class="form-control form-control-sm" id="mDisplayOrder" name="m_displayOrder" required></div>
                                 <div class="invalid-feedback">displayOrder required!</div>
                             </div>
+
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
@@ -142,7 +150,7 @@
         <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="editPFMModal">Update PFM Details</h1>
+                    <h1 class="modal-title fs-5" id="editPFMModal">Edit PFM Details</h1>
                 </div>
                 <form id="edit-pfm-form" class="needs-validation p-2" novalidate>
                     <div class="modal-body">
@@ -261,7 +269,7 @@
                             </div>
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="umStock">Current Stock</label><input type="number" step =".001" tabindex="1" class="form-control form-control-sm" id="umMatLbs" name="um_MatLbs" readonly></input></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="umStock">Current Stock</label><input type="number" step=".001" tabindex="1" class="form-control form-control-sm" id="umMatLbs" name="um_MatLbs" readonly></input></div>
                                 </div>
                             </div>
                             <div class="row pb-2">
@@ -276,7 +284,7 @@
                                 </div>
                                 <div class="col">
                                     <input class="form-check-input" type="radio" name="mInvQty" tabindex="4" id="subtract" value="-">Subtract<label class="form-check-label" for="subtract"></label>
-                                </div> 
+                                </div>
                             </div>
                             <div class="row pb-2">
                                 <textarea class="form-control" name="um_CommentText" id="MCommentText" rows="5" placeholder="Comments"></textarea>
@@ -286,7 +294,7 @@
                     <div class="modal-footer justify-content-center">
                         <button type="submit" value="Update" class="btn btn-success" id="update-material-btn">Update Material Weight</button>
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                        
+
                     </div>
                 </form>
             </div>
@@ -294,7 +302,7 @@
     </div>
     <!-- Update material inventory end -->
 
-<!-- Update pfm iventory start-->
+    <!-- Update pfm iventory start-->
     <div class="modal fade" id="updatePfmModal" tabindex="-1" aria-labelledby="updatePfmModal">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
@@ -329,7 +337,7 @@
                                 </div>
                                 <div class="col">
                                     <input class="form-check-input" type="radio" name="pfInvQty" tabindex="4" id="subtract" value="-">Subtract<label class="form-check-label" for="subtract"></label>
-                                </div> 
+                                </div>
                             </div>
                             <div class="row pb-2">
                                 <textarea class="form-control" name="pfm_CommentText" id="pfmCommentText" rows="5" placeholder="Comments"></textarea>

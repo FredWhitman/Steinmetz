@@ -5,9 +5,6 @@ $controller = require_once __DIR__ . '/../Config/init.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 
-// Assuming $db, $util, and $log have been initialized in inventoryActions.php
-//$controller = new InventoryController($db, $util, $log);
-
 // Dispatcher for POST actions – based on the "action" variable in the JSON payload.
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $data = json_decode(file_get_contents("php://input"), true);

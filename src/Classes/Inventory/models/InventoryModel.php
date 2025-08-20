@@ -247,7 +247,7 @@ class InventoryModel
                     $this->log->error("ERROR getting {$table} record: " . $e->getMessage());
                     return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
                 }
-
+                break;
             default:
                 $this->log->warning("Invalid table type requested: {$table}");
                 return ["success" => false, "message" => "Invalid type requested: {$table}"];
@@ -419,6 +419,7 @@ class InventoryModel
                     $stmt->execute([':productID' => $id]);
 
                     break;
+
                 case "materials":
                     $this->log->info("{$table} record for {$id} requested");
 
@@ -439,7 +440,9 @@ class InventoryModel
                     $stmt->bindParam(':matPartNumber', $id, \PDO::PARAM_STR);
                     $stmt->execute();
                     break;
+
                 case 'pfms':
+                    $this->log->info("{$table} record for {$id} requested");
                     $sql = 'SELECT 
                                 `pfm`.`pfmID`,
                                 `pfm`.`partNumber`,
@@ -453,8 +456,11 @@ class InventoryModel
                                 `pfm`.`pfmID` = :pfmID';
 
                     $stmt = $this->pdo->prepare($sql);
-                    $stmt->execute([':pfmID' => $id]);
+                    // Bind the parameter for pfmID
+                    $stmt->bindParam(':pfmID', $id, \PDO::PARAM_INT);
+                    $stmt->execute();
                     break;
+
                 default:
                     $this->log->warning("Invalid table type requested: {$table}");
                     return null;
