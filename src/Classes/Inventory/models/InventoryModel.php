@@ -163,8 +163,9 @@ class InventoryModel
         }
     }
 
-    public function getProductInventory(){
-        $sql = 
+    public function getProductInventory()
+    {
+        $sql =
             'SELECT 
                 products.productID AS productID,
                 productinventory.partQty AS partQty,
@@ -177,13 +178,11 @@ class InventoryModel
             ORDER BY displayOrder';
 
         $stmt = $this->pdo->prepare($sql);
-        if(!$stmt->execute()){
-
+        if (!$stmt->execute()) {
         }
-            $products = $stmt->fetchALL(\PDO::FETCH_ASSOC);
-            return $products;
+        $products = $stmt->fetchALL(\PDO::FETCH_ASSOC);
+        return $products;
     }
-    
 
     /**
      * get single record based on table and id
@@ -421,6 +420,8 @@ class InventoryModel
 
                     break;
                 case "materials":
+                    $this->log->info("{$table} record for {$id} requested");
+
                     $sql = 'SELECT 
                                 `materialinventory`.`matPartNumber`,
                                 `materialinventory`.`matLbs`,
@@ -435,7 +436,8 @@ class InventoryModel
                                 `materialinventory`.`matPartNumber` = :matPartNumber';
 
                     $stmt = $this->pdo->prepare($sql);
-                    $stmt->execute([':matPartNumber' => $id]);
+                    $stmt->bindParam(':matPartNumber', $id, \PDO::PARAM_STR);
+                    $stmt->execute();
                     break;
                 case 'pfms':
                     $sql = 'SELECT 
@@ -483,6 +485,7 @@ class InventoryModel
     public function updateInvQty($data)
     {
         $this->log->info("POST Data Received by model:\n" . print_r($data, true));
+
         if (!$data) {
             return ["success" => false, "message" => "updateInvQty failed to receive formData!"];
             exit();

@@ -176,8 +176,7 @@ export async function postData(productData) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(productData),
     });
-    const responseBody = await response.text();
-    return responseBody;
+    return await handleResponse(response);
   } catch (error) {
     console.error("Error in postData:", error);
     throw error;

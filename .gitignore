@@ -5,3 +5,6 @@
 /src/Classes/Maintenance/logs
 /src/Classes/Inventory/logs
 /src/Classes/Production/logs
+/src/Classes/Inventory/logs
+/src/Classes/Production/logs
+/src/Classes/Quality/logs

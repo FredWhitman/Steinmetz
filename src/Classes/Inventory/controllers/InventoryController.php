@@ -166,13 +166,14 @@ class InventoryController
             echo "Missing UpdateMaterial Data!";
             return;
         }
+        $this->log->info("updateMaterial called for: {$data['matPartNumber']}");
 
         $result = $this->model->updateInvQty($data);
-        if (!$result['success']) {
-            echo $this->util->showMessage('danger', $result['message'] . " updateInvqty: {$data['action']} failed to be updated!");
-        } else {
-            echo $this->util->showMessage('success', $result['message'] . " updateInvQty: {$data['action']} was successful");
-        }
+        $message = json_decode($this->util->showMessage(
+            $result['success'] ? 'success' : 'danger',
+            $result['message'] . " Material update for {$data['matPartNumber']}" . ($result['success'] ? "was successful" : "failed to be updated!")
+        ), true);
+        echo $message['html'];
     }
 
     public function updatePfm($data)
