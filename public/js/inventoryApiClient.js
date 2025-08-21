@@ -85,6 +85,8 @@ export async function fetchAndFillForm(id, table) {
         productID: "productID",
         minLbs: "minLbs",
         matCustomer: "mCustomer",
+        matSupplier: "m_matSupplier",
+        matPriceLbs: "m_priceLbs",
         displayOrder: "mDisplayOrder",
       },
       pfms: {

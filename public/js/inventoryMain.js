@@ -32,14 +32,19 @@ const editPFMModal = new bootstrap.Modal(
 );
 
 const updateProductForm = document.getElementById("update-product-form");
-const updateProductModal = new bootstrap.Modal(document.getElementById("updateProductModal"));
+const updateProductModal = new bootstrap.Modal(
+  document.getElementById("updateProductModal")
+);
 
 const updateMaterialForm = document.getElementById("update-material-form");
-const updateMaterialModal = new bootstrap.Modal(document.getElementById("updateMaterialModal"));
+const updateMaterialModal = new bootstrap.Modal(
+  document.getElementById("updateMaterialModal")
+);
 
 const updatePfmForm = document.getElementById("update-pfm-form");
-const updatePfmModal = new bootstrap.Modal(document.getElementById("updatePfmModal"));
-
+const updatePfmModal = new bootstrap.Modal(
+  document.getElementById("updatePfmModal")
+);
 
 editProductForm.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -66,10 +71,9 @@ editProductForm.addEventListener("submit", async (e) => {
     editProductModal.hide();
 
     const updatedInventory = await fetchProductsMaterialPFM();
-    import("./inventoryUiManager.js").then(({ renderTables }) =>{
+    import("./inventoryUiManager.js").then(({ renderTables }) => {
       renderTables(updatedInventory);
     });
-    
   } catch (error) {
     console.error("Failed to submit editProduct form:", error);
   }
@@ -98,6 +102,8 @@ editMaterialForm.addEventListener("submit", async (e) => {
       productID: formData.get("m_productID"),
       minLbs: formData.get("m_minLbs"),
       matCustomer: formData.get("m_customer"),
+      matSupplier: formData.get("m_matSupplier"),
+      matPriceLbs: formData.get("m_priceLbs"),
       displayOrder: formData.get("m_displayOrder"),
     },
   };
@@ -120,10 +126,9 @@ editMaterialForm.addEventListener("submit", async (e) => {
     //Wait for updated data to be fetched
     const updatedInventory = await fetchProductsMaterialPFM();
     //Optionally re-render table or refresh the dom here
-    import("./inventoryUiManager.js").then(({ renderTables }) =>{
+    import("./inventoryUiManager.js").then(({ renderTables }) => {
       renderTables(updatedInventory);
     });
-
   } catch (error) {
     console.error("Failed to submit form: ", error);
   }
@@ -170,11 +175,11 @@ editPFMForm.addEventListener("submit", async (e) => {
     editPFMForm.reset();
     editPFMForm.classList.remove("was-validated");
     editPFMModal.hide();
-    
+
     //Wait for updated data to be fetched
     const updatedInventory = await fetchProductsMaterialPFM();
     //Optionally re-render table or refresh the dom here
-    import("./inventoryUiManager.js").then(({ renderTables }) =>{
+    import("./inventoryUiManager.js").then(({ renderTables }) => {
       renderTables(updatedInventory);
     });
   } catch (error) {
@@ -189,7 +194,7 @@ updateProductForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const formData = new FormData(updateProductForm);
 
-  if(!updateProductForm.checkValidity()){
+  if (!updateProductForm.checkValidity()) {
     e.preventDefault();
     e.stopPropagation();
     updateProductForm.classList.add("was-validated");
@@ -203,11 +208,11 @@ updateProductForm.addEventListener("submit", async (e) => {
     partQty: formData.get("p_Stock"),
     changeAmount: formData.get("p_Amount"),
     comments: formData.get("p_commentText"),
-    operator: formData.get("invQty")
-  }
+    operator: formData.get("invQty"),
+  };
 
-  console.log("Raw data output: ",productData);
-  const data = await  fetch("/api/dispatcher.php",{
+  console.log("Raw data output: ", productData);
+  const data = await fetch("/api/dispatcher.php", {
     method: "POST",
     headers: { "Conent-Type": "application/json" },
     body: JSON.stringify(productData),
@@ -220,54 +225,55 @@ updateProductForm.addEventListener("submit", async (e) => {
     updateProductForm.reset();
     updateProductForm.classList.remove("was-validated");
     updateProductModal.hide();
-    
+
     //Wait for updated data to be fetched
     const updatedInventory = await fetchProductsMaterialPFM();
     //Optionally re-render table or refresh the dom here
-    import("./inventoryUiManager.js").then(({ renderTables }) =>{
+    import("./inventoryUiManager.js").then(({ renderTables }) => {
       renderTables(updatedInventory);
     });
-
-    
-
   } catch (error) {
     console.error("Failed to submit form: ", error);
   }
-    
-})
+});
 
 updateMaterialForm.addEventListener("submit", async (e) => {
   console.log("submit material update button clicked");
 
   e.preventDefault();
 
-  const hiddenInput = updateMaterialForm.querySelector('[name="u_matPartNumber"]');
+  const hiddenInput = updateMaterialForm.querySelector(
+    '[name="u_matPartNumber"]'
+  );
   console.log("Hidden input from form scope:", hiddenInput);
   console.log("Hidden input value at submit:", hiddenInput?.value);
 
   const formData = new FormData(updateMaterialForm);
 
-  if(!updateMaterialForm.checkValidity()){
+  if (!updateMaterialForm.checkValidity()) {
     e.preventDefault();
     e.stopPropagation();
     updateMaterialForm.classList.add("was-validated");
     return false;
   }
-  console.log("Actual DOM value:", document.getElementById("h_matPartNumber").value);
+  console.log(
+    "Actual DOM value:",
+    document.getElementById("h_matPartNumber").value
+  );
   const materialData = {
     action: "updateMaterial",
     matPartNumber: document.getElementById("h_matPartNumber").value,
     matLbs: formData.get("um_MatLbs"),
     changeAmount: formData.get("um_Amount"),
     comments: formData.get("um_CommentText"),
-    operator: formData.get("mInvQty")
-  }
+    operator: formData.get("mInvQty"),
+  };
 
   console.log("matPartNumber:", formData.get("u_matPartNumber"));
   console.log("matLbs:", formData.get("um_MatLbs"));
-  
+
   console.log("RAW data outpput: ", materialData);
-  const data = await fetch("/api/dispatcher.php",{
+  const data = await fetch("/api/dispatcher.php", {
     method: "POST",
     headers: { "Conent-Type": "application/json" },
     body: JSON.stringify(materialData),
@@ -279,18 +285,17 @@ updateMaterialForm.addEventListener("submit", async (e) => {
     updateMaterialForm.reset();
     updateMaterialForm.classList.remove("was-validated");
     updateMaterialModal.hide();
-     
-     //Wait for updated data to be fetched
+
+    //Wait for updated data to be fetched
     const updatedInventory = await fetchProductsMaterialPFM();
     //Optionally re-render table or refresh the dom here
-    import("./inventoryUiManager.js").then(({ renderTables }) =>{
+    import("./inventoryUiManager.js").then(({ renderTables }) => {
       renderTables(updatedInventory);
     });
-
   } catch (error) {
     console.error("Failed to submit update Material qty.");
   }
-})
+});
 
 updatePfmForm.addEventListener("submit", async (e) => {
   console.log("submit pfm update button click");
@@ -298,24 +303,24 @@ updatePfmForm.addEventListener("submit", async (e) => {
 
   const formData = new FormData(updatePfmForm);
 
-  if(!updatePfmForm.checkValidity()){
+  if (!updatePfmForm.checkValidity()) {
     e.preventDefault();
     e.stopPropagation();
     updatePfmForm.classList.add("was-validated");
     return false;
   }
 
-  const pfmData ={
+  const pfmData = {
     action: "updatePfm",
     pfmID: document.getElementById("h_pfmID").value,
     partNumber: document.getElementById("h_partNumber").value,
     Qty: formData.get("u_PfmStock"),
     changeAmount: formData.get("upf_Amount"),
     comments: formData.get("pfm_CommentText"),
-    operator: formData.get("pfInvQty")
-  }
+    operator: formData.get("pfInvQty"),
+  };
 
-  const data = await fetch("/api/dispatcher.php",{
+  const data = await fetch("/api/dispatcher.php", {
     method: "POST",
     headers: { "Conent-Type": "application/json" },
     body: JSON.stringify(pfmData),
@@ -328,15 +333,16 @@ updatePfmForm.addEventListener("submit", async (e) => {
     updatePfmForm.reset();
     updatePfmForm.classList.remove("was-validated");
     updatePfmModal.hide();
-    
+
     //Wait for updated data to be fetched
     const updatedInventory = await fetchProductsMaterialPFM();
     //Optionally re-render table or refresh the dom here
-    import("./inventoryUiManager.js").then(({ renderTables }) =>{
+    import("./inventoryUiManager.js").then(({ renderTables }) => {
       renderTables(updatedInventory);
     });
-
   } catch (error) {
     console.error("submit pfm update pfm qty.");
   }
-})
+});
+
+document.addEventListener("DOMContentLoaded", () => {});

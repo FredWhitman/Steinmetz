@@ -99,12 +99,11 @@ class InventoryController
             return;
         }
         $result = $this->model->editInventory($data);
-        $this->log->info("editProduct result: " . print_r($result, true));
-        if ($result["success"]) {
-            echo $this->util->showMessage('success', $result['message'] . " Product ID: {$result['product']} updated!");
-        } else {
-            echo $this->util->showMessage('danger', 'Failed to update product details.');
-        }
+        $message = json_decode($this->util->showMessage(
+            $result['success'] ? 'success' : 'danger',
+            $result['message'] . " Product ID: {$data['products']['productID']} " . ($result['success'] ? " updated!" : " failed to be updated!")
+        ), true);
+        echo $message['html'];
     }
 
     // POST: Edit material
@@ -116,12 +115,12 @@ class InventoryController
             return;
         }
         $result = $this->model->editInventory($data);
-        $this->log->info("editMaterial result: " . print_r($result, true));
-        if ($result["success"]) {
-            echo $this->util->showMessage('success', $result['message'] . " Material: {$result['material']} updated!");
-        } else {
-            echo $this->util->showMessage('danger', $result['message'] . ' ' . $result['error']);
-        }
+        $message = json_decode($this->util->showMessage(
+            $result['success'] ? 'success' : 'danger',
+            $result['message'] . " Material: {$data['materials']['matPartNumber']} " . ($result['success'] ? " updated!" : " failed to be updated!")
+        ), true);
+
+        echo $message['html'];
     }
 
     // POST: Edit PFM
@@ -137,7 +136,7 @@ class InventoryController
         $this->log->info("editPFM result: " . print_r($result, true));
         $message = json_decode($this->util->showMessage(
             $result['success'] ? 'success' : 'danger',
-            $result['message'] . " PFM: {$result['pfm']} " . ($result['success'] ? "updated!" : "failed to be updated!")
+            $result['message'] . " PFM: {$data['pfm']['partName']} " . ($result['success'] ? "updated!" : "failed to be updated!")
         ), true);
         echo $message['html'];
     }
@@ -152,11 +151,11 @@ class InventoryController
         }
 
         $result = $this->model->updateInvQty($data);
-        if (!$result['success']) {
-            echo $this->util->showMessage('danger', $result['message'] . " updateInvqty: {$data['action']} failed to be updated!");
-        } else {
-            echo $this->util->showMessage('success', $result['message'] . " updateInvQty: {$data['action']} was successful");
-        }
+        $message = json_decode($this->util->showMessage(
+            $result['success'] ? 'success' : 'danger',
+            $result['message'] . " Product {$data['productID']}" . ($result['success'] ? " was updated!" : "failed to be updated!")
+        ), true);
+        echo $message['html'];
     }
 
     public function updateMaterial($data)
@@ -172,7 +171,7 @@ class InventoryController
         $result = $this->model->updateInvQty($data);
         $message = json_decode($this->util->showMessage(
             $result['success'] ? 'success' : 'danger',
-            $result['message'] . " Material update for {$data['matPartNumber']}" . ($result['success'] ? "was successful" : "failed to be updated!")
+            $result['message'] . " Material {$data['matPartNumber']}" . ($result['success'] ? " was updated!" : "failed to be updated!")
         ), true);
         echo $message['html'];
     }
@@ -189,7 +188,7 @@ class InventoryController
         $result = $this->model->updateInvQty($data);
         $message = json_decode($this->util->showMessage(
             $result['success'] ? 'success' : 'danger',
-            $result['message']  . ($result['success'] ? "was successful" : "failed to be updated!")
+            $result['message']  . " PFM {$result['pfm']} " . ($result['success'] ? " was updated!" : "failed to be updated!")
         ), true);
         echo $message['html'];
     }

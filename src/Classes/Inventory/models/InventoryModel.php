@@ -257,7 +257,7 @@ class InventoryModel
     }
 
     /**
-     * editInventory
+     * edit Inventory item details
      *
      * @param  mixed $data form data sent 
      * @return void
@@ -265,13 +265,11 @@ class InventoryModel
     public function editInventory($data)
     {
         $this->log->info("editInventory : " . print_r($data, true));
-        if ($data['action'] === 'editProduct') {
-            $this->log->info("edit product has begun!");
 
-            //$this->log->info("data sent to editInventory function: ", $data);
-            //$this->log->info('editInventory called and transaction begun.');
-            //$this->log->info("Received partName value: " . $data['products']['partName']);
-            $sql = "UPDATE products 
+        switch ($data['action']) {
+            case 'editProduct':
+                $this->log->info("edit product has begun!");
+                $sql = "UPDATE products 
                         SET partName = :partName, 
                             minQty = :minQty, 
                             boxesPerSkid = :boxesPerSkid, 
@@ -282,109 +280,123 @@ class InventoryModel
                             productionType = :productionType 
                         WHERE productID = :productID";
 
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->bindParam(':productID', $data['products']['productID'], \PDO::PARAM_STR);
-            $stmt->bindParam(':partName', $data['products']['partName'], \PDO::PARAM_STR);
-            $stmt->bindParam(':minQty', $data['products']['minQty'], \PDO::PARAM_INT);
-            $stmt->bindParam(':boxesPerSkid', $data['products']['boxesPerSkid'], \PDO::PARAM_INT);
-            $stmt->bindParam(':partsPerBox', $data['products']['partsPerBox'], \PDO::PARAM_INT);
-            $stmt->bindParam(':partWeight', $data['products']['partWeight'], \PDO::PARAM_STR);
-            $stmt->bindParam(':displayOrder', $data['products']['displayOrder'], \PDO::PARAM_INT);
-            $stmt->bindParam(':customer', $data['products']['customer'], \PDO::PARAM_STR);
-            $stmt->bindParam(':productionType', $data['products']['productionType'], \PDO::PARAM_STR);
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->bindParam(':productID', $data['products']['productID'], \PDO::PARAM_STR);
+                $stmt->bindParam(':partName', $data['products']['partName'], \PDO::PARAM_STR);
+                $stmt->bindParam(':minQty', $data['products']['minQty'], \PDO::PARAM_INT);
+                $stmt->bindParam(':boxesPerSkid', $data['products']['boxesPerSkid'], \PDO::PARAM_INT);
+                $stmt->bindParam(':partsPerBox', $data['products']['partsPerBox'], \PDO::PARAM_INT);
+                $stmt->bindParam(':partWeight', $data['products']['partWeight'], \PDO::PARAM_STR);
+                $stmt->bindParam(':displayOrder', $data['products']['displayOrder'], \PDO::PARAM_INT);
+                $stmt->bindParam(':customer', $data['products']['customer'], \PDO::PARAM_STR);
+                $stmt->bindParam(':productionType', $data['products']['productionType'], \PDO::PARAM_STR);
 
-            $this->log->info("Executing update query with values: " . json_encode($data));
+                $this->log->info("Executing update query with values: " . json_encode($data));
 
-            try {
-                $result = $stmt->execute();
+                try {
+                    $result = $stmt->execute();
 
-                //check to make sure rows were actually affected
-                $affectedRows = $stmt->rowCount();
-                $this->log->info("Rows affected: " . $affectedRows);
+                    //check to make sure rows were actually affected
+                    $affectedRows = $stmt->rowCount();
+                    $this->log->info("Rows affected: " . $affectedRows);
 
-                if (!$result) {
-                    $errorInfo = $stmt->errorInfo();
-                    $this->log->error('SQL Error: ' . implode(" | ", $errorInfo));
-                    return ["success" => false, "message" => "Product update failed.", "error" => $errorInfo];
+                    if (!$result) {
+                        $errorInfo = $stmt->errorInfo();
+                        $this->log->error('SQL Error: ' . implode(" | ", $errorInfo));
+                        return ["success" => false, "message" => "Product update failed.", "error" => $errorInfo];
+                    }
+                    $this->log->info('Product Updated!');
+                    return ["success" => true, "message" => "Transaction completed successfully.", "product" => $data['products']['productID']];
+                } catch (\PDOException $e) {
+                    $this->log->error("ERROR product update failed: " . $e->getMessage());
+                    return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
                 }
-                $this->log->info('Product Updated!');
-                return ["success" => true, "message" => "Transaction completed successfully.", "product" => $data['products']['productID']];
-            } catch (\PDOException $e) {
-                $this->log->error("ERROR product update failed: " . $e->getMessage());
-                return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
-            }
-        } else if ($data["action"] === 'editMaterial') {
-            $this->log->info('edit material has begun.');
-            $sql = 'UPDATE material 
+                break;
+            case 'editMaterial':
+                $this->log->info('edit material has begun.');
+
+                $sql = 'UPDATE material 
                         SET 
                             matName = :matName, 
                             productID = :productID, 
                             minLbs = :minLbs, 
+                            matSupplier = :matSupplier,
+                            matPriceLbs = :matPriceLbs,
                             matCustomer = :matCustomer, 
                             displayOrder = :displayOrder
                         WHERE matPartNumber = :matPartNumber';
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->bindParam(':matPartNumber', $data['materials']['matPartNumber'], \PDO::PARAM_STR);
-            $stmt->bindParam(':matName', $data['materials']['matName'], \PDO::PARAM_STR);
-            $stmt->bindParam(':productID', $data['materials']['productID'], \PDO::PARAM_STR);
-            $stmt->bindParam(':minLbs', $data['materials']['minLbs'], \PDO::PARAM_STR);
-            $stmt->bindParam(':matCustomer', $data['materials']['matCustomer'], \PDO::PARAM_STR);
-            $stmt->bindParam(':displayOrder', $data['materials']['displayOrder'], \PDO::PARAM_INT);
+                $stmt = $this->pdo->prepare($sql);
 
-            $this->log->info("Executing update query with values: " . json_encode($data));
-            try {
-                $result = $stmt->execute();
-                //check to make sure rows were actually affected
-                $affectedRows = $stmt->rowCount();
-                $this->log->info("Rows affected: " . $affectedRows);
-                if (!$result) {
-                    $errorInfo = $stmt->errorInfo();
-                    $this->log->error('SQL Error: ' . implode(" | ", $errorInfo));
-                    return ["success" => false, "message" => "Material update failed.", "error" => $errorInfo];
+                $stmt->bindParam(':matPartNumber', $data['materials']['matPartNumber'], \PDO::PARAM_STR);
+                $stmt->bindParam(':matName', $data['materials']['matName'], \PDO::PARAM_STR);
+                $stmt->bindParam(':productID', $data['materials']['productID'], \PDO::PARAM_STR);
+                $stmt->bindParam(':minLbs', $data['materials']['minLbs'], \PDO::PARAM_STR);
+                $stmt->bindParam(':matSupplier', $data['materials']['matSupplier'], \PDO::PARAM_STR);
+                $stmt->bindParam(':matPriceLbs', $data['materials']['matPriceLbs'], \PDO::PARAM_STR);
+                $stmt->bindParam(':matCustomer', $data['materials']['matCustomer'], \PDO::PARAM_STR);
+                $stmt->bindParam(':displayOrder', $data['materials']['displayOrder'], \PDO::PARAM_INT);
+
+                $this->log->info("Executing update query with values: " . json_encode($data));
+                try {
+                    $result = $stmt->execute();
+                    //check to make sure rows were actually affected
+                    $affectedRows = $stmt->rowCount();
+                    $this->log->info("Rows affected: " . $affectedRows);
+                    if (!$result) {
+                        $errorInfo = $stmt->errorInfo();
+                        $this->log->error('SQL Error: ' . implode(" | ", $errorInfo));
+                        return ["success" => false, "message" => "Material update failed.", "error" => $errorInfo];
+                    }
+                    $this->log->info('Material Updated!');
+                    return ["success" => true, "message" => "Transaction completed successfully.", "material" => $data['materials']['matName']];
+                } catch (\PDOException $e) {
+                    $this->log->error("ERROR updateInventory: " . $e->getMessage());
+                    return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
                 }
-                $this->log->info('Material Updated!');
-                return ["success" => true, "message" => "Transaction completed successfully.", "material" => $data['materials']['matName']];
-            } catch (\PDOException $e) {
-                $this->log->error("ERROR updateInventory: " . $e->getMessage());
-                return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
-            }
-        } else {
-            $this->log->info('edit PFM has begun.');
-            $sql = 'UPDATE pfm 
-                    SET 
-                        partNumber = :partNumber,
-                        partName = :partName,
-                        productID = :productID,
-                        minQty = :minQty,
-                        customer = :customer,
-                        displayOrder = :displayOrder
-                    WHERE pfmID = :pfmID';
+                break;
 
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->bindParam(':pfmID', $data['pfm']['pfmID'], \PDO::PARAM_STR);
-            $stmt->bindParam(':partNumber', $data['pfm']['partNumber'], \PDO::PARAM_STR);
-            $stmt->bindParam(':partName', $data['pfm']['partName'], \PDO::PARAM_STR);
-            $stmt->bindParam(':productID', $data['pfm']['productID'], \PDO::PARAM_STR);
-            $stmt->bindParam(':minQty', $data['pfm']['minQty'], \PDO::PARAM_INT);
-            $stmt->bindParam(':customer', $data['pfm']['customer'], \PDO::PARAM_STR);
-            $stmt->bindParam(':displayOrder', $data['pfm']['displayOrder'], \PDO::PARAM_INT);
+            case 'editPFM':
+                $this->log->info('edit PFM has begun.');
+                $sql = 'UPDATE pfm 
+                        SET 
+                            partNumber = :partNumber,
+                            partName = :partName,
+                            productID = :productID,
+                            minQty = :minQty,
+                            customer = :customer,
+                            displayOrder = :displayOrder
+                        WHERE pfmID = :pfmID';
 
-            $this->log->info('Executing update query with values ' . json_encode($data));
-            try {
-                $result = $stmt->execute();
-                $affectedRows = $stmt->rowCount();
-                $this->log->info('PFM Rows affected: ' . $affectedRows);
-                if (!$result) {
-                    $errorInfo = $stmt->errorInfo();
-                    $this->log->error('SQL error: ' . implode(" | ", $errorInfo));
-                    return ["success" => false, "message" => 'PFM update failed.', "error" => $errorInfo];
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->bindParam(':pfmID', $data['pfm']['pfmID'], \PDO::PARAM_STR);
+                $stmt->bindParam(':partNumber', $data['pfm']['partNumber'], \PDO::PARAM_STR);
+                $stmt->bindParam(':partName', $data['pfm']['partName'], \PDO::PARAM_STR);
+                $stmt->bindParam(':productID', $data['pfm']['productID'], \PDO::PARAM_STR);
+                $stmt->bindParam(':minQty', $data['pfm']['minQty'], \PDO::PARAM_INT);
+                $stmt->bindParam(':customer', $data['pfm']['customer'], \PDO::PARAM_STR);
+                $stmt->bindParam(':displayOrder', $data['pfm']['displayOrder'], \PDO::PARAM_INT);
+
+                $this->log->info('Executing update query with values ' . json_encode($data));
+
+                try {
+                    $result = $stmt->execute();
+                    $affectedRows = $stmt->rowCount();
+                    $this->log->info('PFM Rows affected: ' . $affectedRows);
+                    if (!$result) {
+                        $errorInfo = $stmt->errorInfo();
+                        $this->log->error('SQL error: ' . implode(" | ", $errorInfo));
+                        return ["success" => false, "message" => 'PFM update failed.', "error" => $errorInfo];
+                    }
+                    $this->log->info("PFM updated!");
+                    return ['success' => true, "message" => 'Transaction completed successfully.', 'pfm' => $data['pfm']['partName']];
+                } catch (\PDOException $e) {
+                    $this->log->error("ERROR update pfm failed!" . $e->getMessage());
+                    return ['success' => false, 'message' => "an error occured", "error" => $e->getMessage()];
                 }
-                $this->log->info("PFM updated!");
-                return ['success' => true, "message" => 'Transaction completed successfully.', 'pfm' => $data['pfm']['partName']];
-            } catch (\PDOException $e) {
-                $this->log->error("ERROR update pfm failed!" . $e->getMessage());
-                return ['success' => false, 'message' => "an error occured", "error" => $e->getMessage()];
-            }
+                break;
+            default:
+                $this->log->error("Invalid action type: " . $data['action']);
+                return ["success" => false, "message" => "Invalid action type: " . $data['action']];
         }
     }
 
@@ -533,7 +545,27 @@ class InventoryModel
                         ':productID' => $data['productID'],
                         ':qty' => $newStockQty
                     ]);
-                    $this->log->info("{$data['action']} successfully attempted to add {$newStockQty} ");
+
+                    $affected = $stmt->rowCount();
+
+                    if (!$affected === 0) {
+                        $this->pdo->rollBack();
+                        $errorInfo = $stmt->errorInfo();
+                        $this->log->warning("no rows updated for {$data['action']}.");
+                        return ["success" => false, "message" => "Database failed to update.", "error" => $errorInfo];
+                    } else {
+
+                        $insertResult = $this->insertTrans($transData);
+
+                        if (!$insertResult) {
+                            $this->pdo->rollBack();
+                            $this->log->warning("Transaction insert into inventorytrans failed: {$data['action']}");
+                            return ['success' => false, "message" => "Failed to insert transaction for {$data['action']}"];
+                        }
+                        $this->pdo->commit();
+                        $this->log->info("{$data['action']} successfully attempted to add {$newStockQty} ");
+                        return ['success' => true, "message" => 'Transaction completed successfully. ', 'product' => $data['productID']];
+                    }
                     break;
                 case "updateMaterial":
                     //updating transData
@@ -557,6 +589,27 @@ class InventoryModel
                         ':matLbs' => $newStockQty
                     ]);
 
+                    $affected = $stmt->rowCount();
+
+                    if (!$affected === 0) {
+                        $this->pdo->rollBack();
+                        $errorInfo = $stmt->errorInfo();
+                        $this->log->warning("no rows updated for {$data['action']}.");
+                        return ["success" => false, "message" => "Database failed to update.", "error" => $errorInfo];
+                    } else {
+
+                        $insertResult = $this->insertTrans($transData);
+
+                        if (!$insertResult) {
+                            $this->pdo->rollBack();
+                            $this->log->warning("Transaction insert into inventorytrans failed: {$data['action']}");
+                            return ['success' => false, "message" => "Failed to insert transaction for {$data['action']}"];
+                        }
+                        $this->pdo->commit();
+                        $this->log->info("{$data['action']} successfully attempted to add {$data['matPartNumber']} ");
+                        return ['success' => true, "message" => 'Transaction completed successfully. ', 'Material' => $data['matPartNumber']];
+                    }
+
                     break;
                 case "updatePfm":
                     //updating transData
@@ -579,32 +632,33 @@ class InventoryModel
                         ':qty' => $newStockQty,
                         ':partNumber' => $data['partNumber']
                     ]);
+                    $this->log->info("PFM updated!");
 
+                    $affected = $stmt->rowCount();
+
+                    if (!$affected === 0) {
+                        $this->pdo->rollBack();
+                        $errorInfo = $stmt->errorInfo();
+                        $this->log->warning("no rows updated for {$data['action']}.");
+                        return ["success" => false, "message" => "Database failed to update.", "error" => $errorInfo];
+                    } else {
+
+                        $insertResult = $this->insertTrans($transData);
+
+                        if (!$insertResult) {
+                            $this->pdo->rollBack();
+                            $this->log->warning("Transaction insert into inventorytrans failed: {$data['action']}");
+                            return ['success' => false, "message" => "Failed to insert transaction for {$data['action']}"];
+                        }
+                        $this->pdo->commit();
+                        $this->log->info("{$data['action']} successfully attempted to add {$data['matPartNumber']} ");
+                        return ['success' => true, "message" => 'Transaction completed successfully. ', 'pfm' => $data['partNumber']];
+                    }
                     break;
                 default:
                     $this->pdo->rollBack();
                     $this->log->warning("Invalid table type requested: {$data['action']}");
                     return ["success" => false, "message" => "Invalid type requested: {$data['action']}"];
-            }
-
-            $affected = $stmt->rowCount();
-
-            if (!$affected === 0) {
-                $this->pdo->rollBack();
-                $errorInfo = $stmt->errorInfo();
-                $this->log->warning("no rows updated for {$data['action']}.");
-                return ["success" => false, "message" => "Database failed to update.", "error" => $errorInfo];
-            } else {
-
-                $insertResult = $this->insertTrans($transData);
-
-                if (!$insertResult) {
-                    $this->pdo->rollBack();
-                    $this->log->warning("Transaction insert into inventorytrans failed: {$data['action']}");
-                    return ['success' => false, "message" => "Failed to insert transaction for {$data['action']}"];
-                }
-                $this->pdo->commit();
-                return ["success" => true, "message" => "{$data['action']} successful!"];
             }
         } catch (\PDOException $e) {
             $this->pdo->rollBack();
