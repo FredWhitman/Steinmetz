@@ -20,90 +20,80 @@
 <body>
     <!--Navbar -->
     <?php require_once '../includes/steinmetzNavbar.php'; ?>
-    <!-- Add New Product start-->
-    <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModal">
-        <div class="modal-dialog modal-sm " style="max-width: 32%">
+    <!-- Add New PFM start-->
+    <div class="modal fade" id="addPFMModal" tabindex="-1" aria-labelledby="addPFMModal">
+        <div class="modal-dialog modal-sm " style="max-width: 45%">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="addProductModal">Add Product</h1>
+                    <h1 class="modal-title fs-5" id="addPFMModal">Add New PFM</h1>
                 </div>
                 <div class="modal-body">
-                    <form id="edit-product-form" class="needs-validation p-2" novalidate>
+                    <form id="add-material-form" class="needs-validation p-2" novalidate>
+                        <input type="hidden" name="hiddenPfmID" id="hiddenPfmID" />
                         <div class="d-flex flex-column g-1 ">
-                            <input type="hidden" name="productID" id="hiddenProductID" />
-
-                            <div class="row-sm-8 mb-1">
-                                <div class="input-group sm-3"><label class="input-group-text" for="partName">Product Name</label><input type="text" tabindex="1" class="form-control form-control-sm" id="add_ProductID" name="add_ProductID" required></input></div>
-                                <div class="invalid-feedback">Product name is required!</div>
+                            <div class="row pb-1"><!-- Part Number & Part Name -->
+                                <div class="col-sm-6">
+                                    <div class="input-group sm-3">
+                                        <label class="input-group-text" for="add_pfmPartNumber">PFM Part #</label>
+                                        <input type="text" tabindex="1" class="form-control form-control-sm" id="add_pfmPartNumber" name="add_pfmPartNumber" required></input>
+                                    </div>
+                                    <div class="invalid-feedback">Mat part number is required!</div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="input-group sm-3">
+                                        <label class="input-group-text" for="add_pfmPartName">PFM Name</label>
+                                        <input type="text" class="form-control form-control-sm" id="add_pfmPartName" name="add_MatPartName" required>
+                                    </div>
+                                    <div class="invalid-feedback">PFM name required!</div>
+                                </div>
                             </div>
-                            <div class="row pb-2">
-                                <div class="row-sm-8">
-                                    <div class="d-flex flex-column flex-sm-column">
-                                        <div class="input-group sm-3">
-                                            <label class="input-group-text" for="customer">Customer</label>
-                                            <input type="text" class="form-control form-control-sm" id="add_Customer" name="add_Customer" required>
-                                        </div>
+                            <div class="row pb-1"><!-- Customer and ProductID -->
+                                <div class="col-sm-6">
+                                    <div class="input-group sm-3">
+                                        <label class="input-group-text" for="add_MatCustomer">Customer</label>
+                                        <input type="text" class="form-control form-control-sm" id="add_MatCustomer" name="add_MatCustomer" required>
                                     </div>
                                     <div class="invalid-feedback">customer required!</div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="d-flex flex-row justify-content-evenly mb-1 g-1">
-                            <div class="col-sm-6">
-                                <div class="input-group sm-3"><label class="input-group-text" for="minQty">Min Qty</label><input type="number" tabindex="1" class="form-control form-control-sm" id="add_MinQty" name="add_MinQty" required></div>
-                                <div class="invalid-feedback">Minimum qauntity required!</div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="input-group sm-2">
-                                    <label class="input-group-text" for="partWeight">Part (lbs)</label>
-                                    <input type="number" step=".001" class="form-control form-control-sm" id="add_PartWeight" name="add_PartWeight">
-                                </div>
-                                <div class="invalid-feedback">weight required!</div>
-                            </div>
 
-                        </div>
-                        <div class="d-flex flex-row justify-content-evenly mb-1 g-1">
-                            <div class="col-sm-6 g-1">
-                                <div class="input-group sm-2">
-                                    <label class="input-group-text" for="partBox">Part Qty/Box</label>
-                                    <input type="number" tabindex="1" class="form-control form-control-sm" id="add_PartsBox" name="add_PartsBox">
+                                <div class="col-sm-6">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="add_pfmProductID">Product</label><select type="text" tabindex="1" class="form-control form-control-sm" id="add_PfmroductID" name="add_PfmProductID" required></select></div>
+                                    <div class="invalid-feedback">Product required!</div>
                                 </div>
-                                <div class="invalid-feedback">qauntity required!</div>
-                            </div>
-                            <div class="col-sm-6 g-1">
-                                <div class="input-group sm-2">
-                                    <label class="input-group-text" for="boxSkid">Boxes/Skid</label><input type="number" tabindex="1" class="form-control form-control-sm" id="add_BoxSkid" name="add_BoxSkid">
-                                </div>
-                                <div class="invalid-feedback">qauntity required!</div>
                             </div>
                         </div>
-                        <div class="d-flex flex-row justify-content-evenly mb-1 g-1">
-                            <div class="col-sm-7">
-                                <div class="input-group sm-3">
-                                    <label class="input-group-text" for="partType">Product Type</label>
-                                    <select type="text" class="form-control form-control-sm" id="add_PartType" name="add_PartType" required></select>
+                        <div class="row pb-3"><!-- Min Qty & Display Order -->
+                            <div class="col-sm-2"></div>
+
+                            <div class="col-sm-4">
+                                <div class="input-group sm-2">
+                                    <label class="input-group-text" for="add_minLbs">Min Qty</label>
+                                    <input type="number" class="form-control form-control-sm" id="add_minPfmQty" name="add_minPfmQty" required>
                                 </div>
-                                <div class="invalid-feedback">type required!</div>
+                                <div class="invalid-feedback">min PFM Qty required!</div>
                             </div>
-                            <div class="col-sm-5">
+                            <div class="col-sm-4">
                                 <div class="input-group sm-3"><label class="input-group-text" for="displayOrder">Display Order</label><input type="number" class="form-control form-control-sm" id="add_DisplayOrder" name="add_DisplayOrder"></div>
                                 <div class="invalid-feedback">displayOrder required!</div>
                             </div>
+                            <div class="col-sm-2"></div>
                         </div>
-
-                        <div>
-
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" value="add" class="btn btn-success" id="add-product-btn">Add Product</button>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <div class="d-flex flex-row justify-content-center mb-1 g-2"> <!-- Buttons -->
+                            <div class="col-sm-3"></div>
+                            <div class="col-sm-2">
+                                <button type="submit" value="add" class="btn btn-success" id="add-pfm-btn">Add PFM</button>
+                            </div>
+                            <div class="col-sm-2">
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                            </div>
+                            <div class="col-sm-3"></div>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    <!--  Add New Product end-->
+    <!--  Add New PFM end-->
 
     <div class="container-fluid">
         <div class="mt-5">
@@ -113,7 +103,7 @@
                         <h4 class="text-primary">Production Data</h4>
                     </div>
                     <div>
-                        <button class="btn btn-primary" type="button" id="loadProdLogForm" data-bs-toggle="modal" data-bs-target="#addProductModal">Add Product</button>
+                        <button class="btn btn-primary" type="button" id="loadProdLogForm" data-bs-toggle="modal" data-bs-target="#addPFMModal">Add PFM</button>
                     </div>
                 </div>
             </div>
