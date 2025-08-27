@@ -257,6 +257,7 @@ class ProductionModel
             foreach ($InsertParams as $key => [$value, $type]) {
                 $stmtInsertProdLog->bindValue($key, $value, $type);
             }
+
             if (!$stmtInsertProdLog->execute()) {
                 $this->log->error('Production log insert failed: ' . print_r($stmtInsertProdLog->errorInfo(), true));
                 throw new \Exception("Production log insert failed.");
@@ -390,7 +391,7 @@ class ProductionModel
         if (!$stmt->execute()) {
             throw new \Exception("Failed to insert purge log for product {$productID}.");
         }
-        return ['success' => true, 'message' => 'Purge log added successfully.'];
+        return ['success' => true, 'message' => 'Purge added production log successfully.'];
     }
 
     /**

@@ -91,16 +91,18 @@ class InventoryController
     }
 
     // POST: Add Product
-    public function addInventoryItem($data){
-        if(!isset($data['action'])){
+    public function addInventoryItem($data)
+    {
+        if (!isset($data['action'])) {
             http_response_code(400);
             echo "Missing product data!";
             return;
         }
+        $this->log->info("addInventoryItem called with action: " . print_r($data, true));
         $result = $this->model->addInventoryItem($data);
         $message = json_decode($this->util->showMessage(
             $result['success'] ? 'success' : 'danger',
-            $result['message'] . " Product ID: {$data['products']['productID']} " . ($result['success'] ? " updated!" : " failed to be updated!")
+            $result['message'] . " Product ID: {$data['productID']} " . ($result['success'] ? " updated!" : " failed to be updated!")
         ), true);
         echo $message['html'];
     }

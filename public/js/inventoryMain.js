@@ -47,7 +47,7 @@ const updatePfmModal = new bootstrap.Modal(
 );
 const addProductForm = document.getElementById("add-product-form");
 const addProductModal = new bootstrap.Modal(
-  document.getElementById(addProductModal)
+  document.getElementById("addProductModal")
 );
 
 addProductForm.addEventListener("submit", async (e) => {
@@ -55,17 +55,15 @@ addProductForm.addEventListener("submit", async (e) => {
   const formData = new FormData(addProductForm);
   const productData = {
     action: "addProduct",
-    product: {
-      productID: "add_ProductID",
-      partName: "add_ProductID",
-      minQty: "add_MinQty",
-      boxesPerSkid: "add_BoxSkid",
-      partPerBox: "addPartsBox",
-      partWeight: "add_PartWeight",
-      displayOrder: "add_DisplayOrder",
-      customer: "add_Customer",
-      productionType: "add_PartType"
-    },
+    productID: formData.get("add_ProductID"),
+    partName: formData.get("add_ProductID"),
+    minQty: formData.get("add_MinQty"),
+    boxesPerSkid: formData.get("add_BoxSkid"),
+    partPerBox: formData.get("addPartsBox"),
+    partWeight: formData.get("add_PartWeight"),
+    displayOrder: formData.get("add_DisplayOrder"),
+    customer: formData.get("add_Customer"),
+    productionType: formData.get("add_PartType"),
   };
 
   try {
@@ -74,12 +72,9 @@ addProductForm.addEventListener("submit", async (e) => {
     addProductForm.reset();
     addProductModal.hide();
 
-    const addProduct =  await fetchProductsMaterialPFM();
+    const addProduct = await fetchProductsMaterialPFM();
     renderTables(addProduct);
-
-  } catch (error) {
-    
-  }
+  } catch (error) {}
 });
 
 editProductForm.addEventListener("submit", async (e) => {

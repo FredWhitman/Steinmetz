@@ -256,7 +256,7 @@ class InventoryModel
         return $result;
     }
 
-       /**
+    /**
      * edit Inventory item details
      *
      * @param  mixed $data form data sent 
@@ -716,16 +716,16 @@ class InventoryModel
         }
     }
 
-    public function addInventoryItem($data){
-
+    public function addInventoryItem($data)
+    {
         $this->log->info("POST Data Received by model:\n" . print_r($data, true));
 
         if (!$data) {
-            return ["success" => false, "message" => "addInvItem failed to receive formData!"];
+            return ["success" => false, "message" => "addInventoryItem failed to receive form data!"];
             exit();
         } else {
             $action = $data['action'];
-            $this->log->info("addInvItem received an {$action} request");
+            $this->log->info("addInventoryItem received an {$action} request");
         }
 
         $this->pdo->beginTransaction();
@@ -733,6 +733,7 @@ class InventoryModel
         switch ($data['action']) {
             case 'addProduct':
                 $this->log->info("addInventoryItem was called with {$data['action']}.");
+                $this->log->info("Product data: " . print_r($data, true));
 
                 $sql = 'INSERT INTO products (
                             productID,
@@ -754,44 +755,46 @@ class InventoryModel
                             :displayOrder,
                             :customer,
                             :productionType)';
-                $stmt=$this->pdo->prepare($sql);
-                $stmt->bindParam(':productID', $data['product']['productID'], \PDO::PARAM_STR);
-                $stmt->bindParam(':partName', $data['product']['partName'], \PDO::PARAM_STR);
-                $stmt->bindParam(':boxesPerSkid', $data['product']['boxesPerSkid'], \PDO::PARAM_INT);
-                $stmt->bindParam(':partsPerBox', $data['product']['partsPerBox'], \PDO::PARAM_INT);
-                $stmt->bindParam(':partWeight', $data['product']['partWeight'], \PDO::PARAM_STR);
-                $stmt->bindParam(':displayOrder', $data['product']['displayOrder'], \PDO::PARAM_INT);                
-                $stmt->bindParam(':customer', $data['product']['customer'], \PDO::PARAM_STR);
-                $stmt->bindParam(':productionType', $data['product']['productionType'], \PDO::PARAM_STR);
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->bindParam(':productID', $data['productID'], \PDO::PARAM_STR);
+                $stmt->bindParam(':partName', $data['partName'], \PDO::PARAM_STR);
+                $stmt->bindParam(':boxesPerSkid', $data['boxesPerSkid'], \PDO::PARAM_INT);
+                $stmt->bindParam(':partsPerBox', $data['partsPerBox'], \PDO::PARAM_INT);
+                $stmt->bindParam(':partWeight', $data['partWeight'], \PDO::PARAM_STR);
+                $stmt->bindParam(':displayOrder', $data['displayOrder'], \PDO::PARAM_INT);
+                $stmt->bindParam(':customer', $data['customer'], \PDO::PARAM_STR);
+                $stmt->bindParam(':productionType', $data['productionType'], \PDO::PARAM_STR);
 
-                if(!$stmt->execute()){
-                    
+                if (!$stmt->execute()) {
+                    $this->pdo->rollBack();
+                    $errorInfo = $stmt->errorInfo();
+                    $this->log->error('SQL Error: ' . implode(" | ", $errorInfo));
+                    throw new \Exception("Failed to add {$data['productID']} to inventory.");
                 }
+
+
                 break;
             case 'addMaterial':
                 $this->log->info("addInventoryItem was called with {$data['action']}.");
-                $sql = '';
-                $stmt=$this->pdo->prepare($sql);
+                /* $sql = '';
+                $stmt = $this->pdo->prepare($sql);
                 $stmt->bindParam();
 
-                if(!$stmt->execute()){
-
-                }
+                if (!$stmt->execute()) {
+                } */
                 break;
             case 'addPfm':
                 $this->log->info("addInventoryItem was called with {$data['action']}.");
-                $sql = '';
-                $stmt=$this->pdo->prepare($sql);
+                /* $sql = '';
+                $stmt = $this->pdo->prepare($sql);
                 $stmt->bindParam();
 
-                if(!$stmt->execute()){
-
-                }
+                if (!$stmt->execute()) {
+                } */
                 break;
             default:
                 $this->log->info('');
                 break;
         }
-        
     }
 }

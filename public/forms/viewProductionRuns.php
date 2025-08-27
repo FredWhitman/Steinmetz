@@ -22,7 +22,12 @@
     <!--Navbar -->
     <?php require_once '../../includes/steinmetzNavbar.php'; ?>
 
-
+    <!-- Loader -->
+    <div id="loader" class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75" style="z-index: 1050;">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
 
     <!-- Table to hold the last 4 weeks of production  -->
     <div class="container-fluid">

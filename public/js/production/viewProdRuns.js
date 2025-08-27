@@ -1,6 +1,8 @@
 import {
   renderRunsNotCompleteTable,
   renderRunsCompleteTable,
+  showLoader,
+  hideLoader,
 } from "./productionUiManager.js";
 
 import {
@@ -10,6 +12,7 @@ import {
 
 async function init() {
   //load & render the landing-page table
+  showLoader();
   const data = await fetchProdRunsCompleted();
   if (data) {
     renderRunsCompleteTable(data);
@@ -19,6 +22,7 @@ async function init() {
   if (notCompleteData) {
     renderRunsNotCompleteTable(notCompleteData);
   }
+  hideLoader();
 }
 
 init();
