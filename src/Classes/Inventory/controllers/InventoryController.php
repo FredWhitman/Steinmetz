@@ -90,6 +90,21 @@ class InventoryController
         exit();
     }
 
+    // POST: Add Product
+    public function addInventoryItem($data){
+        if(!isset($data['action'])){
+            http_response_code(400);
+            echo "Missing product data!";
+            return;
+        }
+        $result = $this->model->addInventoryItem($data);
+        $message = json_decode($this->util->showMessage(
+            $result['success'] ? 'success' : 'danger',
+            $result['message'] . " Product ID: {$data['products']['productID']} " . ($result['success'] ? " updated!" : " failed to be updated!")
+        ), true);
+        echo $message['html'];
+    }
+
     // POST: Edit product
     public function editProduct($data)
     {

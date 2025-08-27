@@ -256,7 +256,7 @@ class InventoryModel
         return $result;
     }
 
-    /**
+       /**
      * edit Inventory item details
      *
      * @param  mixed $data form data sent 
@@ -399,6 +399,7 @@ class InventoryModel
                 return ["success" => false, "message" => "Invalid action type: " . $data['action']];
         }
     }
+
 
     /**
      * getInventoryRecord function will return a joined inventory and details record
@@ -713,5 +714,84 @@ class InventoryModel
         } else {
             return ["success" => true, "message" => "{$data['action']} successful!"];
         }
+    }
+
+    public function addInventoryItem($data){
+
+        $this->log->info("POST Data Received by model:\n" . print_r($data, true));
+
+        if (!$data) {
+            return ["success" => false, "message" => "addInvItem failed to receive formData!"];
+            exit();
+        } else {
+            $action = $data['action'];
+            $this->log->info("addInvItem received an {$action} request");
+        }
+
+        $this->pdo->beginTransaction();
+
+        switch ($data['action']) {
+            case 'addProduct':
+                $this->log->info("addInventoryItem was called with {$data['action']}.");
+
+                $sql = 'INSERT INTO products (
+                            productID,
+                            partName,
+                            minQty,
+                            boxesPerSkid,
+                            partsPerBox,
+                            partWeight,
+                            displayOrder,
+                            customer,
+                            productionType) 
+                        VALUES (
+                            :productID,
+                            :partName,
+                            :minQty,
+                            :boxesPerSkid,
+                            :partsPerBox,
+                            :partWeight,
+                            :displayOrder,
+                            :customer,
+                            :productionType)';
+                $stmt=$this->pdo->prepare($sql);
+                $stmt->bindParam(':productID', $data['product']['productID'], \PDO::PARAM_STR);
+                $stmt->bindParam(':partName', $data['product']['partName'], \PDO::PARAM_STR);
+                $stmt->bindParam(':boxesPerSkid', $data['product']['boxesPerSkid'], \PDO::PARAM_INT);
+                $stmt->bindParam(':partsPerBox', $data['product']['partsPerBox'], \PDO::PARAM_INT);
+                $stmt->bindParam(':partWeight', $data['product']['partWeight'], \PDO::PARAM_STR);
+                $stmt->bindParam(':displayOrder', $data['product']['displayOrder'], \PDO::PARAM_INT);                
+                $stmt->bindParam(':customer', $data['product']['customer'], \PDO::PARAM_STR);
+                $stmt->bindParam(':productionType', $data['product']['productionType'], \PDO::PARAM_STR);
+
+                if(!$stmt->execute()){
+                    
+                }
+                break;
+            case 'addMaterial':
+                $this->log->info("addInventoryItem was called with {$data['action']}.");
+                $sql = '';
+                $stmt=$this->pdo->prepare($sql);
+                $stmt->bindParam();
+
+                if(!$stmt->execute()){
+
+                }
+                break;
+            case 'addPfm':
+                $this->log->info("addInventoryItem was called with {$data['action']}.");
+                $sql = '';
+                $stmt=$this->pdo->prepare($sql);
+                $stmt->bindParam();
+
+                if(!$stmt->execute()){
+
+                }
+                break;
+            default:
+                $this->log->info('');
+                break;
+        }
+        
     }
 }

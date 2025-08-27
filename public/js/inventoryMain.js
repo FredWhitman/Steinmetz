@@ -45,6 +45,42 @@ const updatePfmForm = document.getElementById("update-pfm-form");
 const updatePfmModal = new bootstrap.Modal(
   document.getElementById("updatePfmModal")
 );
+const addProductForm = document.getElementById("add-product-form");
+const addProductModal = new bootstrap.Modal(
+  document.getElementById(addProductModal)
+);
+
+addProductForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const formData = new FormData(addProductForm);
+  const productData = {
+    action: "addProduct",
+    product: {
+      productID: "add_ProductID",
+      partName: "add_ProductID",
+      minQty: "add_MinQty",
+      boxesPerSkid: "add_BoxSkid",
+      partPerBox: "addPartsBox",
+      partWeight: "add_PartWeight",
+      displayOrder: "add_DisplayOrder",
+      customer: "add_Customer",
+      productionType: "add_PartType"
+    },
+  };
+
+  try {
+    const responseText = await postData(productData);
+    document.getElementById("showAlert").innerHTML = responseText;
+    addProductForm.reset();
+    addProductModal.hide();
+
+    const addProduct =  await fetchProductsMaterialPFM();
+    renderTables(addProduct);
+
+  } catch (error) {
+    
+  }
+});
 
 editProductForm.addEventListener("submit", async (e) => {
   e.preventDefault();

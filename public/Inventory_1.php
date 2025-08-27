@@ -34,10 +34,9 @@
                     <h1 class="modal-title fs-5" id="addProductModal">Add New Product</h1>
                 </div>
                 <div class="modal-body">
-                    <form id="edit-product-form" class="needs-validation p-2" novalidate>
+                    <form id="add-product-form" class="needs-validation p-2" novalidate>
                         <div class="d-flex flex-column g-1 ">
                             <input type="hidden" name="productID" id="hiddenProductID" />
-
                             <div class="row-sm-8 mb-1">
                                 <div class="input-group sm-3"><label class="input-group-text" for="partName">Product Name</label><input type="text" tabindex="1" class="form-control form-control-sm" id="add_ProductID" name="add_ProductID" required></input></div>
                                 <div class="invalid-feedback">Product name is required!</div>
@@ -92,7 +91,10 @@
                                 <div class="invalid-feedback">type required!</div>
                             </div>
                             <div class="col-sm-5">
-                                <div class="input-group sm-3"><label class="input-group-text" for="displayOrder">Display Order</label><input type="number" class="form-control form-control-sm" id="add_DisplayOrder" name="add_DisplayOrder"></div>
+                                <div class="input-group sm-3">
+                                    <label class="input-group-text" for="displayOrder">Display Order</label>
+                                    <input type="number" class="form-control form-control-sm" id="add_DisplayOrder" name="add_DisplayOrder">
+                                </div>
                                 <div class="invalid-feedback">displayOrder required!</div>
                             </div>
                         </div>

@@ -11,6 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $logger->info("POST Data Received by dispatcher:\n" . print_r($data, true));
 
     $routes = [
+        'addProduct' => [$controller, 'addInventoryItem'],
         'editProduct'  => [$controller, 'editProduct'],
         'editMaterial' => [$controller, 'editMaterial'],
         'editPFM'      => [$controller, 'editPFM'],
