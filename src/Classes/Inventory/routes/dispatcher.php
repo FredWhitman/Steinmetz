@@ -12,6 +12,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $routes = [
         'addProduct' => [$controller, 'addInventoryItem'],
+        'addMaterial' => [$controller, 'addInventoryItem'],
+        'addPFM' => [$controller, 'addInventoryItem'],
         'editProduct'  => [$controller, 'editProduct'],
         'editMaterial' => [$controller, 'editMaterial'],
         'editPFM'      => [$controller, 'editPFM'],

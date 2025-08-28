@@ -9,3 +9,4 @@
 /src/Classes/Production/logs
 /src/Classes/Quality/logs
 *.log
+*.log

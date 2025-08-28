@@ -38,7 +38,10 @@
                         <div class="d-flex flex-column g-1 ">
                             <input type="hidden" name="productID" id="hiddenProductID" />
                             <div class="row-sm-8 mb-1">
-                                <div class="input-group sm-3"><label class="input-group-text" for="partName">Product Name</label><input type="text" tabindex="1" class="form-control form-control-sm" id="add_ProductID" name="add_ProductID" required></input></div>
+                                <div class="input-group sm-3">
+                                    <label class="input-group-text" for="partName">Product Name</label>
+                                    <input type="text" tabindex="1" class="form-control form-control-sm" id="add_ProductID" name="add_ProductID" required></input>
+                                </div>
                                 <div class="invalid-feedback">Product name is required!</div>
                             </div>
                             <div class="row pb-2">
@@ -46,7 +49,7 @@
                                     <div class="d-flex flex-column flex-sm-column">
                                         <div class="input-group sm-3">
                                             <label class="input-group-text" for="customer">Customer</label>
-                                            <input type="text" class="form-control form-control-sm" id="add_Customer" name="add_Customer" required>
+                                            <input type="text" class="form-control form-control-sm" tabindex="2" id="add_Customer" name="add_Customer" required>
                                         </div>
                                     </div>
                                     <div class="invalid-feedback">customer required!</div>
@@ -55,13 +58,15 @@
                         </div>
                         <div class="row mb-2">
                             <div class="col-sm-7">
-                                <div class="input-group sm-3"><label class="input-group-text" for="minQty">Min Qty</label><input type="number" tabindex="1" class="form-control form-control-sm" id="add_MinQty" name="add_MinQty" required></div>
+                                <div class="input-group sm-3"><label class="input-group-text" for="minQty">Min Qty</label>
+                                    <input type="number" tabindex="3" class="form-control form-control-sm" id="add_MinQty" name="add_MinQty" required>
+                                </div>
                                 <div class="invalid-feedback">Minimum qauntity required!</div>
                             </div>
                             <div class="col-sm-5">
                                 <div class="input-group sm-2">
                                     <label class="input-group-text" for="partWeight">Part (lbs)</label>
-                                    <input type="number" step=".001" class="form-control form-control-sm" id="add_PartWeight" name="add_PartWeight">
+                                    <input type="number" step=".001" tabindex="4" class="form-control form-control-sm" id="add_PartWeight" name="add_PartWeight">
                                 </div>
                                 <div class="invalid-feedback">weight required!</div>
                             </div>
@@ -71,13 +76,14 @@
                             <div class="col-sm-7">
                                 <div class="input-group sm-2">
                                     <label class="input-group-text" for="partBox">Part Qty/Box</label>
-                                    <input type="number" tabindex="1" class="form-control form-control-sm" id="add_PartsBox" name="add_PartsBox">
+                                    <input type="number" tabindex="4" class="form-control form-control-sm" id="add_PartsBox" name="add_PartsBox">
                                 </div>
                                 <div class="invalid-feedback">qauntity required!</div>
                             </div>
                             <div class="col-sm-5">
                                 <div class="input-group sm-2">
-                                    <label class="input-group-text" for="boxSkid">Boxes/Skid</label><input type="number" tabindex="1" class="form-control form-control-sm" id="add_BoxSkid" name="add_BoxSkid">
+                                    <label class="input-group-text" for="boxSkid">Boxes/Skid</label>
+                                    <input type="number" tabindex="5" class="form-control form-control-sm" id="add_BoxSkid" name="add_BoxSkid">
                                 </div>
                                 <div class="invalid-feedback">qauntity required!</div>
                             </div>
@@ -86,14 +92,19 @@
                             <div class="col-sm-7">
                                 <div class="input-group sm-3">
                                     <label class="input-group-text" for="partType">Product Type</label>
-                                    <select type="text" class="form-control form-control-sm" id="add_PartType" name="add_PartType" required></select>
+                                    <select type="text" class="form-control form-control-sm" tabindex="6" id="add_PartType" name="add_PartType" required>
+                                        <option value="" disabled selected>--Select type--</option>
+                                        <option value="Cast">Cast</option>
+                                        <option value="Injection">Injection</option>
+                                        <option value="Machined">Machined</option>
+                                    </select>
                                 </div>
                                 <div class="invalid-feedback">type required!</div>
                             </div>
                             <div class="col-sm-5">
                                 <div class="input-group sm-3">
                                     <label class="input-group-text" for="displayOrder">Display Order</label>
-                                    <input type="number" class="form-control form-control-sm" id="add_DisplayOrder" name="add_DisplayOrder">
+                                    <input type="number" class="form-control form-control-sm" tabindex="7" id="add_DisplayOrder" name="add_DisplayOrder">
                                 </div>
                                 <div class="invalid-feedback">displayOrder required!</div>
                             </div>
@@ -118,7 +129,7 @@
 
     <!-- Add New Material start-->
     <div class="modal fade" id="addMaterialModal" tabindex="-1" aria-labelledby="addMaterialModal">
-        <div class="modal-dialog modal-sm " style="max-width: 35%">
+        <div class="modal-dialog modal-sm " style="max-width: 45%">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="addMaterialModal">Add New Material</h1>
@@ -138,7 +149,7 @@
                                 <div class="col">
                                     <div class="input-group sm-3">
                                         <label class="input-group-text" for="add_MatPartName">Mat Name</label>
-                                        <input type="text" class="form-control form-control-sm" id="add_MatPartName" name="add_MatPartName" required>
+                                        <input type="text" class="form-control form-control-sm" tabindex="2" id="add_matPartName" name="add_matPartName" required>
                                     </div>
                                     <div class="invalid-feedback">mat name required!</div>
                                 </div>
@@ -147,14 +158,14 @@
                                 <div class="col-sm-6">
                                     <div class="input-group sm-3">
                                         <label class="input-group-text" for="add_MatCustomer">Customer</label>
-                                        <input type="text" class="form-control form-control-sm" id="add_MatCustomer" name="add_MatCustomer" required>
+                                        <input type="text" class="form-control form-control-sm" tabindex="3" id="add_matCustomer" name="add_matCustomer" required>
                                     </div>
                                 </div>
                                 <div class="invalid-feedback">customer required!</div>
                                 <div class="col-sm-6">
                                     <div class="input-group sm-3">
                                         <label class="input-group-text" for="add_MatSupplier">Supplier</label>
-                                        <input type="text" class="form-control form-control-sm" id="add_MatSupplier" name="add_MatSupplier" required>
+                                        <input type="text" class="form-control form-control-sm" tabindex="4" id="add_matSupplier" name="add_matSupplier" required>
                                     </div>
                                     <div class="invalid-feedback">Supplier required!</div>
                                 </div>
@@ -162,13 +173,15 @@
                         </div>
                         <div class="row mb-2">
                             <div class="col-sm-7">
-                                <div class="input-group sm-3"><label class="input-group-text" for="add_matProduct">Product</label><select type="text" tabindex="1" class="form-control form-control-sm" id="add_matProduct" name="add_matProduct" required></select></div>
+                                <div class="input-group sm-3"><label class="input-group-text" for="add_matProduct">Product</label>
+                                    <select type="text" tabindex="5" class="form-control form-control-sm" id="add_matProduct" name="add_matProduct" required></select>
+                                </div>
                                 <div class="invalid-feedback">Product required!</div>
                             </div>
                             <div class="col-sm-5">
                                 <div class="input-group sm-2">
                                     <label class="input-group-text" for="add_minLbs">Min (lbs)</label>
-                                    <input type="number" class="form-control form-control-sm" id="add_minLbs" name="add_minLbs" required>
+                                    <input type="number" class="form-control form-control-sm" tabindex="6" id="add_minLbs" name="add_minLbs" required>
                                 </div>
                                 <div class="invalid-feedback">min lbs required!</div>
                             </div>
@@ -178,18 +191,20 @@
                             <div class="col-sm-7">
                                 <div class="input-group sm-2">
                                     <label class="input-group-text" for="add_MatPricLbs">Price/Lbs</label>
-                                    <input type="number" tabindex="1" class="form-control form-control-sm" id="add_MatPricLbs" name="add_MatPricLbs">
+                                    <input type="number" tabindex="7" class="form-control form-control-sm" id="add_matPriceLbs" name="add_matPriceLbs">
                                 </div>
                             </div>
                             <div class="col-sm-5">
-                                <div class="input-group sm-3"><label class="input-group-text" for="displayOrder">Display Order</label><input type="number" class="form-control form-control-sm" id="add_DisplayOrder" name="add_DisplayOrder"></div>
+                                <div class="input-group sm-3"><label class="input-group-text" for="displayOrder">Display Order</label>
+                                    <input type="number" tabindex="8" class="form-control form-control-sm" id="add_matDisplayOrder" name="add_matDisplayOrder">
+                                </div>
                                 <div class="invalid-feedback">displayOrder required!</div>
                             </div>
                         </div>
                         <div class="row mb-2">
                             <div class="col">
 
-                                <textarea type="text" class="form-control form-control-sm" id="add_MatComments" name="add_MatComments">Comments</textarea>
+                                <textarea type="text" tabindex="9" class="form-control form-control-sm" id="add_matComments" placeholder="Comments" name="add_matComments"></textarea>
                             </div>
                         </div>
                         <div class="d-flex flex-row justify-content-center mb-1 g-2">

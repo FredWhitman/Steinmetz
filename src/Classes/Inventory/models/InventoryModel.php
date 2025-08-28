@@ -724,9 +724,10 @@ class InventoryModel
             return ["success" => false, "message" => "addInventoryItem failed to receive form data!"];
             exit();
         } else {
-            $action = $data['action'];
-            $this->log->info("addInventoryItem received an {$action} request");
+            $this->log->info("addInventoryItem received an {$data['action']} request");
         }
+        $affectedRows = 0;
+        $affectedInv = 0;
 
         $this->pdo->beginTransaction();
 
@@ -758,6 +759,7 @@ class InventoryModel
                 $stmt = $this->pdo->prepare($sql);
                 $stmt->bindParam(':productID', $data['productID'], \PDO::PARAM_STR);
                 $stmt->bindParam(':partName', $data['partName'], \PDO::PARAM_STR);
+                $stmt->bindParam(':minQty', $data['minQty'], \PDO::PARAM_INT);
                 $stmt->bindParam(':boxesPerSkid', $data['boxesPerSkid'], \PDO::PARAM_INT);
                 $stmt->bindParam(':partsPerBox', $data['partsPerBox'], \PDO::PARAM_INT);
                 $stmt->bindParam(':partWeight', $data['partWeight'], \PDO::PARAM_STR);
@@ -772,16 +774,58 @@ class InventoryModel
                     throw new \Exception("Failed to add {$data['productID']} to inventory.");
                 }
 
+                $affectedRows = $stmt->rowCount();
+                if ($affectedRows > 0) {
+                    $affectedInv = $this->addInventoryRecord($data);
+                }
 
                 break;
             case 'addMaterial':
                 $this->log->info("addInventoryItem was called with {$data['action']}.");
-                /* $sql = '';
+                $this->log->info("Material data: " . print_r($data, true));
+
+                /* $sql = 'INSERT INTO material (
+                            matPartNumber,
+                            matName,
+                            productID,
+                            minLbs,
+                            matCustomer,
+                            matSupplier,
+                            matPriceLbs,
+                            comments,
+                            displayOrder) 
+                        VALUES (
+                            :matPartNumber,
+                            :matName,
+                            :productID,
+                            :minLbs,
+                            :matCustomer,
+                            :matSupplier,
+                            :matPriceLbs,
+                            :comments,
+                            :displayOrder)';
                 $stmt = $this->pdo->prepare($sql);
-                $stmt->bindParam();
+                $stmt->bindValue(':matPartNumber', $data['matPartNumber'], \PDO::PARAM_STR);
+                $stmt->bindValue(':matName', $data['matName'], \PDO::PARAM_STR);
+                $stmt->bindValue(':productID', $data['productID'], \PDO::PARAM_STR);
+                $stmt->bindValue(':minLbs', $data['minLbs'], \PDO::PARAM_STR);
+                $stmt->bindValue(':matCustomer', $data['matCustomer'], \PDO::PARAM_STR);
+                $stmt->bindValue(':matSupplier', $data['matSupplier'], \PDO::PARAM_STR);
+                $stmt->bindValue(':matPriceLbs', $data['matPriceLbs'], \PDO::PARAM_STR);
+                $stmt->bindValue(':comments', $data['comments'], \PDO::PARAM_STR);
+                $stmt->bindValue(':displayOrder', $data['displayOrder'], \PDO::PARAM_INT);
 
                 if (!$stmt->execute()) {
+                    $this->pdo->rollBack();
+                    $errorInfo = $stmt->errorInfo();
+                    $this->log->error('SQL Error: ' . implode(" | ", $errorInfo));
+                    throw new \Exception("Failed to add {$data['matPartNumber']} to inventory.");
+                }
+                $affectedRows = $stmt->rowCount();
+                if ($affectedRows > 0) {
+                    $affectedInv = $this->addInventoryRecord($data);
                 } */
+
                 break;
             case 'addPfm':
                 $this->log->info("addInventoryItem was called with {$data['action']}.");
@@ -796,5 +840,61 @@ class InventoryModel
                 $this->log->info('');
                 break;
         }
+
+        if ($affectedRows > 0  && $affectedInv > 0) {
+            $this->pdo->commit();
+            $this->log->info("{$data['action']} successfully added {$data['productID']} to inventory.");
+            return ['success' => true, "message" => "{$data['action']} successfully added {$data['productID']} to inventory."];
+        } else {
+            $this->pdo->rollBack();
+            $this->log->warning("No rows affected for {$data['action']}.");
+            return ['success' => false, "message" => "No rows affected for {$data['action']}."];
+        }
+    }
+
+    private function addInventoryRecord($data)
+    {
+        $this->log->info("addInventoryRecord called with data: " . print_r($data, true));
+        $affectedRows = 0;
+
+        switch ($data['action']) {
+            case 'addProduct':
+                $sql = 'INSERT INTO productInventory (productID, partQty) VALUES (:productID, :partQty)';
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->bindValue(':productID', $data['productID'], \PDO::PARAM_STR);
+                $stmt->bindValue(':partQty', 0, \PDO::PARAM_INT);
+
+                if (!$stmt->execute()) {
+                    $errorInfo = $stmt->errorInfo();
+                    $this->log->error('SQL Error: ' . implode(" | ", $errorInfo));
+                    throw new \Exception("Failed to add inventory record for {$data['productID']}.");
+                }
+
+                $affectedRows = $stmt->rowCount();
+                break;
+
+            case 'addMaterial':
+                $sql = 'INSERT INTO materialInventory (matPartNumber, matLbs) VALUES (:matPartNumber, :matLbs)';
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->bindValue(':matPartNumber', $data['matPartNumber'], \PDO::PARAM_STR);
+                $stmt->bindValue(':matLbs', 0, \PDO::PARAM_INT);
+                if (!$stmt->execute()) {
+                    $errorInfo = $stmt->errorInfo();
+                    $this->log->error('SQL Error: ' . implode(" | ", $errorInfo));
+                    throw new \Exception("Failed to add inventory record for {$data['matPartNumber']}.");
+                }
+                $affectedRows = $stmt->rowCount();
+                break;
+
+            case 'addPfm':
+                // Implement logic for adding PFM inventory record
+                break;
+
+            default:
+                $this->log->warning("Invalid action type: {$data['action']}");
+                return 0;
+        }
+
+        return $affectedRows;
     }
 }

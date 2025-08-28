@@ -50,6 +50,11 @@ const addProductModal = new bootstrap.Modal(
   document.getElementById("addProductModal")
 );
 
+const addMaterialForm = document.getElementById("add-material-form");
+const addMaterialModal = new bootstrap.Modal(
+  document.getElementById("addMaterialModal")
+);
+
 addProductForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const formData = new FormData(addProductForm);
@@ -59,7 +64,7 @@ addProductForm.addEventListener("submit", async (e) => {
     partName: formData.get("add_ProductID"),
     minQty: formData.get("add_MinQty"),
     boxesPerSkid: formData.get("add_BoxSkid"),
-    partPerBox: formData.get("addPartsBox"),
+    partPerBox: formData.get("add_PartsBox"),
     partWeight: formData.get("add_PartWeight"),
     displayOrder: formData.get("add_DisplayOrder"),
     customer: formData.get("add_Customer"),
@@ -74,6 +79,31 @@ addProductForm.addEventListener("submit", async (e) => {
 
     const addProduct = await fetchProductsMaterialPFM();
     renderTables(addProduct);
+  } catch (error) {}
+});
+
+addMaterialForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const formData = new FormData(addMaterialForm);
+  const materialData = {
+    action: "addMaterial",
+    matPartNumber: formData.get("add_matPartNumber"),
+    matName: formData.get("add_matPartName"),
+    productID: formData.get("add_matProduct"),
+    minLbs: formData.get("add_minLbs"),
+    matCustomer: formData.get("add_matCustomer"),
+    matSupplier: formData.get("add_matSupplier"),
+    matPriceLbs: formData.get("add_matPriceLbs"),
+    comments: formData.get("add_matComments"),
+    displayOrder: formData.get("add_matDisplayOrder"),
+  };
+  try {
+    const responseText = await postData(materialData);
+    document.getElementById("showAlert").innerHTML = responseText;
+    addMaterialForm.reset();
+    addMaterialModal.hide();
+    const addMaterial = await fetchProductsMaterialPFM();
+    renderTables(addMaterial);
   } catch (error) {}
 });
 

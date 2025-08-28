@@ -95,14 +95,34 @@ class InventoryController
     {
         if (!isset($data['action'])) {
             http_response_code(400);
-            echo "Missing product data!";
+            $message = "Missing inventory item data!";
+            echo $message['html'];
             return;
         }
+
+        $item = '';
+
+        switch ($data['action']) {
+            case 'addProduct':
+                $item = $data["productID"];
+                break;
+            case 'addMaterial':
+                $item = $data["matName"];
+                break;
+            case 'addPFM':
+                $item = $data["partName"];
+                break;
+            default:
+                http_response_code(400);
+                echo "Invalid action!";
+                return;
+        }
+
         $this->log->info("addInventoryItem called with action: " . print_r($data, true));
         $result = $this->model->addInventoryItem($data);
         $message = json_decode($this->util->showMessage(
             $result['success'] ? 'success' : 'danger',
-            $result['message'] . " Product ID: {$data['productID']} " . ($result['success'] ? " updated!" : " failed to be updated!")
+            $result['message'] . " Inventory Item: {$item} " . ($result['success'] ? " updated!" : " failed to be updated!")
         ), true);
         echo $message['html'];
     }
