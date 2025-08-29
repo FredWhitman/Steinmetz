@@ -784,7 +784,7 @@ class InventoryModel
                 $this->log->info("addInventoryItem was called with {$data['action']}.");
                 $this->log->info("Material data: " . print_r($data, true));
 
-                /* $sql = 'INSERT INTO material (
+                $sql = 'INSERT INTO material (
                             matPartNumber,
                             matName,
                             productID,
@@ -824,7 +824,7 @@ class InventoryModel
                 $affectedRows = $stmt->rowCount();
                 if ($affectedRows > 0) {
                     $affectedInv = $this->addInventoryRecord($data);
-                } */
+                }
 
                 break;
             case 'addPfm':
