@@ -230,7 +230,7 @@
                     <h1 class="modal-title fs-5" id="addPFMModal">Add New PFM</h1>
                 </div>
                 <div class="modal-body">
-                    <form id="add-material-form" class="needs-validation p-2" novalidate>
+                    <form id="add-pfm-form" class="needs-validation p-2" novalidate>
                         <input type="hidden" name="hiddenPfmID" id="hiddenPfmID" />
                         <div class="d-flex flex-column g-1 ">
                             <div class="row pb-1"><!-- Part Number & Part Name -->
@@ -244,7 +244,7 @@
                                 <div class="col-sm-6">
                                     <div class="input-group sm-3">
                                         <label class="input-group-text" for="add_pfmPartName">PFM Name</label>
-                                        <input type="text" class="form-control form-control-sm" id="add_pfmPartName" name="add_MatPartName" required>
+                                        <input type="text" tabindex="2" class="form-control form-control-sm" id="add_pfmPartName" name="add_pfmPartName" required>
                                     </div>
                                     <div class="invalid-feedback">PFM name required!</div>
                                 </div>
@@ -253,13 +253,15 @@
                                 <div class="col-sm-6">
                                     <div class="input-group sm-3">
                                         <label class="input-group-text" for="add_MatCustomer">Customer</label>
-                                        <input type="text" class="form-control form-control-sm" id="add_MatCustomer" name="add_MatCustomer" required>
+                                        <input type="text" tabindex="3" class="form-control form-control-sm" id="add_pfmCustomer" name="add_pfmCustomer" required>
                                     </div>
                                     <div class="invalid-feedback">customer required!</div>
                                 </div>
 
                                 <div class="col-sm-6">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="add_pfmProductID">Product</label><select type="text" tabindex="1" class="form-control form-control-sm" id="add_PfmroductID" name="add_PfmProductID" required></select></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="add_pfmProductID">Product</label>
+                                        <select type="text" tabindex="4" class="form-control form-control-sm" id="add_pfmProductID" name="add_pfmProductID" required></select>
+                                    </div>
                                     <div class="invalid-feedback">Product required!</div>
                                 </div>
                             </div>
@@ -270,12 +272,14 @@
                             <div class="col-sm-4">
                                 <div class="input-group sm-2">
                                     <label class="input-group-text" for="add_minLbs">Min Qty</label>
-                                    <input type="number" class="form-control form-control-sm" id="add_minPfmQty" name="add_minPfmQty" required>
+                                    <input type="number" tabindex="5" class="form-control form-control-sm" id="add_pfmMinQty" name="add_pfmMinQty" required>
                                 </div>
                                 <div class="invalid-feedback">min PFM Qty required!</div>
                             </div>
                             <div class="col-sm-4">
-                                <div class="input-group sm-3"><label class="input-group-text" for="displayOrder">Display Order</label><input type="number" class="form-control form-control-sm" id="add_DisplayOrder" name="add_DisplayOrder"></div>
+                                <div class="input-group sm-3"><label class="input-group-text" for="displayOrder">Display Order</label>
+                                    <input type="number" tabindex="6" class="form-control form-control-sm" id="add_pfmDisplayOrder" name="add_pfmDisplayOrder">
+                                </div>
                                 <div class="invalid-feedback">displayOrder required!</div>
                             </div>
                             <div class="col-sm-2"></div>

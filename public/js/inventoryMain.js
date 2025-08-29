@@ -1,9 +1,18 @@
 import {
   renderTables,
   setupEditEventListener,
+  hideLoader,
+  showLoader,
+  populateProductSelect,
+  showAlertMessage,
+  clearAlert,
 } from "/js/inventoryUiManager.js";
 
-import { fetchProductsMaterialPFM, postData } from "/js/inventoryApiClient.js";
+import {
+  fetchProductsMaterialPFM,
+  postData,
+  fetchProductList,
+} from "/js/inventoryApiClient.js";
 
 // Initialize the page: fetch data and render the tables.
 async function init() {
@@ -55,6 +64,53 @@ const addMaterialModal = new bootstrap.Modal(
   document.getElementById("addMaterialModal")
 );
 
+const addPFMForm = document.getElementById("add-pfm-form");
+const addPFMModal = new bootstrap.Modal(document.getElementById("addPFMModal"));
+
+async function onMaterialModalShow() {
+  showLoader();
+  clearAlert();
+  try {
+    const products = await fetchProductList();
+    if (!Array.isArray(products)) {
+      showAlertMessage("⚠️ Product list failed to load properly.");
+      console.error("products", products);
+      return;
+    }
+    console.log("🧪 products:", products);
+
+    const selEl1 = document.getElementById("add_matProduct");
+    populateProductSelect(selEl1, products);
+  } catch (error) {
+    console.error("Error loading purge modal:", error);
+    showAlertMessage("Failed to load purge data.");
+  } finally {
+    hideLoader();
+  }
+}
+
+async function onPFMModalShow() {
+  showLoader();
+  clearAlert();
+  try {
+    const products = await fetchProductList();
+    if (!Array.isArray(products)) {
+      showAlertMessage("⚠️ Product list failed to load properly.");
+      console.error("products", products);
+      return;
+    }
+    console.log("🧪 products:", products);
+
+    const selEl2 = document.getElementById("add_pfmProductID");
+    populateProductSelect(selEl2, products);
+  } catch (error) {
+    console.error("Error loading purge modal:", error);
+    showAlertMessage("Failed to load purge data.");
+  } finally {
+    hideLoader();
+  }
+}
+
 addProductForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const formData = new FormData(addProductForm);
@@ -104,6 +160,28 @@ addMaterialForm.addEventListener("submit", async (e) => {
     addMaterialModal.hide();
     const addMaterial = await fetchProductsMaterialPFM();
     renderTables(addMaterial);
+  } catch (error) {}
+});
+
+addPFMForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const formData = new FormData(addPFMForm);
+  const pfmData = {
+    action: "addPFM",
+    partNumber: formData.get("add_pfmPartNumber"),
+    partName: formData.get("add_pfmPartName"),
+    productID: formData.get("add_pfmProductID"),
+    minQty: formData.get("add_pfmMinQty"),
+    customer: formData.get("add_pfmCustomer"),
+    displayOrder: formData.get("add_pfmDisplayOrder"),
+  };
+  try {
+    const responseText = await postData(pfmData);
+    document.getElementById("showAlert").innerHTML = responseText;
+    addPFMForm.reset();
+    addPFMModal.hide();
+    const addPfm = await fetchProductsMaterialPFM();
+    renderTables(addPfm);
   } catch (error) {}
 });
 
@@ -406,4 +484,10 @@ updatePfmForm.addEventListener("submit", async (e) => {
   }
 });
 
-document.addEventListener("DOMContentLoaded", () => {});
+document.addEventListener("DOMContentLoaded", () => {
+  const addMaterialEl = document.getElementById("addMaterialModal");
+  addMaterialEl.addEventListener("show.bs.modal", onMaterialModalShow);
+
+  const addPFMEl = document.getElementById("addPFMModal");
+  addPFMEl.addEventListener("show.bs.modal", onPFMModalShow);
+});

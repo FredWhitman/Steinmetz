@@ -35,16 +35,28 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 // Dispatcher for GET requests.
 if ($_SERVER["REQUEST_METHOD"] === "GET") {
-    // We can distinguish based on query parameters.
-    if (isset($_GET['getInventory'])) {
-        $controller->getInventory();
-    } elseif (isset($_GET['editProducts']) || isset($_GET['editMaterials']) || isset($_GET['editPfms'])) {
-        $controller->getRecord();
-    } elseif (isset($_GET['updateProducts']) || isset($_GET['updateMaterials']) || isset($_GET['updatePfms'])) {
-        $controller->getInventoryRecord();
-    } else {
-        http_response_code(400);
-        echo json_encode(['error' => 'Invalid GET request']);
+
+    $logger->info("GET Request Received by dispatcher:\n" . print_r($_GET, true));
+
+    switch (true) {
+        case isset($_GET['getInventory']):
+            $controller->getInventory();
+            break;
+        case isset($_GET['editProducts']) || isset($_GET['editMaterials']) || isset($_GET['editPfms']):
+            $controller->getRecord();
+            break;
+        case isset($_GET['updateProducts']) || isset($_GET['updateMaterials']) || isset($_GET['updatePfms']):
+            $controller->getInventoryRecord();
+            break;
+        case isset($_GET['action']) && $_GET['action'] === 'getProducts':
+            $controller->getProductList();
+            break;
+
+        default:
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid GET request']);
+            break;
     }
+
     exit();
 }

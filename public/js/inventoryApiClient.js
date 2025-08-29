@@ -184,3 +184,8 @@ export async function postData(productData) {
     throw error;
   }
 }
+
+export async function fetchProductList() {
+  const res = await fetch(`${BASE_URL}?action=getProducts`);
+  return handleResponse(res);
+}

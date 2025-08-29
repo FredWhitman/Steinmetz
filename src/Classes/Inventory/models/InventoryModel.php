@@ -829,12 +829,41 @@ class InventoryModel
                 break;
             case 'addPfm':
                 $this->log->info("addInventoryItem was called with {$data['action']}.");
-                /* $sql = '';
+                $this->log->info("PFM data: " . print_r($data, true));
+                $sql = 'INSERT INTO pfm (
+                            partNumber,
+                            partName,
+                            productID,
+                            minQty,
+                            customer,
+                            displayOrder) 
+                        VALUES (
+                            :partNumber,
+                            :partName,
+                            :productID,
+                            :minQty,
+                            :customer,
+                            :displayOrder)';
+
                 $stmt = $this->pdo->prepare($sql);
-                $stmt->bindParam();
+                $stmt->bindParam($data['partNumber'], \PDO::PARAM_STR);
+                $stmt->bindParam($data['partName'], \PDO::PARAM_STR);
+                $stmt->bindParam($data['productID'], \PDO::PARAM_STR);
+                $stmt->bindParam($data['minQty'], \PDO::PARAM_INT);
+                $stmt->bindParam($data['customer'], \PDO::PARAM_STR);
+                $stmt->bindParam($data['displayOrder'], \PDO::PARAM_INT);
 
                 if (!$stmt->execute()) {
-                } */
+                    $this->pdo->rollBack();
+                    $errorInfo = $stmt->errorInfo();
+                    $this->log->error('SQL Error: ' . implode(" | ", $errorInfo));
+                    throw new \Exception("Failed to add {$data['partNumber']} to inventory.");
+                }
+                $affectedRows = $stmt->rowCount();
+                if ($affectedRows > 0) {
+                    $affectedInv = $this->addInventoryRecord($data);
+                }
+
                 break;
             default:
                 $this->log->info('');
@@ -887,7 +916,17 @@ class InventoryModel
                 break;
 
             case 'addPfm':
-                // Implement logic for adding PFM inventory record
+                $sql = 'INSERT INTO pfmInventory (PartNumber, Qty) VALUES (:partNumber, :qty)';
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->bindValue(':partNumber', $data['partNumber'], \PDO::PARAM_STR);
+                $stmt->bindValue(':qty', 0, \PDO::PARAM_INT);
+                if (!$stmt->execute()) {
+                    $errorInfo = $stmt->errorInfo();
+                    $this->log->error('SQL Error: ' . implode(" | ", $errorInfo));
+                    throw new \Exception("Failed to add inventory record for {$data['partNumber']}.");
+                }
+                $affectedRows = $stmt->rowCount();
+
                 break;
 
             default:
@@ -896,5 +935,27 @@ class InventoryModel
         }
 
         return $affectedRows;
+    }
+
+    /**
+     * getProductList returns a list of productID and PartName
+     * @return void
+     */
+    public function getProductList()
+    {
+        try {
+            $sql = 'SELECT productID, partName from products';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+            if ($result) {
+                return $result;
+            } else {
+                return 0;
+            }
+        } catch (\PDOException $e) {
+            $this->log->error("ERROR: Failed to get product list: " . $e->getMessage());
+        }
     }
 }

@@ -13,6 +13,68 @@ export function hideLoader() {
   if (loader) loader.classList.add("d-none");
 }
 
+export function clearAlert(containerID = "showAlert") {
+  const c = document.getElementById(containerID);
+  if (c) c.innerHTML = "";
+}
+
+export function showAlertMessage(
+  message,
+  containerID = "alertContainer",
+  level = "success"
+) {
+  const container = document.getElementById(containerID);
+  if (!container) return;
+  container.innerHTML = `
+    <div class="alert alert-${level} alert-dismissible fade show" role="alert">
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>`;
+}
+
+// —————————————————————————————
+// Select Population
+// —————————————————————————————
+function populateSelect(
+  selectEl,
+  items,
+  { valueKey, labelKey, includeEmpty = true }
+) {
+  if (!selectEl) return;
+  selectEl.innerHTML = includeEmpty
+    ? `<option value="">– Select –</option>`
+    : "";
+  items.forEach((item) => {
+    const opt = document.createElement("option");
+    opt.value = item[valueKey];
+    opt.textContent = item[labelKey];
+    selectEl.append(opt);
+  });
+}
+
+export function populateProductSelect(selectEl, products) {
+  if (!selectEl) {
+    console.warn("🚨 Select element not found!");
+    return;
+  }
+  console.log("productionUiManager.js->populateProductSelect(products) called");
+
+  populateSelect(selectEl, products, {
+    valueKey: "productID",
+    labelKey: "partName",
+  });
+}
+
+export function populateMaterialSelects(materials) {
+  [1, 2, 3, 4].forEach((i) => {
+    const sel = document.getElementById(`Mat${i}Name`);
+    populateSelect(sel, materials, {
+      valueKey: "matPartNumber",
+      labelKey: "matName",
+    });
+  });
+}
+
 // Build HTML for the tables
 export function buildProductsTable(products) {
   let html = "";

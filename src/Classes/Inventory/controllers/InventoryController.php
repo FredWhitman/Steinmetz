@@ -229,5 +229,22 @@ class InventoryController
         ), true);
         echo $message['html'];
     }
-    // Additional methods (e.g., updateProduct or deleteItem) go here...
+
+    /**
+     * getProductList function return an array of productIDs and partNames
+     *
+     * @return void  a list of products
+     */
+    public function getProductList()
+    {
+        header('Content-Type: application/json');
+
+        try {
+            $products = $this->model->getProductList();
+            echo json_encode($products);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to fetch product list', 'details' => $e->getMessage()]);
+        }
+    }
 }
