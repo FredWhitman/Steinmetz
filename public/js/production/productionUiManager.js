@@ -566,7 +566,7 @@ export function fillViewLogPage(data) {
   document.getElementById("pl_purge").innerHTML =
     '<span class ="fw-bold">Purge Lbs: </span>' + data.purgeLbs;
   document.getElementById("pl_comments").innerHTML =
-    '<span class ="fw-bold">Comments: </span>' + data.comments;
+    '<span class ="fw-bold">Comments: </span>' + data.Comments;
   document.getElementById("pl_barrelZones").innerHTML =
     '<span class="fw-bold"> Barrel Temps Z1: </span>' +
     (data.z1 || "Z1: 000 °F") +

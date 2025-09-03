@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Production</title>
+    <title>View Production Log</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/lib/css/bootstrap.min.css" rel="stylesheet">

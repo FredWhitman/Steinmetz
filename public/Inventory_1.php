@@ -301,6 +301,57 @@
     </div>
     <!--  Add New PFM end-->
 
+    <!-- Add Shipments start-->
+    <div class="modal fade" id="addShipmentModal" tabindex="-1" aria-labelledby="addShipmentModal">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addShipmentModal">Add Weekly Shipment</h1>
+                </div>
+                <div class="modal-body">
+                    <form id="add-shipment-form" class="needs-validation p-2" novalidate>
+                        <div class="d-flex flex-column g-1 ">
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="add_shipDate">Ship Week Date</label><input class="form-control" type="date" tabindex="2" id="add_shipDate" name="add_shipDate" required></div>
+                                    <div class="invalid-feedback">Production date is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-1"><!-- Customer and ProductID -->
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="add_shipProductID">Product</label>
+                                        <select type="text" tabindex="4" class="form-control form-control-sm" id="add_shipProductID" name="add_shipProductID" required></select>
+                                    </div>
+                                    <div class="invalid-feedback">Product required!</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row pb-3"><!-- Min Qty & Display Order -->
+                            <div class="col-sm-2"></div>
+                            <div class="input-group sm-2">
+                                <label class="input-group-text" for="add_ShipQty">Qty</label>
+                                <input type="number" tabindex="5" class="form-control form-control-sm" id="add_ShipQty" name="add_ShipQty" required>
+                            </div>
+                            <div class="invalid-feedback">Shipment Qty required!</div>
+                        </div>
+                </div>
+                <div class="d-flex flex-row justify-content-center mb-1 g-2"> <!-- Buttons -->
+
+                    <div class="col">
+                        <button type="submit" value="add" class="btn btn-success" id="add-shipment-btn">Add Shipment</button>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+    <!--  Add shipments end-->
+
     <!-- Edit Product start-->
     <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModal">
         <div class="modal-dialog modal-sm">
@@ -642,6 +693,8 @@
                         <button class="btn btn-primary" type="button" id="loadProductForm" data-bs-toggle="modal" data-bs-target="#addProductModal">Add New Product</button>
                         <button class="btn btn-primary" type="button" id="loadMaterialForm" data-bs-toggle="modal" data-bs-target="#addMaterialModal">Add New Material</button>
                         <button class="btn btn-primary" type="button" id="loadPFMForm" data-bs-toggle="modal" data-bs-target="#addPFMModal">Add New PFM</button>
+                        <button class="btn btn-primary" type="button" id="addShipmentForm" data-bs-toggle="modal" data-bs-target="#addShipmentModal">Add Shipments</button>
+
                     </div>
                 </div>
             </div>

@@ -16,7 +16,8 @@ async function init() {
       console.error("Product list failed to load properly.");
       return;
     }
-    populateProductSelect(products);
+    const selectEl = document.getElementById("partName");
+    populateProductSelect(selectEl, products);
   } catch (error) {}
 }
 
