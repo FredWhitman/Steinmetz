@@ -189,3 +189,8 @@ export async function fetchProductList() {
   const res = await fetch(`${BASE_URL}?action=getProducts`);
   return handleResponse(res);
 }
+
+export async function fetchShipments() {
+  const res = await fetch(`${BASE_URL}?action=getShipments`);
+  return handleResponse(res);
+}

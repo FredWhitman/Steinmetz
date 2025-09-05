@@ -67,6 +67,11 @@ const addMaterialModal = new bootstrap.Modal(
 const addPFMForm = document.getElementById("add-pfm-form");
 const addPFMModal = new bootstrap.Modal(document.getElementById("addPFMModal"));
 
+const addShipmentForm = document.getElementById("add-shipment-form");
+const addShipmentModal = new bootstrap.Modal(
+  document.getElementById("addShipmentModal")
+);
+
 async function onMaterialModalShow() {
   showLoader();
   clearAlert();
@@ -84,6 +89,27 @@ async function onMaterialModalShow() {
   } catch (error) {
     console.error("Error loading purge modal:", error);
     showAlertMessage("Failed to load purge data.");
+  } finally {
+    hideLoader();
+  }
+}
+async function onReceiveModalShow() {
+  showLoader();
+  clearAlert();
+  try {
+    const products = await fetchProductList();
+    if (!Array.isArray(products)) {
+      showAlertMessage("⚠️ Product list failed to load properly.");
+      console.error("products", products);
+      return;
+    }
+    console.log("🧪 products:", products);
+
+    const selEl1 = document.getElementById("add_shipProductID");
+    populateProductSelect(selEl1, products);
+  } catch (error) {
+    console.error("Error receive material modal:", error);
+    showAlertMessage("Failed to product data.");
   } finally {
     hideLoader();
   }
@@ -161,6 +187,28 @@ addMaterialForm.addEventListener("submit", async (e) => {
     const addMaterial = await fetchProductsMaterialPFM();
     renderTables(addMaterial);
   } catch (error) {}
+});
+
+addShipmentForm.addEventListener("submit", async (e) => {
+  e.preventDefault(); // Prevent default form submission
+  const formData = new FormData(addShipmentForm);
+  const shipmentData = {
+    action: "addShipment",
+    productID: formData.get("add_shipProductID"),
+    shipQty: formData.get("add_ShipQty"),
+    shipWeek: formData.get("add_shipDate"),
+  };
+
+  try {
+    const responseText = await postData(shipmentData);
+    document.getElementById("showAlert").innerHTML = responseText;
+    addShipmentForm.reset(); // Reset the form fields after submission
+    addShipmentModal.hide(); // Hide the modal after submission
+    const updatedInventory = await fetchProductsMaterialPFM(); // Fetch updated inventory data
+    renderTables(updatedInventory); // Re-render the tables with updated data
+  } catch (error) {
+    console.error("Failed to submit shipment form:", error);
+  }
 });
 
 addPFMForm.addEventListener("submit", async (e) => {
@@ -490,4 +538,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const addPFMEl = document.getElementById("addPFMModal");
   addPFMEl.addEventListener("show.bs.modal", onPFMModalShow);
+
+  const receiveMaterialEl = document.getElementById("addShipmentModal");
+  receiveMaterialEl.addEventListener("show.bs.modal", onReceiveModalShow);
 });

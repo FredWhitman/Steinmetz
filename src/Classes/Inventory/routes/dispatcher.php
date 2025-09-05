@@ -14,6 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         'addProduct' => [$controller, 'addInventoryItem'],
         'addMaterial' => [$controller, 'addInventoryItem'],
         'addPFM' => [$controller, 'addInventoryItem'],
+        'addShipment' => [$controller, 'addShipment'],
         'editProduct'  => [$controller, 'editProduct'],
         'editMaterial' => [$controller, 'editMaterial'],
         'editPFM'      => [$controller, 'editPFM'],
@@ -51,7 +52,9 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
         case isset($_GET['action']) && $_GET['action'] === 'getProducts':
             $controller->getProductList();
             break;
-
+        case isset($_GET['action']) && $_GET['action'] === 'getShipments':
+            $controller->getShipments();
+            break;
         default:
             http_response_code(400);
             echo json_encode(['error' => 'Invalid GET request']);

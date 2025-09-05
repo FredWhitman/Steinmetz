@@ -652,7 +652,7 @@ class InventoryModel
                             return ['success' => false, "message" => "Failed to insert transaction for {$data['action']}"];
                         }
                         $this->pdo->commit();
-                        $this->log->info("{$data['action']} successfully attempted to add {$data['matPartNumber']} ");
+                        $this->log->info("{$data['action']} successfully to add {$data['PartNumber']} ");
                         return ['success' => true, "message" => 'Transaction completed successfully. ', 'pfm' => $data['partNumber']];
                     }
                     break;
@@ -665,6 +665,27 @@ class InventoryModel
             $this->pdo->rollBack();
             $this->log->error("ERROR updating inventory: " . $e->getMessage());
             return ["success" => false, "message" => "An error occurred", "error" => $e->getMessage()];
+        }
+    }
+
+    public function updateProductQty($productID, $amount, $operator)
+    {
+        $op = $op = ($operator === "+") ? '+' : '-';
+
+        $sql = "UPDATE productinventory SET partQty = partQty {$op} :partQty WHERE productID = :productID";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':partQty', $amount, \PDO::PARAM_INT);
+        $stmt->bindParam(':productID', $productID, \PDO::PARAM_STR);
+
+        if (!$stmt->execute()) {
+            $error = $stmt->errorInfo();
+            $this->log->error("Failed to update Product: {$productID}'s qty. \n", [
+                'errorInfo' => $error,
+                'productID' => $productID,
+                'Qty' => $amount,
+                'operator' => $operator
+            ]);
+            throw new \Exception("Failed to update Product: {$productID}'s qty. ERROR: {$error}");
         }
     }
 
@@ -713,6 +734,60 @@ class InventoryModel
             return ["success" => false, "message" => "Database failed to insert a record into inventorytrans.", "error" => $errorInfo];
         } else {
             return ["success" => true, "message" => "{$data['action']} successful!"];
+        }
+    }
+
+    public function addShipment($data)
+    {
+        $this->log->info("POST Data Received by model:\n" . print_r($data, true));
+
+        if (!$data) {
+            return ["success" => false, "message" => "addShipment failed to receive form data!"];
+            exit();
+        } else {
+            $this->log->info("addShipment received an {$data['action']} request");
+        }
+        $affectedRows = 0;
+        $this->pdo->beginTransaction();
+
+
+        try {
+            $sql = 'INSERT INTO weeklyshipment
+                        (shipWeek,
+                        productID,
+                        shipQty)
+                    VALUES (
+                        :shipWeek,
+                        :productID,
+                        :shipQty)';
+
+            $stmt = $this->pdo->prepare($sql);
+
+            $stmt->bindParam(':shipWeek', $data['shipWeek'], \PDO::PARAM_STR);
+            $stmt->bindParam(':productID', $data['productID'], \PDO::PARAM_STR);
+            $stmt->bindParam(':shipQty', $data['shipQty'], \PDO::PARAM_INT);
+
+            if (!$stmt->execute()) {
+                $errorInfo = $stmt->errorInfo();
+                $this->log->error('SQL Error: ' . implode(" | ", $errorInfo));
+                throw new \Exception("Failed to add shipment for {$data['productID']} to inventory.");
+            }
+
+            $affectedRows = $stmt->rowCount();
+
+            $this->updateProductQty($data['productID'], $data['shipQty'], '-');
+
+            $this->pdo->commit();
+            if ($affectedRows > 0) {
+                return ["success" => true, "message" => "Shipment for {$data['productID']} added successfully."];
+            } else {
+                $this->pdo->rollBack();
+                return ["success" => false, "message" => "No rows affected when adding shipment for {$data['productID']}."];
+            }
+        } catch (\Throwable $e) {
+            $this->pdo->rollBack();
+            $this->log->error("ERROR adding shipment: " . $e->getMessage());
+            return ["success" => false, "message" => "No rows affected when adding shipment for {$data['productID']}."];
         }
     }
 
@@ -956,6 +1031,29 @@ class InventoryModel
             }
         } catch (\PDOException $e) {
             $this->log->error("ERROR: Failed to get product list: " . $e->getMessage());
+        }
+    }
+
+    public function getShipments()
+    {
+        try {
+            $sql = 'SELECT 
+                        *
+                    FROM
+                        `weeklyshipment`
+                    WHERE shipWeek BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 WEEK) AND DATE_ADD(CURDATE(), INTERVAL 6 WEEK)';
+
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+            if ($result) {
+                return $result;
+            } else {
+                return [];
+            }
+        } catch (\PDOException $e) {
+            $this->log->error("ERROR: Failed to get shipments list: " . $e->getMessage());
         }
     }
 }

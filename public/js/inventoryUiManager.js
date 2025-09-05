@@ -2,6 +2,19 @@
 
 const showAlert = document.getElementById("showAlert");
 
+const productIDs = [
+  "10601",
+  "10454",
+  "WE-5525",
+  "10471",
+  "10457",
+  "10522A",
+  "98-1-10881",
+  "98-1-10835",
+  "98-1-10702",
+  "98-1-11020",
+];
+
 // Loader functions
 export function showLoader() {
   const loader = document.getElementById("loader");
@@ -163,4 +176,45 @@ export function renderTables({ products, materials, pfms }) {
   document.getElementById("materials").innerHTML =
     buildMaterialsTable(materials);
   document.getElementById("pfms").innerHTML = buildPfmsTable(pfms);
+}
+
+export function renderShipmentsTable(shipments) {
+  const container = document.getElementById("shipments");
+  if (!shipments || shipments.length === 0) {
+    container.innerHTML =
+      "<tr><td colspan='11'>No shipment data available.</td></tr>";
+    return;
+  } else {
+    document.getElementById("shipments").innerHTML =
+      buildShipmentsTable(shipments);
+  }
+}
+
+function groupShipmentsByWeek(shipments, productIDs) {
+  const weeks = {};
+  shipments.forEach(({ shipWeek, productID, shipQty }) => {
+    if (!weeks[shipWeek]) {
+      weeks[shipWeek] = {};
+      productIDs.forEach((pid) => (weeks[shipWeek][pid] = 0));
+    }
+    weeks[shipWeek][productID] = shipQty;
+  });
+  return weeks;
+}
+
+export function buildShipmentsTable(shipments) {
+  const weeks = groupShipmentsByWeek(shipments, productIDs);
+  console.log("Grouped shipments by week:", weeks);
+
+  let html = "";
+
+  Object.entries(weeks).forEach(([weeks, products]) => {
+    html += `<tr><td>${weeks}</td>`;
+    productIDs.forEach((pid) => {
+      html += `<td>${products[pid]}</td>`;
+    });
+    html += `</tr>`;
+  });
+
+  return html;
 }

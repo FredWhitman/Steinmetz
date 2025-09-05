@@ -127,6 +127,24 @@ class InventoryController
         echo $message['html'];
     }
 
+    public function addShipment($data)
+    {
+        if (!isset($data['action'])) {
+            http_response_code(400);
+            $message = "Missing shipment data!";
+            echo $message['html'];
+            return;
+        }
+
+        $this->log->info("addShipment called with action: " . print_r($data, true));
+        $result = $this->model->addShipment($data);
+        $message = json_decode($this->util->showMessage(
+            $result['success'] ? 'success' : 'danger',
+            $result['message'] . " Shipment for Product ID: {$data['productID']} " . ($result['success'] ? " added!" : " failed to be added!")
+        ), true);
+        echo $message['html'];
+    }
+
     // POST: Edit product
     public function editProduct($data)
     {
@@ -245,6 +263,19 @@ class InventoryController
         } catch (\Exception $e) {
             http_response_code(500);
             echo json_encode(['error' => 'Failed to fetch product list', 'details' => $e->getMessage()]);
+        }
+    }
+
+    public function getShipments()
+    {
+        header('Content-Type: application/json');
+
+        try {
+            $shipments = $this->model->getShipments();
+            echo json_encode($shipments);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to fetch shipments', 'details' => $e->getMessage()]);
         }
     }
 }

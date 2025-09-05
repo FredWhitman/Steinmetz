@@ -334,21 +334,17 @@
                             </div>
                             <div class="invalid-feedback">Shipment Qty required!</div>
                         </div>
-                </div>
-                <div class="d-flex flex-row justify-content-center mb-1 g-2"> <!-- Buttons -->
+                        <div class="row pb-3 justify-content-center">
+                            <div class="col-auto d-flex gap-2">
+                                <button type="submit" value="add" class="btn btn-success" id="add-shipment-btn">Add Shipment</button>
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                            </div>
 
-                    <div class="col">
-                        <button type="submit" value="add" class="btn btn-success" id="add-shipment-btn">Add Shipment</button>
-                    </div>
-                    <div class="col">
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    </div>
-
+                        </div>
+                    </form>
                 </div>
-                </form>
             </div>
         </div>
-    </div>
     </div>
     <!--  Add shipments end-->
 
@@ -694,7 +690,7 @@
                         <button class="btn btn-primary" type="button" id="loadMaterialForm" data-bs-toggle="modal" data-bs-target="#addMaterialModal">Add New Material</button>
                         <button class="btn btn-primary" type="button" id="loadPFMForm" data-bs-toggle="modal" data-bs-target="#addPFMModal">Add New PFM</button>
                         <button class="btn btn-primary" type="button" id="addShipmentForm" data-bs-toggle="modal" data-bs-target="#addShipmentModal">Add Shipments</button>
-
+                        <a class="btn btn-primary" href="/forms/viewShipments.php" target="_blank" role="button">View Shipments</a>
                     </div>
                 </div>
             </div>
