@@ -54,6 +54,7 @@ export function buildOvenLogsTable(ovenLogs) {
                   <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 viewLink" title="view ovenLog" data-bs-toggle="modal" data-bs-target="#viewOvenLogModal">
                     <i class="bi bi-eye-fill"></i>
                   </a>
+                  
                   <a href="#" class="btn btn-success btn-sm rounded-pill py-0 updateLink" title="update ovenLog" data-bs-toggle="modal" data-bs-target="#updateOvenLogModal">
                     <i class="bi bi-file-earmark-check"></i>
                   </a>
@@ -81,10 +82,11 @@ export function buildLotChangeTable(lotChangeLogs) {
                   <td>${row.OldLot}</td>
                   <td>${row.NewLot}</td>
                   <td>
-                    <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 viewLink" title="view lotchange" data-bs-toggle="modal" data-bs-target="#viewLotChangeModal">
+                    <a href="#" class="btn btn-primary btn-sm rounded-pill py-0 viewLink" title="view ovenLog" data-bs-toggle="modal" data-bs-target="#viewOvenLogModal">
                       <i class="bi bi-eye-fill"></i>
                     </a>
-                    <a href="#" class="btn btn-success btn-sm rounded-pill py-0 updateLink" title="update ltochange" data-bs-toggle="modal" data-bs-target="#updateLotChangeModal">
+                    
+                    <a href="#" class="btn btn-success btn-sm rounded-pill py-0 updateLink" title="update ovenLog" data-bs-toggle="modal" data-bs-target="#updateOvenLogModal">
                       <i class="bi bi-file-earmark-check"></i>
                     </a>
                   </td>
@@ -203,11 +205,11 @@ export function populateProductSelect(selectEl, products) {
 }
 
 export function populateMaterialSelect(selectEl, materials) {
-  if(!selectEl){
-     console.warn("🚨 Select element not found!");
+  if (!selectEl) {
+    console.warn("🚨 Select element not found!");
     return;
   }
-  console.log("qualityUiManager.js->populateMaterialSelect() called")
+  console.log("qualityUiManager.js->populateMaterialSelect() called");
 
   populateSelect(selectEl, materials, {
     valueKey: "matPartNumber",

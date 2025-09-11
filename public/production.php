@@ -79,10 +79,13 @@
                         <h4 class="text-primary">Production Data</h4>
                     </div>
                     <div>
+
                         <a class="btn btn-primary" href="/forms/viewProductionRuns.php" role="button">View Production Runs</a>
                         <a class="btn btn-primary" href="/forms/viewProductionLog.php" role="button">View log</a>
+
                         <button class="btn btn-primary" type="button" id="loadPurgeForm" data-bs-toggle="modal" data-bs-target="#addPurgeModal">Add Purge</button>
                         <a class="btn btn-primary" href="/forms/addProductionLog.php" role="button">Add Production Log</a>
+
                     </div>
                 </div>
             </div>

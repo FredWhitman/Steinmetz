@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Quality\Models;
 
+use database;
 use Psr\Log\LoggerInterface;
 use Database\Connection;
 use Exception;
@@ -245,20 +246,27 @@ class QualityModel
     {
         try {
             $sql = "INSERT 
-                    INTO ovenlogs (productID, inOvenDate, inOvenTime, inOvenTemp, inOvenInitials, ovenComments) 
-                    VALUES (:productID, :inOvenDate, :inOvenTime, :inOvenTemp, :inOvenInitials, :ovenComments)";
+                    INTO ovenlogs (productID, inOvenDate, firstShift, secondShift, thirdShift, inOvenTime, inOvenTemp, inOvenInitials, ovenComments) 
+                    VALUES (:productID, :inOvenDate, :firstShift, :secondShift, :thirdShift, :inOvenTime, :inOvenTemp, :inOvenInitials, :ovenComments)";
+
+            ($data['ovenLogData']['firstShift'] === 'on') ? $data['ovenLogData']['firstShift'] = '1' : $data['ovenLogData']['firstShift'] = '0';
+            ($data['ovenLogData']['secondShift'] === 'on') ? $data['ovenLogData']['secondShift'] = '1' : $data['ovenLogData']['secondShift'] = '0';
+            ($data['ovenLogData']['thirdShift'] === 'on') ? $data['ovenLogData']['thirdShift'] = '1' : $data['ovenLogData']['thirdShift'] = '0';
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(':productID', $data['ovenLogData']['productID']);
             $stmt->bindValue(':inOvenDate', $data['ovenLogData']['inOvenDate']);
+            $stmt->bindValue(':firstShift', $data['ovenLogData']['firstShift']);
+            $stmt->bindValue(':secondShift', $data['ovenLogData']['secondShift']);
+            $stmt->bindValue(':thirdShift', $data['ovenLogData']['thirdShift']);
             $stmt->bindValue(':inOvenTime', $data['ovenLogData']['inOvenTime']);
             $stmt->bindValue(':inOvenTemp', $data['ovenLogData']['inOvenTemp']);
-            $stmt->bindParam(':inOvenInitials', $data['ovenLogData']['inOvenInitials'], \PDO::PARAM_STR);
+            $stmt->bindValue(':inOvenInitials', $data['ovenLogData']['inOvenInitials']);
             $stmt->bindValue(':ovenComments', $data['ovenLogData']['ovenComments']);
 
             $this->log->info("inOvenInitials: {$data['ovenLogData']['inOvenInitials']}");
 
-            foreach (['productID', 'inOvenDate', 'inOvenTime', 'inOvenTemp', 'inOvenInitials', 'ovenComments'] as $key) {
+            foreach (['productID', 'inOvenDate', 'firstShift', 'secondShift', 'thirdShift', 'inOvenTime', 'inOvenTemp', 'inOvenInitials', 'ovenComments'] as $key) {
                 $this->log->info("Bound {$key}", ['value' => $data['ovenLogData'][$key], 'type' => gettype($data['ovenLogData'][$key])]);
             }
 

@@ -1,32 +1,9 @@
 <?php
-session_start();
+/* if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+} */
 
-if (isset($_SESSION['user'])) {
-    // User is logged in
-    echo "<h2>Welcome, " . htmlspecialchars($_SESSION['user']) . "!</h2>";
-    // Hide login form and show other content as needed
-    // Optionally, show a link to inventory landing page
-    echo '<a href="Inventory_1.php">Go to Inventory</a>';
-    exit();
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Validate credentials (replace with your DB logic)
-    $username = $_POST['username'] ?? '';
-    $password = $_POST['password'] ?? '';
-
-    // Example check (replace with real check)
-    if ($username === 'admin' && $password === 'password') {
-        $_SESSION['user'] = $username;
-        $_SESSION['access_level'] = 2; // Example
-        header('Location: Inventory_1.php');
-        exit();
-    } else {
-        $error = "Invalid username or password.";
-    }
-}
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -56,7 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <img src="/SteinmetzLogo.png" alt="Steinmetz Logo" class="img-fluid" style="max-width: 300px;">
             </div>
         </div>
-        <div class="d-flex flex-row justify-content-center mt-3">
+
+        <!-- <div class="d-flex flex-row justify-content-center mt-3">
             <div class="col-sm-12 text-center">
                 <p class="fs-5">Please login</p>
             </div>
@@ -76,13 +54,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <button type="submit" value="login" class="btn btn-primary w-100" id="login-btn">Login</button>
                 </form>
             </div>
-        </div>
+        </div> -->
 
+    </div>
 
-        <!-- Bootstrap js -->
-        <script type="text/javascript" src="/lib/js/bootstrap.bundle.min.js"></script>
-        <!-- Custom javascript -->
-        <script type="module" src="/js/login.js"></script>
+    <!-- Bootstrap js -->
+    <script type="text/javascript" src="/lib/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom javascript -->
+    <script type="module" src=""></script>
 </body>
 
 </html>

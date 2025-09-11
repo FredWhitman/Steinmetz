@@ -1056,4 +1056,30 @@ class InventoryModel
             $this->log->error("ERROR: Failed to get shipments list: " . $e->getMessage());
         }
     }
+
+    public function getLogin($data)
+    {
+        $this->log->info("getLogin called with data: " . print_r($data, true));
+
+        $sql = 'SELECT 
+                    *
+                FROM
+                    users
+                WHERE
+                    username = :username AND loginPassword = :loginPassword';
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':username', $data['username'], \PDO::PARAM_STR);
+        $stmt->bindParam(':loginPassword', $data['password'], \PDO::PARAM_STR);
+
+        if (!$stmt->execute()) {
+            $errorInfo = $stmt->errorInfo();
+            $this->log->error('SQL Error: ' . implode(" | ", $errorInfo));
+            throw new \Exception("Failed to get user record for {$data['user']}.");
+        }
+
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        return $result;
+    }
 }

@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="https://www.devwares.com/docs/contrast/javascript/sections/timepicker/">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="icon" href="/../steinmetz.ico" type="image/x-icon">
+
 </head>
 
 <body>
@@ -47,6 +48,12 @@
             </form>
 
             <hr>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div id="showAlert"></div>
+                </div>
+            </div>
+
             <div class="row align-items-center justify-content-center">
                 <table class="table w-75 table-bordered">
                     <tbody>

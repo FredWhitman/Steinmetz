@@ -1,4 +1,5 @@
 <?php
+
 // File: src/Classes/Production/Routes/prodDispatcher.php
 $controller = require_once __DIR__ . '/../Config/prodInit.php';
 

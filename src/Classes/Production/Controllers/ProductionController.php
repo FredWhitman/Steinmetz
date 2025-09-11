@@ -110,6 +110,7 @@ class ProductionController
      */
     public function getMaterialList()
     {
+
         header('Content-Type: application/json');
         try {
             $materials = $this->model->getMaterialList();
@@ -122,6 +123,7 @@ class ProductionController
 
     public function checkLogDates($productID, $date)
     {
+
         header('Content-Type: application/json');
         try {
             $this->log->info("checkLogDates called with these values: {$productID} and {$date}.");
@@ -135,6 +137,7 @@ class ProductionController
 
     public function viewLog($productID, $date)
     {
+
         header('Content-Type: application/json');
         try {
             $this->log->info("viewLog called with these values: {$productID} and {$date}.");
@@ -148,6 +151,7 @@ class ProductionController
 
     public function checkRun($productID)
     {
+
         header('Content-Type: application/json');
         try {
             $this->log->info("checkRun called with these values: {$productID}.");

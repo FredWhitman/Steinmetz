@@ -23,6 +23,11 @@ async function handleResponse(res) {
     throw new Error(msg);
   }
 
+  if (res.status === 401) {
+    window.location.href = "/index.php";
+    return;
+  }
+
   // business-logic error?
   if (data && data.success === false) {
     //sever returned {success: false, message:"..."}

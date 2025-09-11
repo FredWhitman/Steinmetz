@@ -1,9 +1,12 @@
 <?php
+
+
 // File: routes/dispatcher.php
 $controller = require_once __DIR__ . '/../Config/init.php';
 /* require_once __DIR__ . '/../controllers/InventoryController.php'; */
 
 $data = json_decode(file_get_contents('php://input'), true);
+$action = $data['action'] ?? null;
 
 // Dispatcher for POST actions – based on the "action" variable in the JSON payload.
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -13,6 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $routes = [
         'addProduct' => [$controller, 'addInventoryItem'],
         'addMaterial' => [$controller, 'addInventoryItem'],
+        'login' => [$controller, 'login'],
         'addPFM' => [$controller, 'addInventoryItem'],
         'addShipment' => [$controller, 'addShipment'],
         'editProduct'  => [$controller, 'editProduct'],

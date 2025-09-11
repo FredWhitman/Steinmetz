@@ -187,6 +187,9 @@ function addOvenLogFormSubmission() {
       ovenLogData: {
         productID: data.get("ol_PartName"),
         inOvenDate: data.get("ol_inOvenDate"),
+        firstShift: data.get("ol_1stShift"),
+        secondShift: data.get("ol_2ndShift"),
+        thirdShift: data.get("ol_3rdShift"),
         inOvenTime: data.get("ol_inOvenTime"),
         inOvenTemp: data.get("ol_inOvenTemp"),
         inOvenInitials: data.get("ol_inOvenInitials"),

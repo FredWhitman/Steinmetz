@@ -685,12 +685,15 @@
                     <div>
                         <h4 class="text-primary">Inventory Data</h4>
                     </div>
-                    <div>
+                    <div class="d-flex flex-wrap gap-2">
+
                         <button class="btn btn-primary" type="button" id="loadProductForm" data-bs-toggle="modal" data-bs-target="#addProductModal">Add New Product</button>
                         <button class="btn btn-primary" type="button" id="loadMaterialForm" data-bs-toggle="modal" data-bs-target="#addMaterialModal">Add New Material</button>
                         <button class="btn btn-primary" type="button" id="loadPFMForm" data-bs-toggle="modal" data-bs-target="#addPFMModal">Add New PFM</button>
                         <button class="btn btn-primary" type="button" id="addShipmentForm" data-bs-toggle="modal" data-bs-target="#addShipmentModal">Add Shipments</button>
+
                         <a class="btn btn-primary" href="/forms/viewShipments.php" target="_blank" role="button">View Shipments</a>
+
                     </div>
                 </div>
             </div>

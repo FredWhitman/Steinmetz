@@ -278,4 +278,28 @@ class InventoryController
             echo json_encode(['error' => 'Failed to fetch shipments', 'details' => $e->getMessage()]);
         }
     }
+
+    public function login($data)
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        header('Content-Type: application/json');
+        try {
+            $login = $this->model->getLogin($data);
+            if ($login && isset($login['username'])) {
+                $_SESSION['user'] = $login['username'];
+                $_SESSION['access_level'] = $login['access'];
+                $this->log->info("User {$login['username']} logged in successfully.");
+                echo json_encode(['success' => true, 'message' => 'Login successful']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Invalid username or password']);
+                $this->log->warning("Failed login attempt.");
+            }
+        } catch (\Throwable $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to login', 'details' => $e->getMessage()]);
+        }
+    }
 }

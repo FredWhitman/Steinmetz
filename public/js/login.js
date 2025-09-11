@@ -34,8 +34,3 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-
-async function fetchLogin(data) {
-  const res = await fetch(`${BASE_URL}?action=login`);
-  return handleResponse(res);
-}

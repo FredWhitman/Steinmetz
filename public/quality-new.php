@@ -296,14 +296,48 @@
                         <div class="mb-3">
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="olPartName">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="ol_PartName" name="ol_PartName" required></select></div>
+                                    <div class="input-group sm-3">
+                                        <label class="input-group-text" for="olPartName">Part Name</label>
+                                        <select type="text" tabindex="1" class="form-select form-control-sm" id="ol_PartName" name="ol_PartName" required></select>
+                                    </div>
                                     <div class="invalid-feedback">Part name is required!</div>
                                 </div>
                             </div>
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="lcLotDate">In Oven Date</label><input class="form-control" type="date" tabindex="2" id="ol_inOvenDate" name="ol_inOvenDate" required></div>
+                                    <div class="input-group sm-3">
+                                        <label class="input-group-text" for="lcLotDate">In Oven Date</label>
+                                        <input class="form-control" type="date" tabindex="2" id="ol_inOvenDate" name="ol_inOvenDate" required>
+                                    </div>
                                     <div class="invalid-feedback">In Oven date is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="d-flex flex-row justify-content-evenly align-items-center">
+                                        <div class="col g-1">
+                                            <label class="input-group-text">Shift</label>
+                                        </div>
+                                        <div class="col">
+                                            <input class="form-check-input" type="checkbox" id="ol_1stShift" name="ol_1stShift">
+                                        </div>
+                                        <div class="col">
+                                            <label>1st</label>
+                                        </div>
+                                        <div class="col">
+                                            <input class="form-check-input" type="checkbox" id="ol_2ndShift" name="ol_2ndShift">
+                                        </div>
+                                        <div class="col">
+                                            <label>2nd</label>
+                                        </div>
+                                        <div class="col">
+                                            <input class="form-check-input" type="checkbox" id="ol_3rdShift" name="ol_3rdShift">
+                                        </div>
+                                        <div class="col">
+                                            <label>3rd</label>
+                                        </div>
+                                        <div class="invalid-feedback">At least one shift is required!</div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row pb-2">
@@ -548,10 +582,14 @@
                         <h3 class="text-primary">Quality</h3>
                     </div>
                     <div>
+
                         <button class="btn btn-primary" type="button" id="loadOvenLogForm" data-bs-toggle="modal" data-bs-target="#addOvenLogModal">Add Oven Log</button>
                         <button class="btn btn-primary" type="button" id="loadProductForm" data-bs-toggle="modal" data-bs-target="#addLotChangeModal">Add Lot Change</button>
                         <button class="btn btn-primary" type="button" id="loadQARejectForm" data-bs-toggle="modal" data-bs-target="#addQARejectsModal">Add QA Rejects</button>
+
                         <button class="btn btn-primary" type="button" id="loadMaterialForm" data-bs-toggle="modal" data-bs-target="#addMaterialReceivedModal">Receive Material</button>
+                        <button class="btn btn-primary" type="button" id="loadpfmForm" data-bs-toggle="modal" data-bs-target="#addpfmReceivedModal">Receive PFM</button>
+
                     </div>
                 </div>
             </div>
@@ -639,6 +677,7 @@
     <!-- Bootstrap js -->
     <script type="text/javascript" src="/lib/js/bootstrap.bundle.min.js"></script>
     <!-- Custom javascript -->
+
     <script type="module" src="/js/quality/qualityMain.js"></script>
 </body>
 
