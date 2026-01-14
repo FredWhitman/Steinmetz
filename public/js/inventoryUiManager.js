@@ -1,4 +1,4 @@
-// uiManager.js
+//File: /js/inventoryUiManager.js
 
 const showAlert = document.getElementById("showAlert");
 

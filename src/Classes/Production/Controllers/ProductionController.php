@@ -393,6 +393,7 @@ class ProductionController
                 $data["materialData"],
                 $data["tempData"]
             );
+
             // Determine success type based on $result if needed
             $type = $result['success'] ? 'success' : 'warning';
             $msg = $this->util->showMessage($type, $result['message']);
@@ -408,6 +409,7 @@ class ProductionController
         } catch (\Exception $e) {
             $this->log->error("Failed to add production log: " . $e->getMessage());
             $msg = $this->util->showMessage('danger', 'Failed to add production log.');
+
             http_response_code(500);
 
             echo json_encode([

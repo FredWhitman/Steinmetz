@@ -33,6 +33,9 @@ class InsertProduction
         $this->update = $update;
     }
 
+    /* 
+        INSERT FUNCTIONS
+    */
     /**
      * insertProdLog
      * Main entry point for inserting a production log.
@@ -220,10 +223,6 @@ class InsertProduction
         }
     }
 
-    /* 
-        INSERT FUNCTIONS
-    */
-
     /**
      * insertMatLog
      *
@@ -383,7 +382,6 @@ class InsertProduction
 
         return ['success' => true, 'message' => 'Purge added production log successfully.'];
     }
-
 
     /**
      * insertProductionRun create a production run
