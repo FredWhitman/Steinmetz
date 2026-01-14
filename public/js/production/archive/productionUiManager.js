@@ -54,8 +54,8 @@ export function buildProdLogsTable(prodLogs) {
                 <td>${row.purgeLbs} lbs</td>
                 <td>${row.runStatus}</td>
                 <td>
-                    <a href="/forms/viewProductionLog.php?productID=${row.productID}&prodDate=${row.prodDate}" target="_blank" class="btn btn-primary btn-sm rounded-pill py-0">View</a>
-                  </td>
+                  <a href="/forms/viewProductionLog.php?productID=${row.productID}&prodDate=${row.prodDate}" target="_blank" class="btn btn-primary btn-sm rounded-pill py-0">View</a>
+                </td>
             </tr>`;
   });
   return html;
@@ -93,7 +93,7 @@ export function buildRunsCompleteTable(prodRunLogs) {
   let html = "";
   prodRunLogs.forEach((row) => {
     html += `<tr data-id='${row.logID}'>
-                <td>${row.productID}</td>
+                <td><a href='/forms/viewRunlogs.php?logID=${row.logID}'>${row.productID}</a></td>
                 <td>${row.startDate}</td>
                 <td>${row.endDate}</td>
                 <td>${row.mat1Lbs}</td>
@@ -105,6 +105,28 @@ export function buildRunsCompleteTable(prodRunLogs) {
                 <td>${row.qaRejects}</td>
                 <td>${row.purgeLbs}</td>
                 </tr>`;
+  });
+  return html;
+}
+
+export function buildRunProdLogsTable(runProdLogs) {
+  if (!runProdLogs.length) {
+    return ` <tr> 
+                <td colspan="7" class="text-center text-muted"> No production logs found for this run. </td> 
+             </tr> `;
+  }
+
+  let html = "";
+  runProdLogs.forEach((row) => {
+    html += `<tr data-id='${row.logID}'> 
+                <td>${row.productID}</td>
+                <td>${row.prodDate}</td>
+                <td>${row.pressCounter}</td>
+                <td>${row.startUpRejects}</td>
+                <td>${row.qaRejects}</td>
+                <td>${row.purgeLbs} lbs</td>
+                <td>${row.runStatus}</td>
+            </tr>`;
   });
   return html;
 }
@@ -147,6 +169,11 @@ export function renderRunsCompleteTable(prodRunLogs) {
   console.log("Rendering Runs Complete Table with data:", prodRunLogs);
   document.getElementById("runsFinished").innerHTML =
     buildRunsCompleteTable(prodRunLogs);
+}
+
+export function renderRunProdLogsTable(runProdLogs) {
+  document.getElementById("runProdLogs").innerHTML =
+    buildRunProdLogsTable(runProdLogs);
 }
 
 function capitalize(str) {

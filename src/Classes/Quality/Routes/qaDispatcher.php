@@ -22,12 +22,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         case isset($data['action']) && $data['action'] === 'matReceived':
             $controller->addMatTransaction($data);
             break;
+        case isset($data['action']) && $data['action'] === 'pfmReceived':
+            $controller->addPfmTransaction($data);
+            break;
         default:
             http_response_code(400);
             echo json_encode(['error' => "Invalid POST['action'] request."]);
     }
 }
-
 
 if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET['action'])) {
 
@@ -42,6 +44,9 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET['action'])) {
         case 'getMaterials':
             $controller->getMaterialList();
             break;
+        case 'getPfms':
+            $controller->getPFMList();
+            break;
         case 'getQaRejectLog':
             $controller->getQaRejectLog($_GET['id']);
             break;
@@ -50,6 +55,10 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET['action'])) {
             break;
         case 'getLotChangeLog':
             $controller->getLotChange($_GET['id']);
+            break;
+
+        case 'getReceivedShipments':
+            $controller->getReceivedShipments();
             break;
         default:
             http_response_code(400);

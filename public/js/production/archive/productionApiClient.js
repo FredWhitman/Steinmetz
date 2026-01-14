@@ -62,6 +62,25 @@ export async function fetchProdRunsNotComplete() {
   }
 }
 
+export async function fetchRunProdLogs(runID) {
+  showLoader();
+  try {
+    const response = await fetch(
+      `/api/prodDispatcher.php?getRunProdLogs=${encodeURIComponent(runID)}`
+    );
+    if (!response.ok) {
+      console.error("API returned error:", response.statusText);
+      return;
+    }
+    const jsonData = await response.json();
+    console.log(`parsed production logs for runID ${runID}: `, jsonData);
+    hideLoader();
+    return jsonData;
+  } catch (error) {
+    console.error(`Error getting production logs for runID ${runID}: `, error);
+  }
+}
+
 async function handleResponse(res) {
   //read raw text
   const text = await res.text();
@@ -87,6 +106,7 @@ async function handleResponse(res) {
     throw new Error(data.message || "Unknown server error");
   }
 
+  console.log("Raw response text:", text);
   // all good: return parsed JSON (or plain text)
   return data ?? text;
 }
@@ -142,6 +162,7 @@ export async function postProductionLog(payload) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
+  console.log("Server response:", res);
   return handleResponse(res);
 }
 

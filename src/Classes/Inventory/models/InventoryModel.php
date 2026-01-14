@@ -652,7 +652,7 @@ class InventoryModel
                             return ['success' => false, "message" => "Failed to insert transaction for {$data['action']}"];
                         }
                         $this->pdo->commit();
-                        $this->log->info("{$data['action']} successfully to add {$data['PartNumber']} ");
+                        $this->log->info("{$data['action']} successfully to added. ");
                         return ['success' => true, "message" => 'Transaction completed successfully. ', 'pfm' => $data['partNumber']];
                     }
                     break;
@@ -1019,7 +1019,7 @@ class InventoryModel
     public function getProductList()
     {
         try {
-            $sql = 'SELECT productID, partName from products';
+            $sql = 'SELECT productID, partName, displayOrder from products Order By displayOrder ASC';
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);

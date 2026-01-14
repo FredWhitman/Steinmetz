@@ -13,15 +13,13 @@
     <link href="/css/myCSS.css" rel="stylesheet">
     <link rel="stylesheet" href="https://www.devwares.com/docs/contrast/javascript/sections/timepicker/">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="icon" href="steinmetz.ico" type="image/x-icon">
+    <link rel="icon" href="/assets/steinmetz.ico" type="image/x-icon">
 
 </head>
 
 <body>
     <!--Navbar -->
     <?php require_once '../includes/steinmetzNavbar.php'; ?>
-
-
 
     <!-- Loader -->
     <div id="loader" class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75" style="z-index: 1050;">
@@ -127,7 +125,7 @@
     <!-- Bootstrap js -->
     <script type="text/javascript" src="/lib/js/bootstrap.bundle.min.js"></script>
     <!-- My custom js -->
-    <script type="module" src="/js/production/productionMain.js"></script>
+    <script type="module" src="/js/production/productionMain_new.js"></script>
 </body>
 
 </html>

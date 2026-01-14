@@ -1,3 +1,5 @@
+//FILE: public/js/inventoryMain.js
+
 import {
   renderTables,
   setupEditEventListener,

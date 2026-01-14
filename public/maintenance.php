@@ -21,7 +21,7 @@
 
     <div class="row mt-5">
         <div class="col-lg-12">
-            <div id="showAlert"></div>
+            <div id="showAlert"><strong>This page is currently under construction and will be completed soon.</strong></div>
         </div>
     </div>
     <hr>

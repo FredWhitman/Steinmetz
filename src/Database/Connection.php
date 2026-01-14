@@ -14,6 +14,11 @@ class Connection
     private $username = "root";
     private $password = "";
 
+    /**
+     * @param \Database\Connection $dbConnection
+     * @param LoggerInterface $log
+     * @param Utilities $util
+     */
 
     /** @var PDO|null */
     private ?PDO $pdo = null;

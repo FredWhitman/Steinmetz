@@ -9,7 +9,7 @@ use Database\Connection;
 use Production\Config\LogFactory;
 use Production\Models\ProductionModel;
 use Production\Controllers\ProductionController;
-use Util\Utilities;
+use Production\Utilities\ProductionMessage;
 
 $logger = LogFactory::getLogger('Production');
 error_log("✅ Logger initialized");
@@ -17,7 +17,7 @@ error_log("✅ Logger initialized");
 $dbConn = new Connection();
 error_log("✅ DB connected");
 
-$util = new Utilities;
+$util = new ProductionMessage();
 error_log("✅ Util ready");
 
 $model = new ProductionModel($dbConn, $logger, $util);

@@ -96,12 +96,12 @@ function addPurgeFormSubmission() {
         "showAlert",
         "danger"
       );
-
+    } finally {
       const data = await fetchProdLogs();
       if (data) {
         renderTables(data);
       }
-    } finally {
+
       hideLoader();
     }
   });

@@ -14,7 +14,7 @@
     <link href="/css/qualityTable.css" rel="stylesheet">
     <link rel="stylesheet" href="https://www.devwares.com/docs/contrast/javascript/sections/timepicker/">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="icon" href="steinmetz.ico" type="image/x-icon">
+    <link rel="icon" href="/assets/steinmetz.ico" type="image/x-icon">
 </head>
 
 <body>
@@ -199,7 +199,7 @@
                             </div>
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="lcaTime">Time</label><input class="form-control" type="time" id="v_lclotTime" name="v_lcLotTime" value="09:00" readonly></div>
+                                    <div class="input-group sm-3"><label class="input-group-text" for="lcaTime">Time</label><input class="form-control" type="time" id="v_lcLotTime" name="v_lcLotTime" value="09:00" readonly></div>
                                     <div class="invalid-feedback">Change time is required!</div>
                                 </div>
                             </div>
@@ -306,7 +306,7 @@
                             <div class="row pb-2">
                                 <div class="col">
                                     <div class="input-group sm-3">
-                                        <label class="input-group-text" for="lcLotDate">In Oven Date</label>
+                                        <label class="input-group-text" for="lcLotDate">Production Date</label>
                                         <input class="form-control" type="date" tabindex="2" id="ol_inOvenDate" name="ol_inOvenDate" required>
                                     </div>
                                     <div class="invalid-feedback">In Oven date is required!</div>
@@ -527,7 +527,7 @@
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5">Oven Log</h1>
+                    <h1 class="modal-title fs-5">Material Received</h1>
                 </div>
                 <div class="modal-body">
                     <form id="add-matreceived-form" class="needs-validation p-2" novalidate>
@@ -540,13 +540,19 @@
                             </div>
                             <div class="row pb-2">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="mr_matReceiveDate">Received Date</label><input class="form-control" type="date" tabindex="2" id="mr_matReceiveDate" name="mr_matReceiveDate" required></div>
+                                    <div class="input-group sm-3">
+                                        <label class="input-group-text" for="mr_matReceiveDate">Received Date</label>
+                                        <input class="form-control" type="date" tabindex="2" id="mr_matReceivedDate" name="mr_matReceivedDate" required>
+                                    </div>
                                     <div class="invalid-feedback">Received date is required!</div>
                                 </div>
                             </div>
                             <div class="d-flex flex-row justify-content-evenly mb-2 g-1">
                                 <div class="col">
-                                    <div class="input-group sm-3"><label class="input-group-text" for="mr_lbsReceived">Lbs Received</label><input class="form-control" type="number" tabindex="2" id="mr_lbsReceived" name="mr_lbsReceived" required></div>
+                                    <div class="input-group sm-3">
+                                        <label class="input-group-text" for="mr_lbsReceived">Lbs Received</label>
+                                        <input class="form-control" type="number" tabindex="2" id="mr_lbsReceived" name="mr_lbsReceived" required>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -573,6 +579,64 @@
     </div>
     <!-- Add Material Received end-->
 
+    <!-- Add PFM Receive start-->
+    <div class="modal fade" id="addPfmReceivedModal" tabindex="-1" aria-labelledby="addPfmReceivedModal">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">PFM Received</h1>
+                </div>
+                <div class="modal-body">
+                    <form id="add-pfmreceived-form" class="needs-validation p-2" novalidate>
+                        <div class="mb-3">
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3"><label class="input-group-text" for="pr_partNumber">Part Name</label><select type="text" tabindex="1" class="form-select form-control-sm" id="pr_partNumber" name="pr_partNumber" required></select></div>
+                                    <div class="invalid-feedback">Material Part Nnumber is required!</div>
+                                </div>
+                            </div>
+                            <div class="row pb-2">
+                                <div class="col">
+                                    <div class="input-group sm-3">
+                                        <label class="input-group-text" for="pr_pfmReceiveDate">Received Date</label>
+                                        <input class="form-control" type="date" tabindex="2" id="pr_pfmReceivedDate" name="pr_pfmReceivedDate" required>
+                                    </div>
+                                    <div class="invalid-feedback">Received date is required!</div>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-row justify-content-evenly mb-2 g-1">
+                                <div class="col">
+                                    <div class="input-group sm-3">
+                                        <label class="input-group-text" for="mr_lbsReceived">Qty Received</label>
+                                        <input class="form-control" type="number" tabindex="2" id="pr_qtysReceived" name="pr_qtysReceived" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-row justify-content-evenly mb-2">
+                            <textarea class="form-control" type="text" id="pr_Comments" name="pr_Comments">Comments</textarea>
+                        </div>
+                        <div class="d-flex justify-content-evenly mt-1 mb-2">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                                </div>
+                                <div class="col-sm-8">
+                                    <button type="submit" class="btn btn-success" id="add-pfmreceived-btn">Add PFM</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add PFM Received end-->
+
+
     <!-- Table to hold the last 4 weeks of production  -->
     <div class="container-fluid">
         <div class="mt-5">
@@ -588,7 +652,7 @@
                         <button class="btn btn-primary" type="button" id="loadQARejectForm" data-bs-toggle="modal" data-bs-target="#addQARejectsModal">Add QA Rejects</button>
 
                         <button class="btn btn-primary" type="button" id="loadMaterialForm" data-bs-toggle="modal" data-bs-target="#addMaterialReceivedModal">Receive Material</button>
-                        <button class="btn btn-primary" type="button" id="loadpfmForm" data-bs-toggle="modal" data-bs-target="#addpfmReceivedModal">Receive PFM</button>
+                        <button class="btn btn-primary" type="button" id="loadpfmForm" data-bs-toggle="modal" data-bs-target="#addPfmReceivedModal">Receive PFM</button>
 
                     </div>
                 </div>
@@ -626,12 +690,15 @@
                     <table class="table table-striped table-bordered text-center w-100">
                         <thead class="table-primary">
                             <tr>
-                                <th colspan="10">Oven Logs</th>
+                                <th colspan="13">Oven Logs</th>
                             </tr>
                             <tr class="table-primary">
                                 <th>Part Number</th>
-                                <th>In Date</th>
+                                <th>Produciton Date</th>
                                 <th>In Time</th>
+                                <th>1<sup>st</sup> Shift</th>
+                                <th>2<sup>nd</sup> Shift</th>
+                                <th>3<sup>rd</sup> Shift</th>
                                 <th>In Temp</th>
                                 <th>In Initials</th>
                                 <th>Out Date</th>
@@ -678,7 +745,7 @@
     <script type="text/javascript" src="/lib/js/bootstrap.bundle.min.js"></script>
     <!-- Custom javascript -->
 
-    <script type="module" src="/js/quality/qualityMain.js"></script>
+    <script type="module" src="/js/quality/qualityMain_new.js"></script>
 </body>
 
 </html>

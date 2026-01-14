@@ -111,7 +111,7 @@ class QualityController
             $result = $this->model->updateOvenLog($data);
             $type = $result['success'] ? 'success' : 'danger';
             $alert = $this->util->showMessage($type, $result['message']);
-            $this->log->info('QualityController->updateOvenLog $alert: '. print_r($alert, true));
+            $this->log->info('QualityController->updateOvenLog $alert: ' . print_r($alert, true));
             echo $alert;
         } catch (\Throwable $e) {
             http_response_code(500);
@@ -135,18 +135,48 @@ class QualityController
         }
     }
 
-    public function addMatTransaction($data){
-        header('Content-Type: application/json');
-        try {
-            $result = $this->model->insertTransactions($data);
-            $type = $result['success'] ? 'success' : 'danger';
-            $alertJson = $this->util->showMessage($type, $result['message']);
-            echo $alertJson;
-        } catch (\Throwable $th) {
-            http_response_code(500);
-            $alertJson = $this->util->showMessage('danger', 'Unhandled exception: ' . $e->getMessage());
-            echo $alertJson;
-        }
+    public function addMatTransaction($data)
+    {
+        $mat = $data['matTransData'];
+
+        $payload = [
+            'inventoryID'   => $mat['inventoryID'],
+            'inventoryType' => 'material',
+            'deliveryDate'  => $mat['deliveryDate'],
+            'transAmount'   => $mat['lbsReceived'],
+            'transComment'  => $mat['transComment'],
+            'transType'     => 'material received',
+            'prodLogID'     => 0
+        ];
+
+        $result = $this->model->recordInventoryReceipt($payload);
+
+        echo $this->util->showMessage(
+            $result['success'] ? 'success' : 'danger',
+            $result['message']
+        );
+    }
+
+    public function addPfmTransaction($data)
+    {
+        $pfm = $data['pfmReceivedData'];
+
+        $payload = [
+            'inventoryID'   => $pfm['partNumber'],
+            'inventoryType' => 'pfm',
+            'deliveryDate'  => $pfm['pfmReceivedDate'],
+            'transAmount'   => $pfm['qtyReceived'],
+            'transComment'  => $pfm['comments'],
+            'transType'     => 'pfm received',
+            'prodLogID'     => 0
+        ];
+
+        $result = $this->model->recordInventoryReceipt($payload);
+
+        echo $this->util->showMessage(
+            $result['success'] ? 'success' : 'danger',
+            $result['message']
+        );
     }
 
     public function getProductList()
@@ -163,8 +193,6 @@ class QualityController
         }
     }
 
-
-
     public function getMaterialList()
     {
         ob_clean();
@@ -176,6 +204,33 @@ class QualityController
         } catch (\Exception $e) {
             http_response_code(500);
             echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function getPfmList()
+    {
+        ob_clean();
+        header('Content-Type: application/json');
+        try {
+            $result = $this->model->getPFMList();
+            $this->log->info("PFM List for select");
+            echo json_encode($result);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function getReceivedShipments()
+    {
+        header('Content-Type: application/json');
+
+        try {
+            $receivedShipments = $this->model->getReceivedShipments();
+            echo json_encode($receivedShipments);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to fetch received shipments', 'details' => $e->getMessage()]);
         }
     }
 }

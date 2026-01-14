@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Quality\Models;
 
-use database;
 use Psr\Log\LoggerInterface;
 use Database\Connection;
 use Exception;
@@ -74,6 +73,7 @@ class QualityModel
                 "transType" => "qa rejects",
                 "transComment" => 'qaReject Log',
             );
+
             $this->log->info('Reached insertQaRejects with data:', $data);
             $this->log->error("Logger alive check: about to try insert");
 
@@ -147,42 +147,227 @@ class QualityModel
         }
     }
 
-    public function insertTransactions($data)
+    //This function handles both material and PFM receipts for received shipments
+    public function recordInventoryReceipt(array $data)
+    {
+        try {
+            $this->pdo->beginTransaction();
+
+            $inventoryID   = $data['inventoryID'];
+            $inventoryType = $data['inventoryType'];   // 'material' or 'pfm'
+            $amount        = (int)$data['transAmount'];
+            $date          = $data['deliveryDate'];
+            $comment       = $data['transComment'];
+            $transType     = $data['transType'] ?? 'received';
+            $prodLogID     = $data['prodLogID'] ?? 0;
+
+            // 1. Get current stock
+            if ($inventoryType === 'material') {
+                $currentStock = $this->getMaterialInventory($inventoryID)[0]['matLbs'];
+                $this->updateMaterialQty($inventoryID, $amount, "+");
+            } else {
+                $currentStock = $this->getPFMInventory($inventoryID)['Qty'];
+                $this->updatePFMQty($inventoryID, $amount, "+");
+            }
+
+            // 2. Insert into inventorytrans
+            $this->insertTransactions([
+                'inventoryID'   => $inventoryID,
+                'inventoryType' => $inventoryType,
+                'prodLogID'     => $prodLogID,
+                'deliveryDate'  => $date,
+                'oldStockCount' => $currentStock,
+                'transAmount'   => $amount,
+                'transType'     => $transType,
+                'transComment'  => $comment
+            ]);
+
+            // 3. Insert into receivedshipments
+            $sql = "INSERT INTO receivedshipments 
+                    (inventoryType, inventoryID, receivedDate, receivedAmount, qaApprovedBy)
+                    VALUES (:inventoryType, :inventoryID, :receivedDate, :receivedAmount, :qaApprovedBy)";
+
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([
+                ':inventoryType'  => $inventoryType,
+                ':inventoryID'    => $inventoryID,
+                ':receivedDate'   => $date,
+                ':receivedAmount' => $amount,
+                ':qaApprovedBy'   => $comment
+            ]);
+
+            $this->pdo->commit();
+
+            return [
+                'success' => true,
+                'message' => "Successfully received {$amount} of {$inventoryID}."
+            ];
+        } catch (\Throwable $e) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+
+            $this->log->error("Failed to record inventory receipt for {$data['inventoryID']}: " . $e->getMessage());
+
+            return [
+                'success' => false,
+                'message' => "Failed to record inventory receipt: " . $e->getMessage()
+            ];
+        }
+    }
+
+    public function insertTransactions(array $data)
+    {
+        $sql = 'INSERT INTO inventorytrans 
+            (inventoryID, inventoryType, prodLogID, deliveryDate, oldStockCount, transAmount, transType, transComment)
+            VALUES (:inventoryID, :inventoryType, :prodLogID, :deliveryDate, :oldStockCount, :transAmount, :transType, :transComment)';
+
+        $stmt = $this->pdo->prepare($sql);
+
+        $stmt->execute([
+            ':inventoryID'   => $data['inventoryID'],
+            ':inventoryType' => $data['inventoryType'],
+            ':prodLogID'     => $data['prodLogID'],
+            ':deliveryDate'  => $data['deliveryDate'],
+            ':oldStockCount' => $data['oldStockCount'],
+            ':transAmount'   => $data['transAmount'],
+            ':transType'     => $data['transType'],
+            ':transComment'  => $data['transComment']
+        ]);
+
+        return true;
+    }
+
+
+    public function addReceivedShipments($data)
+    {
+        try {
+            $this->pdo->beginTransaction();
+
+            $this->insertTransactions($data);
+
+            $sql = 'INSERT into receivedshipments (inventoryType, inventoryID, receivedDate, receivedAmount, qaApprovedBy) 
+                    VALUES (:inventoryType, :inventoryID, :receivedDate, :receivedAmount, :qaApprovedBy)';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':inventoryType', $data['inventoryType'], \PDO::PARAM_STR);
+            $stmt->bindParam(':inventoryID', $data['inventoryID'], \PDO::PARAM_STR);
+            $stmt->bindParam(':receivedDate', $data['matTransData']['deliveryDate'], \PDO::PARAM_STR);
+            $stmt->bindParam(':receivedAmount', $data['matTransData']['transAmount'], \PDO::PARAM_INT);
+            $stmt->bindParam(':qaApprovedBy', $data['matTransData']['transComment'], \PDO::PARAM_STR);
+
+
+            $this->pdo->commit();
+        } catch (\Throwable $e) {
+
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+
+            $this->log->error("Exception during insert of received shipments transaction: {$data['inventoryID']}:  ERROR: " . $e->getMessage());
+            return ["success" => false, "message" => "Failed to insert received shipments transaction for {$data['inventoryID']}. ERROR: {$e->getMessage()}"];
+        }
+    }
+
+
+    public function addPfmTransaction($data)
+    {
+        try {
+            $this->pdo->beginTransaction();
+
+            $currentStock = $this->getPFMInventory($data['inventoryID']);
+
+            $data['oldStockCount'] = $currentStock;
+
+            $this->insertTransactions($data);
+
+            $sql = "Insert into receivedshipments (inventoryType, inventoryID, receivedDate, receivedAmount, qaApprovedBy) 
+                    VALUES (:inventoryType, :inventoryID, :receivedDate, :receivedAmount, :qaApprovedBy)";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':inventoryType', $data['inventoryType'], \PDO::PARAM_STR);
+            $stmt->bindParam(':inventoryID', $data['inventoryID'], \PDO::PARAM_STR);
+            $stmt->bindParam(':receivedDate', $data['deliveryDate'], \PDO::PARAM_STR);
+            $stmt->bindParam(':receivedAmount', $data['transAmount'], \PDO::PARAM_INT);
+            $stmt->bindParam(':receivedAmount', $data['transAmount'], \PDO::PARAM_INT);
+            $stmt->bindParam(':qaApprovedBy', $data['transComment'], \PDO::PARAM_STR);
+            $this->pdo->commit();
+        } catch (\Throwable $e) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+
+            $this->log->error("Exception during insert of received shipments transaction: {$data['inventoryID']}:  ERROR: " . $e->getMessage());
+            return ["success" => false, "message" => "Failed to insert received shipments transaction for {$data['inventoryID']}. ERROR: {$e->getMessage()}"];
+        }
+    }
+
+    /* public function insertTransactions($data)
     {
 
         $sql = 'INSERT INTO 
-                    inventorytrans (inventoryID, inventoryType, prodLogID, oldStockCount, transAmount, transType, transComment) 
-                VALUES (:inventoryID, :inventoryType, :prodLogID, :oldStockCount, :transAmount, :transType, :transComment)';
+                    inventorytrans (
+                        inventoryID, 
+                        inventoryType, 
+                        prodLogID, 
+                        deliveryDate, 
+                        oldStockCount, 
+                        transAmount, 
+                        transType, 
+                        transComment) 
+                VALUES (
+                    :inventoryID, 
+                    :inventoryType, 
+                    :prodLogID, :deliveryDate, :oldStockCount, :transAmount, :transType, :transComment)';
         $stmt = $this->pdo->prepare($sql);
 
-        if ($data['action'] == 'matReceived') {
-            $currentStock = $this->getMaterialInventory($data['matTransData']['inventoryID']);
+        try {
 
-            $stmt->bindParam(':inventoryID', $data['matTransData']['inventoryID'], \PDO::PARAM_STR);
-            $stmt->bindParam(':inventoryType', $data['matTransData']['inventoryType'], \PDO::PARAM_STR);
-            $stmt->bindParam(':prodLogID', $data['matTransData']['prodLogID'], \PDO::PARAM_INT);
-            $stmt->bindParam(':oldStockCount', $currentStock, \PDO::PARAM_STR);
-            $stmt->bindParam(':transAmount', $data['matTransData']['transAmount'], \PDO::PARAM_STR);
-            $stmt->bindParam(':transType', $data['matTransData']['transType'], \PDO::PARAM_STR);
-            $stmt->bindParam(':transComment', $data['matTransData']['transComment'], \PDO::PARAM_STR);
-        } else {
-            $stmt->bindParam(':inventoryID', $data['inventoryID'], \PDO::PARAM_STR);
-            $stmt->bindParam(':inventoryType', $data['inventoryType'], \PDO::PARAM_STR);
-            $stmt->bindParam(':prodLogID', $data['prodLogID'], \PDO::PARAM_INT);
-            $stmt->bindParam(':oldStockCount', $data['oldStockCount'], \PDO::PARAM_INT);
-            $stmt->bindParam(':transAmount', $data['transAmount'], \PDO::PARAM_INT);
-            $stmt->bindParam(':transType', $data['transType'], \PDO::PARAM_STR);
-            $stmt->bindParam(':transComment', $data['transComment'], \PDO::PARAM_STR);
+            if ($data['action'] == 'matReceived') {
+
+                $currentStock = $this->getMaterialInventory($data['matTransData']['inventoryID']);
+
+                $this->updateMaterialQty($data['matTransData']['inventoryID'], $data['matTransData']['lbsReceived'], "+");
+
+                $stmt->bindParam(':inventoryID', $data['matTransData']['inventoryID'], \PDO::PARAM_STR);
+                $stmt->bindParam(':inventoryType', $data['matTransData']['inventoryType'], \PDO::PARAM_STR);
+                $stmt->bindParam(':prodLogID', $data['matTransData']['inventoryLogID'], \PDO::PARAM_INT);
+                $stmt->bindParam(':deliveryDate', $data['matTransData']['deliveryDate'], \PDO::PARAM_STR);
+                $stmt->bindParam(':oldStockCount', $currentStock, \PDO::PARAM_STR);
+                $stmt->bindParam(':transAmount', $data['matTransData']['lbsReceived'], \PDO::PARAM_STR);
+                $stmt->bindParam(':transType', $data['matTransData']['transType'], \PDO::PARAM_STR);
+                $stmt->bindParam(':transComment', $data['matTransData']['transComment'], \PDO::PARAM_STR);
+            } else {
+
+                $currentStock = $this->getPFMInventory($data['inventoryID']);
+
+                $this->updatePFMQty($data['inventoryID'], $data['transAmount'], "+");
+
+                $stmt->bindParam(':inventoryID', $data['inventoryID'], \PDO::PARAM_STR);
+                $stmt->bindParam(':inventoryType', $data['inventoryType'], \PDO::PARAM_STR);
+                $stmt->bindParam(':prodLogID', $data['prodLogID'], \PDO::PARAM_INT);
+                $stmt->bindValue(':deliveryDate', "null");
+                $stmt->bindParam(':oldStockCount', $currentStock, \PDO::PARAM_INT);
+                $stmt->bindParam(':transAmount', $data['transAmount'], \PDO::PARAM_INT);
+                $stmt->bindParam(':transType', $data['transType'], \PDO::PARAM_STR);
+                $stmt->bindParam(':transComment', $data['transComment'], \PDO::PARAM_STR);
+            }
+
+            if (!$stmt->execute()) {
+                $error = $stmt->errorInfo();
+
+                $this->log->error("error insert inventory transaction: {$data['inventoryID']}:  ERROR: " . $error);
+                throw new \Exception("Failed to insert transactions for {$data['inventoryID']}.  ERROR: {$error}");
+                return ["success" => false, "message" => "Failed to insert inventory transaction for {$data['inventoryID']}. ERROR: {$error}"];
+            } else {
+
+                $this->log->info("Successfully inserted inventory transaction for {$data['matTransData']['inventoryID']}.");
+                $message = "Transaction completed successfully.";
+                return ["success" => true, "message" => $message];
+            }
+        } catch (\Throwable $e) {
+            $this->log->error("Exception during insert inventory transaction: {$data['inventoryID']}:  ERROR: " . $e->getMessage());
+            return ["success" => false, "message" => "Failed to insert inventory transaction for {$data['inventoryID']}. ERROR: {$e->getMessage()}"];
         }
-
-
-
-        if (!$stmt->execute()) {
-            $error = $stmt->errorInfo();
-            $this->log->error("error insert inventory transaction: {$data['inventoryID']}:  ERROR: " . $error);
-            throw new \Exception("Failed to insert transactions for {$data['inventoryID']}.  ERROR: {$error}");
-        }
-    }
+    } */
 
     /**
      * addPurge
@@ -249,9 +434,9 @@ class QualityModel
                     INTO ovenlogs (productID, inOvenDate, firstShift, secondShift, thirdShift, inOvenTime, inOvenTemp, inOvenInitials, ovenComments) 
                     VALUES (:productID, :inOvenDate, :firstShift, :secondShift, :thirdShift, :inOvenTime, :inOvenTemp, :inOvenInitials, :ovenComments)";
 
-            ($data['ovenLogData']['firstShift'] === 'on') ? $data['ovenLogData']['firstShift'] = '1' : $data['ovenLogData']['firstShift'] = '0';
-            ($data['ovenLogData']['secondShift'] === 'on') ? $data['ovenLogData']['secondShift'] = '1' : $data['ovenLogData']['secondShift'] = '0';
-            ($data['ovenLogData']['thirdShift'] === 'on') ? $data['ovenLogData']['thirdShift'] = '1' : $data['ovenLogData']['thirdShift'] = '0';
+            $data['ovenLogData']['firstShift']  = (int)$data['ovenLogData']['firstShift'];
+            $data['ovenLogData']['secondShift'] = (int)$data['ovenLogData']['secondShift'];
+            $data['ovenLogData']['thirdShift']  = (int)$data['ovenLogData']['thirdShift'];
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(':productID', $data['ovenLogData']['productID']);
@@ -338,6 +523,27 @@ class QualityModel
         }
     }
 
+    private function updateMaterialQty($matPartNumber, $amount, $operator)
+    {
+        $op = $op = ($operator === "+") ? '+' : '-';
+
+        $sql = "UPDATE materialInventory SET matLbs = matLbs {$op} :matLbs WHERE matPartNumber = :matPartNumber";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':matLbs', $amount, \PDO::PARAM_INT);
+        $stmt->bindParam(':matPartNumber', $matPartNumber, \PDO::PARAM_STR);
+
+        if (!$stmt->execute()) {
+            $error = $stmt->errorInfo();
+            $this->log->error("Failed to update Material: {$matPartNumber}'s qty. \n", [
+                'errorInfo' => $error,
+                'matPartNumber' => $matPartNumber,
+                'Qty' => $amount,
+                'operator' => $operator
+            ]);
+            throw new \Exception("Failed to update Material: {$matPartNumber}'s qty. ERROR: {$error}");
+        }
+    }
+
     public function updateProductQty($productID, $amount, $operator)
     {
         $op = $op = ($operator === "+") ? '+' : '-';
@@ -414,7 +620,7 @@ class QualityModel
     public function getProductList()
     {
         try {
-            $sql = 'SELECT productID, partName from products';
+            $sql = 'SELECT productID, partName from products Order By displayOrder ASC';
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -446,7 +652,7 @@ class QualityModel
     public function getMaterialList()
     {
         try {
-            $sql = 'SELECT matPartNumber, matName from material';
+            $sql = 'SELECT matPartNumber, matName from material Order By displayOrder ASC';
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -462,6 +668,28 @@ class QualityModel
             return [
                 'success' => false,
                 'message' => "Failed to get material list: ERROR MESSAGE: {$e->getMessage()}"
+            ];
+        }
+    }
+
+    public function getPFmList()
+    {
+        try {
+            $sql = 'SELECT partNumber, partName from pfm Order By displayOrder ASC';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+            if ($result) {
+                return $result;
+            } else {
+                return 0;
+            }
+        } catch (\Exception $e) {
+            $this->log->error("ERROR: Failed to get PFM list: " . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => "Failed to get PFM list: ERROR MESSAGE: {$e->getMessage()}"
             ];
         }
     }
@@ -519,7 +747,7 @@ class QualityModel
 
     private function getMaterialInventory($matPartNumber)
     {
-        $sql = "SELECT matLbs FROM materialInventory WHERE matPartNumber - :matPartNumber";
+        $sql = "SELECT matLbs FROM materialInventory WHERE matPartNumber = :matPartNumber";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':matPartNumber', $matPartNumber, \PDO::PARAM_STR);
         if (!$stmt->execute()) {
@@ -527,7 +755,7 @@ class QualityModel
             $this->log->error("Failed to get material Inventory for {$matPartNumber}. ERROR: " . $error);
             throw new \Exception("Failed to get material Inventory for {$matPartNumber}");
         }
-        $result = $stmt->fetch();
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         return $result;
     }
 
@@ -591,7 +819,7 @@ class QualityModel
     {
         $sql = 'SELECT * FROM ovenlogs
                 WHERE inOvenDate >= DATE_SUB(NOW(), INTERVAL 4 WEEK) 
-                Order By inOvenDate Desc';
+                Order By updatedAt DESC, inOvenDate ASC';
         $stmt = $this->pdo->prepare($sql);
         if (!$stmt->execute()) throw new \Exception("Failed to get Oven Logs");
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -661,5 +889,18 @@ class QualityModel
             $this->log->error('Failed to getQaRejectLog: ERROR-' . $e->getMessage());
             return ["success" => false, "message" => "Failed to getQA Log: {$e}"];
         }
+    }
+
+    public function getReceivedShipments()
+    {
+        $sql = 'SELECT * FROM receivedshipments
+                WHERE deliveryDate >= DATE_SUB(NOW(), INTERVAL 12 WEEK) ORDER BY deliveryDate DESC';
+        $stmt = $this->pdo->prepare($sql);
+        if (!$stmt->execute()) {
+            $errorInfo = $stmt->errorInfo();
+            throw new \Exception("Failed to get received shipments logs. ERROR: {$errorInfo}");
+        }
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $result;
     }
 }

@@ -170,7 +170,7 @@
     <!-- Include your JavaScript files here -->
     <!-- Bootstrap js -->
     <script type="text/javascript" src="/lib/js/bootstrap.bundle.min.js"></script>
-    <script type="module" src="/js/production/viewProdLog.js"></script>
+    <script type="module" src="/js/production/viewProdLog_new.js"></script>
 
 </body>
 

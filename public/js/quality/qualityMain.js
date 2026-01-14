@@ -1,434 +1,258 @@
-//FILE /js/qualityMain.js
+//FILE: /js/quality/qualityMain_new.js
 
 import {
   renderTables,
-  setupEventListener,
+  showLoader,
+  hideLoader,
   showAlertMessage,
   clearAlert,
   populateProductSelect,
   populateMaterialSelect,
-  showLoader,
-  hideLoader,
+  populatePFMSelect,
 } from "./qualityUiManager.js";
 
 import {
   fetchQualityLogs,
+  fetchProductList,
+  fetchMaterialList,
+  fetchPFMList,
   postQaRejects,
   postLotChange,
   postOvenLog,
   postUpdateOvenLog,
   postMatReceived,
-  fetchProductList,
-  fetchMaterialList,
+  postPfmReceived,
 } from "./qualityApiClient.js";
 
-async function init() {
-  //load and render tables for OvenLog and QA Rejects
-  const data = await fetchQualityLogs();
-  if (data) {
-    renderTables(data);
-    setupEventListener("qaRejectLogs", "qaRejectsLogs");
-    setupEventListener("lotChangeLogs", "lotChangeLogs");
-    setupEventListener("ovenLogs", "ovenLogs");
-  }
-}
-
-init();
-
-function addQaRejectsFormSubmision() {
-  const form = document.getElementById("add-qaReject-form");
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    if (!form.checkValidity()) {
-      form.classList.add("was-validated");
-      return;
-    }
-
-    const data = new FormData(form);
-    const payload = {
-      action: "addQaRejects",
-      qaRejectData: {
-        prodDate: data.get("qaLogDate"),
-        productID: data.get("qaPart"),
-        rejects: data.get("rejects"),
-        comments: data.get("qaComments"),
-      },
-    };
-
-    try {
-      const result = await postQaRejects(payload);
-
-      if (result) {
-        console.log("Raw result:", result);
-        const alertData = result;
-        document.getElementById("showAlert").innerHTML = alertData.html;
-        bootstrap.Modal.getInstance(
-          document.getElementById("addQARejectsModal")
-        ).hide();
-      }
-      console.log("postQaRejects result: ", result);
-      const data = await fetchQualityLogs();
-      if (data) {
-        renderTables(data);
-      }
-    } catch (error) {
-      console.error("Failed to submit QA Rejects:", error);
-      document.getElementById("showAlert").innerHtml;
-    }
-  });
-}
-
-function addMaterialReceived() {
-  const form = document.getElementById("add-matreceived-form");
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    if (!form.checkValidity()) {
-      form.classList.add("was-validated");
-      return;
-    }
-
-    const data = new FormData(form);
-    const payload = {
-      action: "matReceived",
-      matTransData: {
-        inventoryID: data.get("mr_matPartNumber"),
-        inventoryType: data.get("material"),
-        transDate: data.get("mr_matReceivedDate"),
-        inventoryLogID: "0",
-        oldStockCount: "0",
-        transAmount: data.get("mr_lbsReceived"),
-        transType: "received",
-        transComment: data.get("mr_Comments"),
-      },
-    };
-
-    try {
-      const result = await postMatReceived(payload);
-      if (result) {
-        console.log("Raw result: ", result);
-        const alertData = result;
-        document.getElementById("showAlert").innerHTML = alertData.html;
-        bootstrap.Modal.getInstance(
-          document.getElementById("addMaterialReceivedModal")
-        ).hide();
-      }
-    } catch (error) {
-      console.error("Failed to submit material transaction", error);
-      document.getElementById("showAlert").innerHtml;
-    }
-  });
-}
-
-function addLotChangeFormSubmission() {
-  const form = document.getElementById("add-lotchange-form");
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    if (!form.checkValidity()) {
-      form.classList.add("was-validated");
-      return;
-    }
-
-    const data = new FormData(form);
-    const payload = {
-      action: "addLotChange",
-      lotChangeData: {
-        productID: data.get("lc_PartName"),
-        MaterialName: data.get("lc_MatName"),
-        ChangeDate: data.get("lc_LotDate"),
-        ChangeTime: data.get("lc_LotTime"),
-        OldLot: data.get("lc_OldLot"),
-        NewLot: data.get("lc_NewLot"),
-        Comments: data.get("lc_Comments"),
-      },
-    };
-
-    try {
-      const result = await postLotChange(payload);
-      if (result) {
-        const alertData = result;
-        document.getElementById("showAlert").innerHTML = alertData.html;
-        bootstrap.Modal.getInstance(
-          document.getElementById("addLotChangeModal")
-        ).hide();
-      }
-
-      console.log("postLotChange result: ", result);
-      const data = await fetchQualityLogs();
-      if (data) {
-        renderTables(data);
-      }
-    } catch (error) {
-      console.error("Failed to submit Lot Change:", error);
-    }
-  });
-}
-
-function addOvenLogFormSubmission() {
-  //create form value
-  const form = document.getElementById("add-ovenlog-form");
-  //add listener to form that catches submit event
-  form.addEventListener("submit", async (e) => {
-    //prevent form submission
-    e.preventDefault();
-    //check validity of form
-    if (!form.checkValidity()) {
-      form.classList.add("was-validated");
-      return;
-    }
-
-    //store form data in array
-    const data = new FormData(form);
-    //capture form data
-    const payload = {
-      action: "addOvenLog",
-      ovenLogData: {
-        productID: data.get("ol_PartName"),
-        inOvenDate: data.get("ol_inOvenDate"),
-        firstShift: data.get("ol_1stShift"),
-        secondShift: data.get("ol_2ndShift"),
-        thirdShift: data.get("ol_3rdShift"),
-        inOvenTime: data.get("ol_inOvenTime"),
-        inOvenTemp: data.get("ol_inOvenTemp"),
-        inOvenInitials: data.get("ol_inOvenInitials"),
-        ovenComments: data.get("ol_Comments"),
-      },
-    };
-    console.log(JSON.stringify(payload, null, 2));
-    try {
-      const result = await postOvenLog(payload);
-      console.log("RAW result: ", result);
-      console.log("Alert HTML: ", result?.html);
-
-      if (result) {
-        const alertData = result;
-        document.getElementById("showAlert").innerHTML = alertData.html;
-        bootstrap.Modal.getInstance(
-          document.getElementById("addOvenLogModal")
-        ).hide();
-      }
-      console.log("postOvenLog result: ", result);
-      const data = await fetchQualityLogs();
-      if (data) {
-        renderTables(data);
-      }
-    } catch (error) {
-      console.error("Failed to submit oven log: ", error);
-    }
-  });
-}
-
-function updateOvenLogFormSubmission() {
-  const form = document.getElementById("update-ovenlog-form");
+// Generic form handler
+function handleFormSubmit(formId, buildPayload, postFn, modalId) {
+  const form = document.getElementById(formId);
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!form.checkValidity()) {
       form.classList.add("was-validated");
       return;
     }
-    const data = new FormData(form);
-    const payload = {
-      action: "updateOvenLog",
-      ovenlog: {
-        ovenLogID: data.get("u_olOvenLogID"),
-        outOvenDate: data.get("u_olOutOvenDate"),
-        outOvenTime: data.get("u_olOutOvenTime"),
-        outOvenTemp: data.get("u_olOutOvenTemp"),
-        outOvenInitials: data.get("u_olOutOvenInitials"),
-        ovenComments: data.get("u_olComments"),
-      },
-    };
 
-    console.log(JSON.stringify(payload, null, 2));
+    const data = new FormData(form);
+    const payload = buildPayload(data);
 
     try {
-      const result = await postUpdateOvenLog(payload);
-      console.log("RAW result: ", result);
-      console.log("Alert HTML: ", result?.html);
+      showLoader();
+      const result = await postFn(payload);
+      if (result?.html)
+        document.getElementById("showAlert").innerHTML = result.html;
+      bootstrap.Modal.getInstance(document.getElementById(modalId)).hide();
 
-      if (result) {
-        const alertData = result;
-        document.getElementById("showAlert").innerHTML = alertData.html;
-        bootstrap.Modal.getInstance(
-          document.getElementById("updateOvenLogModal")
-        ).hide();
-      }
-      console.log("postUpdateOvenLog result: ", result);
-      const data = await fetchQualityLogs();
-      if (data) {
-        renderTables(data);
-      }
-    } catch (error) {
-      console.error("Failed to update oven log: ", error);
+      const logs = await fetchQualityLogs();
+      if (logs) renderTables(logs);
+    } catch (err) {
+      console.error(`Failed to submit ${formId}:`, err);
+      showAlertMessage("Submission failed.", "showAlert", "danger");
+    } finally {
+      hideLoader();
     }
   });
 }
 
-// 1) When the modal opens, load options
-async function onModalShow() {
-  showLoader();
-  clearAlert();
+function setupModalShow(modalId, configs) {
+  const modalEl = document.getElementById(modalId);
+  modalEl.addEventListener("show.bs.modal", async () => {
+    showLoader();
+    clearAlert();
+    try {
+      const results = await Promise.all(configs.map((c) => c.fetchFn()));
+      configs.forEach((c, i) => {
+        if (Array.isArray(results[i])) {
+          c.populateFn(document.getElementById(c.elId), results[i]);
+        } else {
+          showAlertMessage(
+            `⚠️ Failed to load ${c.name}`,
+            "showAlert",
+            "danger"
+          );
+        }
+      });
+    } catch (err) {
+      console.error(`Failed to load data for ${modalId}:`, err);
+      showAlertMessage("Failed to load data.", "showAlert", "danger");
+    } finally {
+      hideLoader();
+    }
+  });
+}
 
+//add-qaReject-form call handleFormSubmit function and pass form name, payload
+// builder, post function, and modal ID
+handleFormSubmit(
+  "add-qaReject-form",
+  (d) => ({
+    qaRejectData: {
+      prodDate: d.get("qaLogDate"),
+      productID: d.get("qaPart"),
+      rejects: d.get("rejects"),
+      comments: d.get("qaComments"),
+    },
+  }),
+  postQaRejects,
+  "addQARejectsModal"
+);
+
+//add-lotchange-form
+handleFormSubmit(
+  "add-lotchange-form",
+  (d) => ({
+    lotChangeData: {
+      productID: d.get("lc_PartName"),
+      MaterialName: d.get("lc_MatName"),
+      ChangeDate: d.get("lc_LotDate"),
+      ChangeTime: d.get("lc_LotTime"),
+      OldLot: d.get("lc_OldLot"),
+      NewLot: d.get("lc_NewLot"),
+      Comments: d.get("lc_Comments"),
+    },
+  }),
+  postLotChange,
+  "addLotChangeModal"
+);
+
+//add-ovenlog-form
+handleFormSubmit(
+  "add-ovenlog-form",
+  (d) => ({
+    ovenLogData: {
+      productID: d.get("ol_PartName"),
+      inOvenDate: d.get("ol_inOvenDate"),
+      firstShift: d.get("ol_1stShift") ? 1 : 0,
+      secondShift: d.get("ol_2ndShift") ? 1 : 0,
+      thirdShift: d.get("ol_3rdShift") ? 1 : 0,
+      inOvenTime: d.get("ol_inOvenTime"),
+      inOvenTemp: d.get("ol_inOvenTemp"),
+      inOvenInitials: d.get("ol_inOvenInitials"),
+      ovenComments: d.get("ol_Comments"),
+    },
+  }),
+  postOvenLog,
+  "addOvenLogModal"
+);
+
+//update-ovenlog-form
+handleFormSubmit(
+  "update-ovenlog-form",
+  (d) => ({
+    ovenlog: {
+      ovenLogID: d.get("u_olOvenLogID"),
+      productID: d.get("u_olPartName"),
+      inOvenDate: d.get("u_olinOvenDate"),
+      inOvenTime: d.get("u_olinOvenTime"),
+      inOvenTemp: d.get("u_olinOvenTemp"),
+      inOvenInitials: d.get("u_olinOvenInitials"),
+      outOvenDate: d.get("u_olOutOvenDate"),
+      outOvenTime: d.get("u_olOutOvenTime"),
+      outOvenTemp: d.get("u_olOutOvenTemp"),
+      outOvenInitials: d.get("u_olOutOvenInitials"),
+      ovenComments: d.get("u_olComments"),
+    },
+  }),
+  postUpdateOvenLog,
+  "updateOvenLogModal"
+);
+
+//add-matreceived-form
+handleFormSubmit(
+  "add-matreceived-form",
+  (d) => ({
+    matTransData: {
+      inventoryID: d.get("mr_matPartNumber"),
+      inventoryType: "material",
+      inventoryLogID: 0,
+      matPartNumber: d.get("mr_matPartNumber"),
+      deliveryDate: d.get("mr_matReceivedDate"),
+      lbsReceived: d.get("mr_lbsReceived"),
+      transType: "received",
+      transComment: d.get("mr_Comments"),
+    },
+  }),
+  postMatReceived,
+  "addMaterialReceivedModal"
+);
+
+//add-pfmreceived-form
+handleFormSubmit(
+  "add-pfmreceived-form",
+  (d) => ({
+    pfmReceivedData: {
+      partNumber: d.get("pr_partNumber"),
+      pfmReceivedDate: d.get("pr_pfmReceivedDate"),
+      qtyReceived: d.get("pr_qtysReceived"),
+      comments: d.get("pr_Comments"),
+    },
+  }),
+  postPfmReceived,
+  "addPfmReceivedModal"
+);
+
+setupModalShow("addQARejectsModal", [
+  {
+    fetchFn: fetchProductList,
+    populateFn: populateProductSelect,
+    elId: "qaPartName",
+    name: "products",
+  },
+]);
+
+setupModalShow("addLotChangeModal", [
+  {
+    fetchFn: fetchProductList,
+    populateFn: populateProductSelect,
+    elId: "lc_PartName",
+    name: "products",
+  },
+  {
+    fetchFn: fetchMaterialList,
+    populateFn: populateMaterialSelect,
+    elId: "lc_MatName",
+    name: "materials",
+  },
+]);
+
+setupModalShow("addOvenLogModal", [
+  {
+    fetchFn: fetchProductList,
+    populateFn: populateProductSelect,
+    elId: "ol_PartName",
+    name: "products",
+  },
+]);
+
+setupModalShow("addMaterialReceivedModal", [
+  {
+    fetchFn: fetchMaterialList,
+    populateFn: populateMaterialSelect,
+    elId: "mr_matPartNumber",
+    name: "materials",
+  },
+]);
+
+setupModalShow("addPfmReceivedModal", [
+  {
+    fetchFn: fetchPFMList,
+    populateFn: populatePFMSelect,
+    elId: "pr_partNumber",
+    name: "pfms",
+  },
+]);
+
+// Initial page load
+(async function init() {
   try {
-    const response = await fetchProductList();
-    //const products = response.products;
-    console.log("🧪 products:", response);
-
-    if (!Array.isArray(response)) {
-      showAlertMessage("⚠️ Product list failed to load properly.");
-      console.error("products", response);
-      return;
-    }
-
-    const sel = document.getElementById("qaPartName");
-    populateProductSelect(sel, response);
+    showLoader();
+    const logs = await fetchQualityLogs();
+    if (logs) renderTables(logs);
   } catch (err) {
-    console.error(err);
-    showAlertMessage("Unable to load products or materials.");
+    console.error("Init failed:", err);
+    showAlertMessage("Failed to load initial data.", "showAlert", "danger");
   } finally {
     hideLoader();
   }
-}
-//fill selects with list of products and materials
-async function onLotChangeModalShow() {
-  showLoader();
-  clearAlert();
-
-  try {
-    const [products, materials] = await Promise.all([
-      fetchProductList(),
-      fetchMaterialList(),
-    ]);
-
-    if (!Array.isArray(products) || !Array.isArray(materials)) {
-      showAlertMessage("⚠️ Product or material lists failed to load properly.");
-      console.error("products", products);
-      console.error("material", materials);
-      return;
-    }
-
-    const sel = document.getElementById("lc_PartName");
-    const selectEl = document.getElementById("lc_MatName");
-
-    populateProductSelect(sel, products);
-    populateMaterialSelect(selectEl, materials);
-  } catch (err) {
-    console.error(err);
-    showAlertMessage("Unable to load products or materials.");
-  } finally {
-    hideLoader();
-  }
-}
-
-async function onOvenLogModalShow() {
-  //Fill productID select
-  showLoader();
-  clearAlert();
-  try {
-    const [products] = await Promise.all([fetchProductList()]);
-
-    if (!Array.isArray(products)) {
-      showAlertMessage(
-        "⚠️ Product or material lists failed to load properly.",
-        "showAlert",
-        "danger"
-      );
-      console.error("products", products);
-      return;
-    }
-    const sel = document.getElementById("ol_PartName");
-    populateProductSelect(sel, products);
-  } catch (error) {
-    console.error(error);
-    showAlertMessage("Unable to load product list!", "showAlert", "danger");
-  } finally {
-    hideLoader();
-  }
-}
-
-async function onUpdateLotModalShow() {
-  showLoader();
-  try {
-    const [products, materials] = await Promise.all([
-      fetchProductList(),
-      fetchMaterialList(),
-    ]);
-
-    if (!Array.isArray(products) || !Array.isArray(materials)) {
-      showAlertMessage(
-        "⚠️ Product or material lists failed to load properly.",
-        "showAlert",
-        "danger"
-      );
-      console.error("products", products);
-      console.error("materials", materials);
-      return;
-    }
-    const sel = document.getElementById("u_lcPartName");
-    const selectEl = document.getElementById("u_lcMatName");
-    populateProductSelect(sel, products);
-    populateMaterialSelect(selectEl, materials);
-  } catch (error) {
-    console.error(error);
-    showAlertMessage("Unable to load product list!", "showAlert", "danger");
-  } finally {
-    hideLoader();
-  }
-}
-
-async function onMatReceivedModalShow() {
-  showLoader();
-  clearAlert();
-
-  try {
-    const materials = await fetchMaterialList();
-
-    if (!Array.isArray(materials)) {
-      showAlertMessage(
-        "⚠️ Material lists failed to load properly.",
-        "showAlert",
-        "danger"
-      );
-      console.error("materials", materials);
-      return;
-    }
-
-    console.log("materials", materials);
-
-    const sel = document.getElementById("mr_matPartNumber");
-    populateMaterialSelect(sel, materials);
-  } catch (error) {
-    console.error(error);
-    showAlertMessage("Unable to load material list!", "showAlert", "danger");
-  } finally {
-    hideLoader();
-  }
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  // Load data when modal shows
-  const addModalEl = document.getElementById("addQARejectsModal");
-  addModalEl.addEventListener("show.bs.modal", onModalShow);
-
-  const addLotModalEl = document.getElementById("addLotChangeModal");
-  addLotModalEl.addEventListener("show.bs.modal", onLotChangeModalShow);
-
-  const addOvenLogModalEl = document.getElementById("addOvenLogModal");
-  addOvenLogModalEl.addEventListener("show.bs.modal", onOvenLogModalShow);
-
-  const updateLotModal = document.getElementById("updateLotChangeModal");
-  updateLotModal.addEventListener("show.bs.modal", onUpdateLotModalShow);
-
-  const addMatReceivedModal = document.getElementById(
-    "addMaterialReceivedModal"
-  );
-  addMatReceivedModal.addEventListener("show.bs.modal", onMatReceivedModalShow);
-
-  addQaRejectsFormSubmision();
-  addLotChangeFormSubmission();
-  addOvenLogFormSubmission();
-  updateOvenLogFormSubmission();
-  addMaterialReceived();
-});
+})();

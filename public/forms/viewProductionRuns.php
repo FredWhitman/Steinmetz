@@ -14,7 +14,7 @@
     <link href="/css/myCSS.css" rel="stylesheet">
     <link rel="stylesheet" href="https://www.devwares.com/docs/contrast/javascript/sections/timepicker/">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="icon" href="../steinmetz.ico" type="image/x-icon">
+    <link rel="icon" href="/assets/steinmetz.ico" type="image/x-icon">
 
 </head>
 
@@ -65,6 +65,7 @@
                                     <th>Startup Rejects</th>
                                     <th>QA Rejects</th>
                                     <th>Purge lbs</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="runsNotComplete">
@@ -95,6 +96,7 @@
                                     <th>Startup Rejects</th>
                                     <th>QA Rejects</th>
                                     <th>Purge lbs</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="runsFinished">
@@ -114,7 +116,7 @@
     <script type="text/javascript" src="/lib/js/bootstrap.bundle.min.js"></script>
 
     <!-- My custom js -->
-    <script type="module" src="/js/production/viewProdRuns.js"></script>
+    <script type="module" src="/js/production/viewProdRuns_new.js"></script>
 </body>
 
 </html>

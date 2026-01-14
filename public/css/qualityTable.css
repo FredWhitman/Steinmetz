@@ -1,48 +1,47 @@
 .table-container {
-    max-height: 225px;
-    border: 1px solid #ccc;
-    overflow-y: auto;
-    width: 100%;
+  max-height: 500px;
+  border: 1px solid #ccc;
+  overflow-y: auto;
+  width: 100%;
 }
 
 table {
-
-    border-top: 0 solid black;
-    width: 100%;
-    border-collapse: collapse;
-    border-right: 1px solid black;
-    table-layout: fixed;
+  border-top: 0 solid black;
+  width: 100%;
+  border-collapse: collapse;
+  border-right: 1px solid black;
+  table-layout: fixed;
 }
 /* thead, tbody {
     display: block;
 } */
 thead {
-    background-color: #ffffff;
+  background-color: #ffffff;
 }
 tbody {
-    max-height: 150px;
-    overflow-y: auto;
+  max-height: 400px;
+  overflow-y: auto;
 }
 
 td {
-    font-size: 12px;
+  font-size: 12px;
 }
 
 th {
-    font-size: 14px;
-    border-top: 0;
-    background: white;
-    position: sticky;
-    top: -1; /* Don't forget this, required for the stickiness */
-    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
-    }
+  font-size: 14px;
+  border-top: 0;
+  background: white;
+  position: sticky;
+  top: -1; /* Don't forget this, required for the stickiness */
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+}
 
-th, td {
-
-    padding: 0px;
-    text-align: center;
-    border: 0px solid #969696;
-    /* width: 24%;
+th,
+td {
+  padding: 0px;
+  text-align: center;
+  border: 0px solid #969696;
+  /* width: 24%;
     box-sizing: border-box; */
 }
 
@@ -53,7 +52,7 @@ thead tr:first-child th {
   background-color: var(--bs-light);
   z-index: 3;
   /* box-shadow: 0 2px 2px -2px rgba(0, 0, 0, 0.15); */
-    box-shadow: 0 2px 2px .05em rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 2px 0.05em rgba(0, 0, 0, 0.15);
 }
 
 /* Second sticky row: column headers */
@@ -63,10 +62,4 @@ thead tr:nth-child(2) th {
   background-color: var(--bs-light);
   box-shadow: 0 2px 2px -2px rgba(0, 0, 0, 0.15);
   z-index: 2;
-  }
-
-  
-
-
-
-
+}
