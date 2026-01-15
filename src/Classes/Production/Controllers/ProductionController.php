@@ -384,6 +384,7 @@ class ProductionController
 
     public function addLog($data)
     {
+        ob_clean();
         header('Content-Type: application/json');
         try {
             $this->log->info("addLog called to insert new production log.");
