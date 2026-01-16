@@ -6,9 +6,7 @@ declare(strict_types=1);
 
 namespace Inventory\Models;
 
-use Inventory\Models\InventoryGet;
-
-class InsertProduction
+class InventoryInsert
 {
     private $pdo;
     private $log;

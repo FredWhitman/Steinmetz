@@ -3,7 +3,20 @@
 const BASE_URL = "../api/prodDispatcher.php";
 
 async function handleResponse(response) {
-  const json = await response.json();
+  //const json = await response.json(); testing
+
+  const raw = await response.text();
+  console.log("RAW SERVER RESPONSE: ", raw);
+
+  let json;
+  try {
+    json = JSON.parse(raw);
+  } catch (err) {
+    throw new Error(
+      "Invalid JSON returned by server. See console for RAW SERVER RESPONSE."
+    );
+  }
+
   // Display alert HTML if provided
   const alertContainer = document.getElementById("alerts");
   if (alertContainer && json.html) {

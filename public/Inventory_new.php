@@ -771,7 +771,7 @@
     <!-- Bootstrap js -->
     <script type="text/javascript" src="/lib/js/bootstrap.bundle.min.js"></script>
     <!-- Custom javascript -->
-    <script type="module" src="/js/inventoryMain.js"></script>
+    <script type="module" src="/js/inventoryMain_new.js"></script>
 
 </body>
 
